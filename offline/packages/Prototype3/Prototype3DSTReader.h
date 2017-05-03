@@ -1,17 +1,17 @@
-// $Id: Prototype2DSTReader.h,v 1.7 2015/02/27 23:42:23 jinhuang Exp $
+// $Id: Prototype3DSTReader.h,v 1.7 2015/02/27 23:42:23 jinhuang Exp $
 
 /*!
- * \file Prototype2DSTReader.h
+ * \file Prototype3DSTReader.h
  * \brief 
  * \author Jin Huang <jhuang@bnl.gov>
  * \version $Revision: 1.7 $
  * \date $Date: 2015/02/27 23:42:23 $
  */
 
-#ifndef Prototype2DSTReader_H_
-#define Prototype2DSTReader_H_
+#ifndef Prototype3DSTReader_H_
+#define Prototype3DSTReader_H_
 
-#include "RawTower_Prototype2.h"
+#include "RawTower_Prototype3.h"
 #include "RawTower_Temperature.h"
 
 #include <HepMC/GenEvent.h>
@@ -31,14 +31,14 @@ class TTree;
 #endif
 
 /*!
- * \brief Prototype2DSTReader save information from DST to an evaluator, which could include hit. particle, vertex, towers and jet (to be activated)
+ * \brief Prototype3DSTReader save information from DST to an evaluator, which could include hit. particle, vertex, towers and jet (to be activated)
  */
-class Prototype2DSTReader : public SubsysReco
+class Prototype3DSTReader : public SubsysReco
 {
 public:
-  Prototype2DSTReader(const std::string &filename);
+  Prototype3DSTReader(const std::string &filename);
   virtual
-  ~Prototype2DSTReader();
+  ~Prototype3DSTReader();
 
   //! full initialization
   int
@@ -69,6 +69,11 @@ public:
   {
     _runinfo_list.push_back(name);
   }
+  void
+  AddEventInfo(const std::string &name)
+  {
+    _eventinfo_list.push_back(name);
+  }
 
   //! zero suppression for all calorimeters
   double
@@ -93,6 +98,7 @@ protected:
 //  std::vector<std::string> _jet_postfix;
 //  std::vector<std::string> _node_name;
   std::vector<std::string> _runinfo_list;
+  std::vector<std::string> _eventinfo_list;
 
   int nblocks;
 
@@ -110,14 +116,14 @@ protected:
 
     enum enu_type
     {
-      typ_hit, typ_part, typ_vertex, typ_tower, typ_jets, typ_runinfo, typ_towertemp
+      typ_hit, typ_part, typ_vertex, typ_tower, typ_jets, typ_runinfo, typ_eventinfo, typ_towertemp
     };
     enu_type _type;
   };
   typedef std::vector<record> records_t;
   records_t _records;
 
-  typedef RawTower_Prototype2 RawTower_type;
+  typedef RawTower_Prototype3 RawTower_type;
 
   typedef RawTower_Temperature RawTowerT_type;
 #endif
@@ -136,4 +142,4 @@ protected:
   build_tree();
 };
 
-#endif /* Prototype2DSTReader_H_ */
+#endif /* Prototype3DSTReader_H_ */

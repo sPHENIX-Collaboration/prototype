@@ -1,5 +1,5 @@
-AC_INIT(prototype3,[1.00])
-AC_CONFIG_SRCDIR([configure.in])
+AC_INIT(prototype2,[1.00])
+AC_CONFIG_SRCDIR([configure.ac])
 AM_INIT_AUTOMAKE
 
 AC_PROG_CXX(g++)
@@ -12,4 +12,5 @@ if test $ac_cv_prog_gxx = yes; then
    CXXFLAGS="$CXXFLAGS -Wall -Werror"
 fi
 
-AC_OUTPUT(Makefile)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

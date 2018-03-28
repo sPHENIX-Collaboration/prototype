@@ -6,27 +6,23 @@
 
 #include <fun4all/SubsysReco.h>
 #include <phool/PHObject.h>
-#include <string>
 #include <phparameter/PHParameters.h>
+#include <string>
 
 class RawTowerContainer;
 
 class CaloCalibration : public SubsysReco
 {
-public:
-  CaloCalibration(const std::string& name);
+ public:
+  CaloCalibration(const std::string &name);
 
-  int
-  Init(PHCompositeNode *topNode);
+  int Init(PHCompositeNode *topNode);
 
-  int
-  InitRun(PHCompositeNode *topNode);
+  int InitRun(PHCompositeNode *topNode);
 
-  int
-  process_event(PHCompositeNode *topNode);
+  int process_event(PHCompositeNode *topNode);
 
-  int
-  End(PHCompositeNode *topNode);
+  int End(PHCompositeNode *topNode);
 
   void
   CreateNodeTree(PHCompositeNode *topNode);
@@ -38,7 +34,7 @@ public:
   }
 
   void
-  set_calib_tower_node_prefix(std::string calibTowerNodePrefix)
+  set_calib_tower_node_prefix(const std::string & calibTowerNodePrefix)
   {
     _calib_tower_node_prefix = calibTowerNodePrefix;
   }
@@ -50,7 +46,7 @@ public:
   }
 
   void
-  set_raw_tower_node_prefix(std::string rawTowerNodePrefix)
+  set_raw_tower_node_prefix(const std::string & rawTowerNodePrefix)
   {
     _raw_tower_node_prefix = rawTowerNodePrefix;
   }
@@ -71,15 +67,33 @@ public:
 
   //! Overwrite the parameter. Useful fields are listed in SetDefaultParameters();
   void
-  SetCalibrationParameters(const PHParameters & calib_params)
+  SetCalibrationParameters(const PHParameters &calib_params)
   {
     _calib_params = calib_params;
   }
 
-private:
+  enum FitMethodType
+  {
+    //! single power-low-exp fit, PROTOTYPE4_FEM::SampleFit_PowerLawExp()
+    kPowerLawExp,
 
-  RawTowerContainer* _calib_towers;
-  RawTowerContainer* _raw_towers;
+    //! power-low-double-exp fit, PROTOTYPE4_FEM::SampleFit_PowerLawDoubleExp
+    kPowerLawDoubleExp,
+
+    //! power-low-double-exp fit, PROTOTYPE4_FEM::SampleFit_PowerLawDoubleExp, and constraining all tower take identical shape
+    kPowerLawDoubleExpWithGlobalFitConstraint,
+
+    //! just use the peak sample, PROTOTYPE4_FEM::SampleFit_PeakSample()
+    kPeakSample
+
+  };
+
+  void
+  SetFitType(FitMethodType t) {_fit_type = t;}
+
+ private:
+  RawTowerContainer *_calib_towers;
+  RawTowerContainer *_raw_towers;
 
   std::string detector;
   std::string RawTowerNodeName;
@@ -90,10 +104,11 @@ private:
 
   PHParameters _calib_params;
 
+  FitMethodType _fit_type;
+
   //! load the default parameter to param
   void
-  SetDefaultParameters(PHParameters & param);
-
+  SetDefaultParameters(PHParameters &param);
 };
 
-#endif //**CaloCalibrationF**//
+#endif  //**CaloCalibrationF**//

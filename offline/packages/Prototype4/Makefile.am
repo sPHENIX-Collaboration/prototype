@@ -5,41 +5,43 @@ AM_CPPFLAGS = \
   -I$(OFFLINE_MAIN)/include \
   -I`root-config --incdir`
 
-libPrototype2_la_LDFLAGS = \
+libPrototype4_la_LDFLAGS = \
   -nodefaultlibs \
   -L$(libdir) \
   -L$(OFFLINE_MAIN)/lib \
   `root-config --libs`
 
 lib_LTLIBRARIES = \
-  libPrototype2.la
+  libPrototype4.la
 
 pkginclude_HEADERS = \
-  RawTower_Prototype2.h \
+  RawTower_Prototype4.h \
   RawTower_Temperature.h \
-  PROTOTYPE2_FEM.h
+  PROTOTYPE4_FEM.h
 
-libPrototype2_la_SOURCES = \
-  RawTower_Prototype2.cc \
-  RawTower_Prototype2Dict.C \
-  Prototype2DSTReader.cc \
-  Prototype2DSTReaderDict.C \
+libPrototype4_la_SOURCES = \
+  RawTower_Prototype4.cc \
+  RawTower_Prototype4Dict.C \
+  Prototype4DSTReader.cc \
+  Prototype4DSTReaderDict.C \
   CaloUnpackPRDF.C \
   CaloUnpackPRDFDict.C \
   TempInfoUnpackPRDF.C \
   TempInfoUnpackPRDFDict.C \
   RunInfoUnpackPRDF.C \
   RunInfoUnpackPRDFDict.C \
+  EventInfoSummary.C \
+  EventInfoSummaryDict.C \
   CaloCalibration.C \
   CaloCalibrationDict.C \
   GenericUnpackPRDF.C \
   GenericUnpackPRDFDict.C \
-  PROTOTYPE2_FEM.C \
-  PROTOTYPE2_FEMDict.C \
+  PROTOTYPE4_FEM.C \
+  PROTOTYPE4_FEMDict.C \
   RawTower_Temperature.cc \
   RawTower_TemperatureDict.C
 
-libPrototype2_la_LIBADD = \
+libPrototype4_la_LIBADD = \
   -lSubsysReco \
   -lphool \
   -lfun4all \
@@ -53,7 +55,7 @@ noinst_PROGRAMS = \
   testexternals
 
 testexternals_LDADD = \
-  libPrototype2.la
+  libPrototype4.la
 
 testexternals.C:
 	echo "//*** this is a generated file. Do not commit, do not edit" > $@

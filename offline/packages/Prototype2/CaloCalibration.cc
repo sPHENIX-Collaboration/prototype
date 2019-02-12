@@ -1,4 +1,5 @@
 #include "CaloCalibration.h"
+
 #include "PROTOTYPE2_FEM.h"
 #include "RawTower_Prototype2.h"
 
@@ -10,8 +11,9 @@
 #include <phool/phool.h>
 #include <phool/getClass.h>
 
+#include <boost/format.hpp>
+
 #include <iostream>
-#include <TString.h>
 #include <cmath>
 #include <string>
 #include <cassert>
@@ -20,21 +22,14 @@
 using namespace std;
 
 //____________________________________
-CaloCalibration::CaloCalibration(const std::string& name) : //
+CaloCalibration::CaloCalibration(const string& name) : //
     SubsysReco(string("CaloCalibration_") + name), //
-    _calib_towers(NULL), _raw_towers(NULL), detector(name), //
+    _calib_towers(nullptr), _raw_towers(nullptr), detector(name), //
     _calib_tower_node_prefix("CALIB"), //
     _raw_tower_node_prefix("RAW"), //
     _calib_params(name)
 {
   SetDefaultParameters(_calib_params);
-}
-
-//____________________________________
-int
-CaloCalibration::Init(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 //_____________________________________
@@ -45,7 +40,7 @@ CaloCalibration::InitRun(PHCompositeNode *topNode)
 
   if (Verbosity())
     {
-      std::cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
+      cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
           << " - print calibration parameters: "<<endl;
       _calib_params.Print();
     }
@@ -60,8 +55,8 @@ CaloCalibration::process_event(PHCompositeNode *topNode)
 
   if (Verbosity())
     {
-      std::cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
-          << "Process event entered" << std::endl;
+      cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
+          << "Process event entered" << endl;
     }
 
   const double calib_const_scale = _calib_params.get_double_param(
@@ -88,8 +83,7 @@ CaloCalibration::process_event(PHCompositeNode *topNode)
 
           assert(column >= 0);
           assert(row >= 0);
-
-          string calib_const_name(Form("calib_const_column%d_row%d",column,row));
+          string calib_const_name((boost::format("calib_const_column%d_row%d") %column %row).str());
 
           calibration_const *= _calib_params.get_double_param(calib_const_name);
         }
@@ -133,10 +127,10 @@ CaloCalibration::process_event(PHCompositeNode *topNode)
 
   if (Verbosity())
     {
-      std::cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
+      cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
           << "input sum energy = " << _raw_towers->getTotalEdep()
           << ", output sum digitalized value = "
-          << _calib_towers->getTotalEdep() << std::endl;
+          << _calib_towers->getTotalEdep() << endl;
     }
 
   return Fun4AllReturnCodes::EVENT_OK;
@@ -152,9 +146,9 @@ CaloCalibration::CreateNodeTree(PHCompositeNode *topNode)
       "PHCompositeNode", "DST"));
   if (!dstNode)
     {
-      std::cerr << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
-          << "DST Node missing, doing nothing." << std::endl;
-      throw std::runtime_error(
+      cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
+          << "DST Node missing, doing nothing." << endl;
+      throw runtime_error(
           "Failed to find DST node in RawTowerCalibration::CreateNodes");
     }
 
@@ -163,10 +157,10 @@ CaloCalibration::CreateNodeTree(PHCompositeNode *topNode)
       RawTowerNodeName.c_str());
   if (!_raw_towers)
     {
-      std::cerr << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
+      cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
           << " " << RawTowerNodeName << " Node missing, doing bail out!"
-          << std::endl;
-      throw std::runtime_error(
+          << endl;
+      throw runtime_error(
           "Failed to find " + RawTowerNodeName
               + " node in RawTowerCalibration::CreateNodes");
     }
@@ -203,13 +197,6 @@ CaloCalibration::CreateNodeTree(PHCompositeNode *topNode)
   //   save updated persistant copy on node tree
   _calib_params.SaveToNodeTree(parNode, paramnodename);
 
-}
-
-//___________________________________
-int
-CaloCalibration::End(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 void

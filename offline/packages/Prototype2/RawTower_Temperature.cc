@@ -17,7 +17,6 @@ RawTower_Temperature::RawTower_Temperature() :
 RawTower_Temperature::RawTower_Temperature(RawTowerDefs::keytype id) :
     towerid(id)
 {
-
 }
 
 RawTower_Temperature::RawTower_Temperature(const unsigned int icol, const unsigned int irow)

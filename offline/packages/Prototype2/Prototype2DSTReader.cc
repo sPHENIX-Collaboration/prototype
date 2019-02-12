@@ -10,16 +10,17 @@
 
 #include "Prototype2DSTReader.h"
 
+#include <calobase/RawTowerContainer.h>
+
+#include <pdbcalbase/PdbParameterMap.h>
+
+#include <phparameter/PHParameters.h>
+
 #include <fun4all/PHTFileServer.h>
 #include <fun4all/Fun4AllReturnCodes.h>
-//#include <PHGeometry.h>
 
 #include <phool/getClass.h>
-#include <phool/getClass.h>
 
-#include <calobase/RawTowerContainer.h>
-#include <pdbcalbase/PdbParameterMap.h>
-#include <phparameter/PHParameters.h>
 
 #include <TTree.h>
 
@@ -34,7 +35,7 @@ using namespace std;
 
 Prototype2DSTReader::Prototype2DSTReader(const string &filename) :
     SubsysReco("Prototype2DSTReader"), nblocks(0), _event(0), //
-    _out_file_name(filename), /*_file(NULL), */_T(NULL), //
+    _out_file_name(filename), /*_file(nullptr), */_T(nullptr), //
     _tower_zero_sup(-10000000)
 {
 
@@ -72,8 +73,8 @@ Prototype2DSTReader::Init(PHCompositeNode*)
       record rec;
       rec._cnt = 0;
       rec._name = nodenam;
-      rec._arr = NULL;
-      rec._arr_ptr = NULL;
+      rec._arr = nullptr;
+      rec._arr_ptr = nullptr;
       rec._dvalue = 0;
       rec._type = record::typ_runinfo;
 
@@ -119,8 +120,8 @@ Prototype2DSTReader::Init(PHCompositeNode*)
       record rec;
       rec._cnt = 0;
       rec._name = hname;
-      rec._arr = NULL;
-      rec._arr_ptr = NULL;
+      rec._arr = nullptr;
+      rec._arr_ptr = nullptr;
       rec._dvalue = 0;
       rec._type = record::typ_towertemp;
 

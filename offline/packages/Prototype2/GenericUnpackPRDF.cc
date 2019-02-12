@@ -1,17 +1,20 @@
-#include "RawTower_Prototype2.h"
-#include "PROTOTYPE2_FEM.h"
 #include "GenericUnpackPRDF.h"
 
+#include "RawTower_Prototype2.h"
+#include "PROTOTYPE2_FEM.h"
+
 #include <Event/Event.h>
-#include <Event/EventTypes.h>
-#include <Event/packetConstants.h>
 #include <Event/packet.h>
 #include <Event/packet_hbd_fpgashort.h>
+
 #include <calobase/RawTowerContainer.h>
-#include <phool/PHCompositeNode.h>
-#include <phool/phool.h>
-#include <phool/getClass.h>
+
 #include <fun4all/Fun4AllReturnCodes.h>
+
+#include <phool/PHCompositeNode.h>
+#include <phool/getClass.h>
+
+
 #include <iostream>
 #include <string>
 #include <cassert>
@@ -22,16 +25,8 @@ using namespace std;
 GenericUnpackPRDF::GenericUnpackPRDF(const string & detector) :
     SubsysReco("GenericUnpackPRDF_" + detector), //
     _detector(detector),
-    /*Event**/_event(NULL),
-    /*PHCompositeNode **/_towers(NULL)
+    _towers(nullptr)
 {
-}
-
-//____________________________________
-int
-GenericUnpackPRDF::Init(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 //_____________________________________
@@ -46,8 +41,8 @@ GenericUnpackPRDF::InitRun(PHCompositeNode *topNode)
 int
 GenericUnpackPRDF::process_event(PHCompositeNode *topNode)
 {
-  _event = findNode::getClass<Event>(topNode, "PRDF");
-  if (_event == NULL)
+   Event* _event = findNode::getClass<Event>(topNode, "PRDF");
+  if (!_event)
     {
       if (Verbosity() >= VERBOSITY_SOME)
         cout << "GenericUnpackPRDF::Process_Event - Event not found" << endl;
@@ -142,13 +137,6 @@ GenericUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode)
   PHIODataNode<PHObject> *towerNode = new PHIODataNode<PHObject>(_towers,
       "TOWER_RAW_" + _detector, "PHObject");
   data_node->addNode(towerNode);
-}
-
-//___________________________________
-int
-GenericUnpackPRDF::End(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 void

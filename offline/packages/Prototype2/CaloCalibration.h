@@ -40,7 +40,7 @@ public:
   }
 
   void
-  set_calib_tower_node_prefix(std::string calibTowerNodePrefix)
+  set_calib_tower_node_prefix(const std::string &calibTowerNodePrefix)
   {
     _calib_tower_node_prefix = calibTowerNodePrefix;
   }
@@ -52,7 +52,7 @@ public:
   }
 
   void
-  set_raw_tower_node_prefix(std::string rawTowerNodePrefix)
+  set_raw_tower_node_prefix(const std::string &rawTowerNodePrefix)
   {
     _raw_tower_node_prefix = rawTowerNodePrefix;
   }

@@ -33,7 +33,7 @@ namespace PROTOTYPE2_FEM
 
   //! FEM mapping of channel -> calorimeter col and rows
   int
-  GetHBDCh(std::string caloname, int i_column, int i_row);
+  GetHBDCh(const std::string &caloname, int i_column, int i_row);
 
   //! Abhisek's power-law + exp fit
   bool

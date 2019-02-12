@@ -10,17 +10,18 @@
 
 #include "PROTOTYPE2_FEM.h"
 
-#include <iostream>
-#include <cassert>
-#include <cmath>
 #include <TGraph.h>
 #include <TF1.h>
 #include <TCanvas.h>
 
+#include <iostream>
+#include <cassert>
+#include <cmath>
+
 using namespace std;
 
 int
-PROTOTYPE2_FEM::GetHBDCh(std::string caloname, int i_column, int i_row)
+PROTOTYPE2_FEM::GetHBDCh(const std::string &caloname, int i_column, int i_row)
 {
   if (caloname == "HCALIN")
     {

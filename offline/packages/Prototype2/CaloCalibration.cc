@@ -3,10 +3,13 @@
 #include "RawTower_Prototype2.h"
 
 #include <calobase/RawTowerContainer.h>
+
+#include <fun4all/Fun4AllReturnCodes.h>
+
 #include <phool/PHCompositeNode.h>
 #include <phool/phool.h>
 #include <phool/getClass.h>
-#include <fun4all/Fun4AllReturnCodes.h>
+
 #include <iostream>
 #include <TString.h>
 #include <cmath>

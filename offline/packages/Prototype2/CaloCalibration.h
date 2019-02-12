@@ -1,13 +1,15 @@
-#ifndef __CaloCalibrationF__
-#define __CaloCalibrationF__
+#ifndef PROTOTYPE2_CALOCALIBRATION_H
+#define PROTOTYPE2_CALOCALIBRATION_H
 
 //* Unpacks raw HCAL PRDF files *//
 //Abhisek Sen
 
 #include <fun4all/SubsysReco.h>
-#include <phool/PHObject.h>
-#include <string>
+
 #include <phparameter/PHParameters.h>
+
+#include <string>
+
 
 class RawTowerContainer;
 
@@ -96,4 +98,4 @@ private:
 
 };
 
-#endif //**CaloCalibrationF**//
+#endif

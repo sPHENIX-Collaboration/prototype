@@ -1,5 +1,5 @@
-#ifndef __PROTOTYPE2_FEM_H__
-#define __PROTOTYPE2_FEM_H__
+#ifndef PROTOTYPE2_PROTOTYPE2FEM_H
+#define PROTOTYPE2_PROTOTYPE2FEM_H
 
 #include <string>
 #include <vector>

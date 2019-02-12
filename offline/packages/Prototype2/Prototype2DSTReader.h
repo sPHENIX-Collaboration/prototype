@@ -1,5 +1,3 @@
-// $Id: Prototype2DSTReader.h,v 1.7 2015/02/27 23:42:23 jinhuang Exp $
-
 /*!
  * \file Prototype2DSTReader.h
  * \brief 
@@ -8,8 +6,8 @@
  * \date $Date: 2015/02/27 23:42:23 $
  */
 
-#ifndef Prototype2DSTReader_H_
-#define Prototype2DSTReader_H_
+#ifndef PROTOTYPE2_PROTOTYPE2DSTREADER_H
+#define PROTOTYPE2_PROTOTYPE2DSTREADER_H
 
 #include "RawTower_Prototype2.h"
 #include "RawTower_Temperature.h"
@@ -33,8 +31,7 @@ class Prototype2DSTReader : public SubsysReco
 {
 public:
   Prototype2DSTReader(const std::string &filename);
-  virtual
-  ~Prototype2DSTReader();
+  virtual ~Prototype2DSTReader();
 
   //! full initialization
   int
@@ -82,12 +79,9 @@ public:
 
 protected:
 
-//  std::vector<std::string> _node_postfix;
   std::vector<std::string> _tower_postfix;
   //! tower temperature
   std::vector<std::string> _towertemp_postfix;
-//  std::vector<std::string> _jet_postfix;
-//  std::vector<std::string> _node_name;
   std::vector<std::string> _runinfo_list;
 
   int nblocks;
@@ -128,8 +122,7 @@ protected:
   //! zero suppression for all calorimeters
   double _tower_zero_sup;
 
-  void
-  build_tree();
+  void build_tree();
 };
 
-#endif /* Prototype2DSTReader_H_ */
+#endif

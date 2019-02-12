@@ -1,16 +1,10 @@
-#ifndef __CaloUnpackPRDFF__
-#define __CaloUnpackPRDFF__
+#ifndef PROTOTYPE2_RUNINFOUNPACKPRDFF_H
+#define PROTOTYPE2_RUNINFOUNPACKPRDFF_H
 
 #include <fun4all/SubsysReco.h>
-#include <phool/PHObject.h>
-#include <string>
-#include <map>
-#include <utility>
 
-class Event;
-class Packet;
-class RawTowerContainer;
-class RawTower;
+#include <map>
+#include <string>
 
 class RunInfoUnpackPRDF : public SubsysReco
 {
@@ -63,4 +57,4 @@ private:
   std::string runinfo_node_name;
 };
 
-#endif //**CaloUnpackPRDFF**//
+#endif

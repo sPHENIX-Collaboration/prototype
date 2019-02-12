@@ -1,10 +1,13 @@
-#ifndef RAWTOWER_TEMPERATURE_H_
-#define RAWTOWER_TEMPERATURE_H_
+#ifndef PROTOTYPE2_RAWTOWERTEMPERATURE_H
+#define PROTOTYPE2_RAWTOWERTEMPERATURE_H
 
 #include <calobase/RawTower.h>
+
 #include <calobase/RawTowerDefs.h>
+
+#include <iostream>
 #include <vector>
-#include <stdint.h>
+#include <ctime>
 
 class RawTower_Temperature : public RawTower {
  public:
@@ -13,8 +16,6 @@ class RawTower_Temperature : public RawTower {
   RawTower_Temperature(const unsigned int icol, const unsigned int irow);
   RawTower_Temperature(RawTowerDefs::keytype id);
   virtual ~RawTower_Temperature();
-
-  //  void set_id(RawTowerDefs::keytype id) { towerid = id; }
 
   void Reset();
   int isValid() const { return get_nr_entries(); }
@@ -74,5 +75,5 @@ class RawTower_Temperature : public RawTower {
   ClassDef(RawTower_Temperature, 1)
 };
 
-#endif /* RAWTOWER_PROTOTYPE2_H_ */
+#endif
 

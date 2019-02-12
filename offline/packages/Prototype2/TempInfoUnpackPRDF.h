@@ -1,16 +1,13 @@
-#ifndef __TempInfoUnpackPRDFF__
-#define __TempInfoUnpackPRDFF__
+#ifndef PROTOTYPE2_TEMPINFOUNPACKPRDFF_H
+#define PROTOTYPE2_TEMPINFOUNPACKPRDFF_H
 
 #include <fun4all/SubsysReco.h>
-#include <phool/PHObject.h>
-#include <string>
-#include <map>
-#include <utility>
+
+#include <ctime>
 
 class Event;
 class Packet;
 class RawTowerContainer;
-class RawTower;
 
 class TempInfoUnpackPRDF : public SubsysReco
 {
@@ -45,4 +42,4 @@ protected:
 };
 
 
-#endif //**TempInfoUnpackPRDFF**//
+#endif

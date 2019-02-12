@@ -1,12 +1,10 @@
-#ifndef RAWTOWER_PROTOTYPE2_H_
-#define RAWTOWER_PROTOTYPE2_H_
+#ifndef PROTOTYPE2_RAWTOWERPROTOTYPE2_H
+#define PROTOTYPE2_RAWTOWERPROTOTYPE2_H
+
+#include "PROTOTYPE2_FEM.h"
 
 #include <calobase/RawTower.h>
 #include <calobase/RawTowerDefs.h>
-#include <map>
-#include <stdint.h>
-
-#include <prototype2/PROTOTYPE2_FEM.h>
 
 class RawTower_Prototype2 : public RawTower {
  public:
@@ -70,4 +68,4 @@ class RawTower_Prototype2 : public RawTower {
   ClassDef(RawTower_Prototype2, 3)
 };
 
-#endif /* RAWTOWER_PROTOTYPE2_H_ */
+#endif

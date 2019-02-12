@@ -22,9 +22,14 @@ AM_LDFLAGS = \
 
 
 pkginclude_HEADERS = \
+  CaloCalibration.h \
+  CaloUnpackPRDF.h \
+  GenericUnpackPRDF.h \
+  PROTOTYPE2_FEM.h \
   RawTower_Prototype2.h \
   RawTower_Temperature.h \
-  PROTOTYPE2_FEM.h
+  RunInfoUnpackPRDF.h \
+  TempInfoUnpackPRDF.h
 
 ROOTDICTS = \
   RawTower_Prototype2_Dict.cc \
@@ -32,8 +37,8 @@ ROOTDICTS = \
 if MAKEROOT6
   pcmdir = $(libdir)
   nobase_dist_pcm_DATA = \
-  RawTower_Prototype2_Dict_rdict.pcm \
-  RawTower_Temperature_Dict_rdict.pcm
+    RawTower_Prototype2_Dict_rdict.pcm \
+    RawTower_Temperature_Dict_rdict.pcm
 else
   ROOT5_IO_DICTS = \
     PROTOTYPE2_FEM_Dict.cc

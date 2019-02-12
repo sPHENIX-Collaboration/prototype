@@ -1,18 +1,22 @@
 #include "RunInfoUnpackPRDF.h"
+
 #include "RawTower_Prototype2.h"
 #include "PROTOTYPE2_FEM.h"
 
 #include <ffaobjects/EventHeaderv1.h>
+
+#include <pdbcalbase/PdbParameterMap.h>
+
+#include <phparameter/PHParameters.h>
+
+#include <fun4all/Fun4AllReturnCodes.h>
+
+#include <phool/PHCompositeNode.h>
+#include <phool/getClass.h>
+
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
-#include <Event/packetConstants.h>
 #include <Event/packet.h>
-#include <pdbcalbase/PdbParameterMap.h>
-#include <phparameter/PHParameters.h>
-#include <phool/PHCompositeNode.h>
-#include <phool/phool.h>
-#include <phool/getClass.h>
-#include <fun4all/Fun4AllReturnCodes.h>
 
 #include <iostream>
 #include <string>
@@ -28,12 +32,6 @@ RunInfoUnpackPRDF::RunInfoUnpackPRDF() :
 {
 }
 
-//____________________________________
-int
-RunInfoUnpackPRDF::Init(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
-}
 
 //_____________________________________
 int
@@ -56,8 +54,7 @@ RunInfoUnpackPRDF::process_event(PHCompositeNode *topNode)
     }
 
   // construct event info
-  EventHeaderv1* eventheader = findNode::getClass<
-      EventHeaderv1>(topNode, "EventHeader");
+  EventHeaderv1* eventheader = findNode::getClass<EventHeaderv1>(topNode, "EventHeader");
   if (eventheader)
     {
       eventheader->set_RunNumber(event->getRunNumber());
@@ -72,7 +69,9 @@ RunInfoUnpackPRDF::process_event(PHCompositeNode *topNode)
 
   // search for run info
   if (event->getEvtType() != BEGRUNEVENT)
+  {
     return Fun4AllReturnCodes::EVENT_OK;
+  }
   else
     {
       if (Verbosity() >= VERBOSITY_SOME)
@@ -127,14 +126,15 @@ RunInfoUnpackPRDF::process_event(PHCompositeNode *topNode)
       for (map<int, Packet*>::iterator it = packet_list.begin();
           it != packet_list.end(); ++it)
         {
-          if (it->second)
             delete it->second;
         }
 
       Params.SaveToNodeTree(topNode, runinfo_node_name);
 
       if (Verbosity() >= VERBOSITY_SOME)
+      {
         Params.Print();
+      }
     }
   return Fun4AllReturnCodes::EVENT_OK;
 }
@@ -176,13 +176,6 @@ RunInfoUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode)
   PHObjectNode_t *EventHeaderNode = new PHObjectNode_t(eventheader, "EventHeader", "PHObject"); // contain PHObject
   dst_node->addNode(EventHeaderNode);
 
-}
-
-//___________________________________
-int
-RunInfoUnpackPRDF::End(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 void

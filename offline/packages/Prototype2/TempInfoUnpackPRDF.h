@@ -13,19 +13,13 @@ class TempInfoUnpackPRDF : public SubsysReco
 {
 public:
   TempInfoUnpackPRDF();
-  virtual ~TempInfoUnpackPRDF() {};
-
-  int
-  Init(PHCompositeNode *topNode);
+  virtual ~TempInfoUnpackPRDF() {}
 
   int
   InitRun(PHCompositeNode *topNode);
 
   int
   process_event(PHCompositeNode *topNode);
-
-  int
-  End(PHCompositeNode *topNode);
 
   void
   CreateNodeTree(PHCompositeNode *topNode);

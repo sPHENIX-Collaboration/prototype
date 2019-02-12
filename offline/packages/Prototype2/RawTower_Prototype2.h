@@ -14,7 +14,7 @@ class RawTower_Prototype2 : public RawTower {
   RawTower_Prototype2(const unsigned int icol, const unsigned int irow);
   RawTower_Prototype2(const RawTowerDefs::CalorimeterId caloid, const unsigned int ieta,
              const unsigned int iphi);
-  virtual ~RawTower_Prototype2();
+  virtual ~RawTower_Prototype2(){}
 
   void Reset();
   int isValid() const;

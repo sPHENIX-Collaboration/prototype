@@ -1,22 +1,23 @@
 #include "RawTower_Prototype2.h"
+
+#include "PROTOTYPE2_FEM.h"
+
 #include <calobase/RawTowerDefs.h>
+
 #include <iostream>
 #include <algorithm>
 #include <cmath>
 #include <map>
 #include <cassert>
 
-#include "PROTOTYPE2_FEM.h"
 
 using namespace std;
-
-ClassImp(RawTower_Prototype2)
 
 RawTower_Prototype2::RawTower_Prototype2() :
     towerid(~0), // initialize all bits on
     energy(0), time(NAN), HBD_channel(-1)
 {
-  for (int i=0; i<NSAMPLES; ++i  ) signal_samples[i] = -9999;
+  fill_n(signal_samples,NSAMPLES,-9999);
 }
 
 RawTower_Prototype2::RawTower_Prototype2(const RawTower & tower)
@@ -25,20 +26,20 @@ RawTower_Prototype2::RawTower_Prototype2(const RawTower & tower)
   energy = (tower.get_energy());
   time = (tower.get_time());
   HBD_channel = -1;
-  for (int i=0; i<NSAMPLES; ++i  ) signal_samples[i] = -9999;
+  fill_n(signal_samples,NSAMPLES,-9999);
 }
 
 RawTower_Prototype2::RawTower_Prototype2(RawTowerDefs::keytype id) :
     towerid(id), energy(0), time(NAN), HBD_channel(-1)
 {
-  for (int i=0; i<NSAMPLES; ++i  ) signal_samples[i] = -9999;
+  fill_n(signal_samples,NSAMPLES,-9999);
 }
 
 RawTower_Prototype2::RawTower_Prototype2(const unsigned int icol, const unsigned int irow) :
     towerid(0), energy(0), time(NAN), HBD_channel(-1)
 {
   towerid = RawTowerDefs::encode_towerid(RawTowerDefs::NONE, icol, irow);
-  for (int i=0; i<NSAMPLES; ++i  ) signal_samples[i] = -9999;
+  fill_n(signal_samples,NSAMPLES,-9999);
 }
 
 RawTower_Prototype2::RawTower_Prototype2(const RawTowerDefs::CalorimeterId caloid,
@@ -46,11 +47,7 @@ RawTower_Prototype2::RawTower_Prototype2(const RawTowerDefs::CalorimeterId caloi
     towerid(0), energy(0), time(NAN), HBD_channel(-1)
 {
   towerid = RawTowerDefs::encode_towerid(caloid, ieta, iphi);
-  for (int i=0; i<NSAMPLES; ++i  ) signal_samples[i] = -9999;
-}
-
-RawTower_Prototype2::~RawTower_Prototype2()
-{
+  fill_n(signal_samples,NSAMPLES,-9999);
 }
 
 void
@@ -58,6 +55,7 @@ RawTower_Prototype2::Reset()
 {
   energy = 0;
   time = NAN;
+  fill_n(signal_samples,NSAMPLES,-9999);
 }
 
 int

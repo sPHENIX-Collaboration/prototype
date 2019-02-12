@@ -1,34 +1,18 @@
 #include "RawTower_Temperature.h"
-#include <calobase/RawTowerDefs.h>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <cmath>
-#include <map>
-#include <cassert>
 
 #include "PROTOTYPE2_FEM.h"
 
-using namespace std;
+#include <calobase/RawTowerDefs.h>
 
-ClassImp(RawTower_Temperature)
+#include <iostream>
+#include <iomanip>
+
+
+using namespace std;
 
 RawTower_Temperature::RawTower_Temperature() :
     towerid(~0) // initialize all bits on
 {}
-
-// we can copy only from another  RawTower_Temperature, not a generic tower
-RawTower_Temperature::RawTower_Temperature(const RawTower_Temperature & tower)
-{
-  towerid = tower.get_id();
-
-  for ( int i = 0; i < tower.get_nr_entries(); i++)
-    {
-      add_entry( tower.get_eventnumber_from_entry(i)
-		 ,tower.get_time_from_entry(i)
-		 ,tower.get_temperature_from_entry(i) );
-    }
-}
 
 RawTower_Temperature::RawTower_Temperature(RawTowerDefs::keytype id) :
     towerid(id)
@@ -41,10 +25,6 @@ RawTower_Temperature::RawTower_Temperature(const unsigned int icol, const unsign
   towerid = RawTowerDefs::encode_towerid(RawTowerDefs::NONE, icol, irow);
 }
 
-
-RawTower_Temperature::~RawTower_Temperature()
-{
-}
 
 void
 RawTower_Temperature::Reset()

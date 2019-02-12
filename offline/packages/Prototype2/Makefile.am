@@ -26,6 +26,7 @@ pkginclude_HEADERS = \
   CaloUnpackPRDF.h \
   GenericUnpackPRDF.h \
   PROTOTYPE2_FEM.h \
+  Prototype2DSTReader.h \
   RawTower_Prototype2.h \
   RawTower_Temperature.h \
   RunInfoUnpackPRDF.h \

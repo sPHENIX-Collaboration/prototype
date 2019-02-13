@@ -1,20 +1,21 @@
 #include "GenericUnpackPRDF.h"
+
 #include "PROTOTYPE3_FEM.h"
 #include "RawTower_Prototype3.h"
 
-#include <Event/Event.h>
-#include <Event/EventTypes.h>
-#include <Event/packet.h>
-#include <Event/packetConstants.h>
-#include <Event/packet_hbd_fpgashort.h>
 #include <calobase/RawTowerContainer.h>
-#include <cassert>
+
 #include <fun4all/Fun4AllReturnCodes.h>
-#include <iostream>
+
 #include <phool/PHCompositeNode.h>
 #include <phool/getClass.h>
-#include <phool/phool.h>
+
+#include <Event/Event.h>
+#include <Event/packet_hbd_fpgashort.h>
+
+#include <iostream>
 #include <string>
+#include <cassert>
 
 using namespace std;
 
@@ -22,13 +23,7 @@ using namespace std;
 GenericUnpackPRDF::GenericUnpackPRDF(const string &detector)
     : SubsysReco("GenericUnpackPRDF_" + detector), //
       _detector(detector),
-      /*Event**/ _event(NULL),
-      /*PHCompositeNode **/ _towers(NULL) {}
-
-//____________________________________
-int GenericUnpackPRDF::Init(PHCompositeNode *topNode) {
-  return Fun4AllReturnCodes::EVENT_OK;
-}
+      _towers(nullptr) {}
 
 //_____________________________________
 int GenericUnpackPRDF::InitRun(PHCompositeNode *topNode) {
@@ -38,8 +33,8 @@ int GenericUnpackPRDF::InitRun(PHCompositeNode *topNode) {
 
 //____________________________________
 int GenericUnpackPRDF::process_event(PHCompositeNode *topNode) {
-  _event = findNode::getClass<Event>(topNode, "PRDF");
-  if (_event == NULL) {
+  Event *_event = findNode::getClass<Event>(topNode, "PRDF");
+  if (! _event) {
     if (Verbosity() >= VERBOSITY_SOME)
       cout << "GenericUnpackPRDF::Process_Event - Event not found" << endl;
     return Fun4AllReturnCodes::DISCARDEVENT;
@@ -123,11 +118,6 @@ void GenericUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
   PHIODataNode<PHObject> *towerNode =
       new PHIODataNode<PHObject>(_towers, "TOWER_RAW_" + _detector, "PHObject");
   data_node->addNode(towerNode);
-}
-
-//___________________________________
-int GenericUnpackPRDF::End(PHCompositeNode *topNode) {
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 void GenericUnpackPRDF::add_channel(const int packet_id, //! packet id

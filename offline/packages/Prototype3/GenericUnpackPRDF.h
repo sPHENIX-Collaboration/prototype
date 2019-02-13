@@ -5,23 +5,16 @@
 
 #include <map>
 #include <string>
-#include <utility>
 
-class Event;
-class Packet;
 class RawTowerContainer;
 
 class GenericUnpackPRDF : public SubsysReco {
 public:
   GenericUnpackPRDF(const std::string &detector);
 
-  int Init(PHCompositeNode *topNode);
-
   int InitRun(PHCompositeNode *topNode);
 
   int process_event(PHCompositeNode *topNode);
-
-  int End(PHCompositeNode *topNode);
 
   void CreateNodeTree(PHCompositeNode *topNode);
 
@@ -41,8 +34,6 @@ private:
   typedef std::map<hbd_channel_typ, int> hbd_channel_map;
 
   hbd_channel_map _hbd_channel_map;
-
-  Event *_event;
 
   // output -> Towers
   RawTowerContainer *_towers;

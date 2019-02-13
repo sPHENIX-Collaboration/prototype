@@ -1,17 +1,19 @@
 #include "CaloCalibration.h"
+
 #include "PROTOTYPE3_FEM.h"
 #include "RawTower_Prototype3.h"
 
-#include <TString.h>
 #include <calobase/RawTowerContainer.h>
-#include <cassert>
-#include <cfloat>
-#include <cmath>
+
 #include <fun4all/Fun4AllReturnCodes.h>
-#include <iostream>
+
 #include <phool/PHCompositeNode.h>
 #include <phool/getClass.h>
-#include <phool/phool.h>
+
+#include <boost/format.hpp>
+
+#include <cassert>
+#include <iostream>
 #include <string>
 
 using namespace std;
@@ -20,7 +22,7 @@ using namespace std;
 CaloCalibration::CaloCalibration(const std::string &name)
     :                                                         //
       SubsysReco(string("CaloCalibration_") + name),          //
-      _calib_towers(NULL), _raw_towers(NULL), detector(name), //
+      _calib_towers(nullptr), _raw_towers(nullptr), detector(name), //
       _calib_tower_node_prefix("CALIB"),                      //
       _raw_tower_node_prefix("RAW"),                          //
       _calib_params(name) {
@@ -76,7 +78,7 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
       assert(column >= 0);
       assert(row >= 0);
 
-      string calib_const_name(Form("calib_const_column%d_row%d", column, row));
+      string calib_const_name((boost::format("calib_const_column%d_row%d") % column % row).str());
 
       calibration_const *= _calib_params.get_double_param(calib_const_name);
     }

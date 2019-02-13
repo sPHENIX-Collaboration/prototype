@@ -1,33 +1,35 @@
 #include "TempInfoUnpackPRDF.h"
+
 #include "PROTOTYPE3_FEM.h"
 #include "RawTower_Temperature.h"
+
+#include <calobase/RawTowerContainer.h>
+
+#include <phparameter/PHParameters.h>
+
+#include <pdbcalbase/PdbParameterMap.h>
+
+#include <fun4all/Fun4AllReturnCodes.h>
+
+#include <phool/PHCompositeNode.h>
+#include <phool/getClass.h>
+#include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
 #include <Event/packetConstants.h>
-#include <calobase/RawTowerContainer.h>
+
 #include <cassert>
-#include <fun4all/Fun4AllReturnCodes.h>
 #include <iostream>
-#include <pdbcalbase/PdbParameterMap.h>
-#include <phool/PHCompositeNode.h>
-#include <phool/getClass.h>
-#include <phool/phool.h>
-#include <phparameter/PHParameters.h>
 #include <string>
 
 using namespace std;
 
 //____________________________________
 TempInfoUnpackPRDF::TempInfoUnpackPRDF()
-    : SubsysReco("TempInfoUnpackPRDF"), hcalin_temperature(NULL),
-      hcalout_temperature(NULL), emcal_temperature(NULL) {}
-
-//____________________________________
-int TempInfoUnpackPRDF::Init(PHCompositeNode *topNode) {
-  return Fun4AllReturnCodes::EVENT_OK;
-}
+    : SubsysReco("TempInfoUnpackPRDF"), hcalin_temperature(nullptr),
+      hcalout_temperature(nullptr), emcal_temperature(nullptr) {}
 
 //_____________________________________
 int TempInfoUnpackPRDF::InitRun(PHCompositeNode *topNode) {
@@ -179,11 +181,9 @@ void TempInfoUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
     cout << "PHComposite node created: RUN" << endl;
   }
 
-  PHIODataNode<PHObject> *tower_node = NULL;
-
   // HCAL Towers
   hcalin_temperature = new RawTowerContainer(RawTowerDefs::HCALIN);
-  tower_node = new PHIODataNode<PHObject>(
+  PHIODataNode<PHObject> *tower_node = new PHIODataNode<PHObject>(
       hcalin_temperature, "TOWER_TEMPERATURE_HCALIN", "PHObject");
   run_node->addNode(tower_node);
 
@@ -198,7 +198,3 @@ void TempInfoUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
   run_node->addNode(tower_node);
 }
 
-//___________________________________
-int TempInfoUnpackPRDF::End(PHCompositeNode *topNode) {
-  return Fun4AllReturnCodes::EVENT_OK;
-}

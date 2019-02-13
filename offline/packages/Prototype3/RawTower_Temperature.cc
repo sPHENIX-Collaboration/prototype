@@ -4,12 +4,8 @@
 
 #include <calobase/RawTowerDefs.h>
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <map>
 
 using namespace std;
 
@@ -26,8 +22,6 @@ RawTower_Temperature::RawTower_Temperature(const unsigned int icol,
                                            const unsigned int irow) {
   towerid = RawTowerDefs::encode_towerid(RawTowerDefs::NONE, icol, irow);
 }
-
-RawTower_Temperature::~RawTower_Temperature() {}
 
 void RawTower_Temperature::Reset() {
   eventnumbers.clear();

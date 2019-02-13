@@ -1,19 +1,26 @@
 #include "EventInfoSummary.h"
+
 #include "PROTOTYPE3_FEM.h"
 #include "RawTower_Prototype3.h"
+
+#include <calobase/RawTowerContainer.h>
+
+#include <ffaobjects/EventHeaderv1.h>
+
+#include <phparameter/PHParameters.h>
+
+#include <pdbcalbase/PdbParameterMap.h>
+
+#include <fun4all/Fun4AllReturnCodes.h>
+
+#include <phool/PHCompositeNode.h>
+#include <phool/getClass.h>
+#include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
 #include <Event/packetConstants.h>
-#include <calobase/RawTowerContainer.h>
-#include <ffaobjects/EventHeaderv1.h>
-#include <fun4all/Fun4AllReturnCodes.h>
-#include <pdbcalbase/PdbParameterMap.h>
-#include <phool/PHCompositeNode.h>
-#include <phool/getClass.h>
-#include <phool/phool.h>
-#include <phparameter/PHParameters.h>
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
@@ -25,16 +32,9 @@
 using namespace std;
 using namespace boost::accumulators;
 
-typedef PHIODataNode<PHObject> PHObjectNode_t;
-
 //____________________________________
 EventInfoSummary::EventInfoSummary()
     : SubsysReco("EventInfoSummary"), eventinfo_node_name("EVENT_INFO") {}
-
-//____________________________________
-int EventInfoSummary::Init(PHCompositeNode *topNode) {
-  return Fun4AllReturnCodes::EVENT_OK;
-}
 
 //_____________________________________
 int EventInfoSummary::InitRun(PHCompositeNode *topNode) {
@@ -45,7 +45,7 @@ int EventInfoSummary::InitRun(PHCompositeNode *topNode) {
 //____________________________________
 int EventInfoSummary::process_event(PHCompositeNode *topNode) {
   Event *event = findNode::getClass<Event>(topNode, "PRDF");
-  if (event == NULL) {
+  if (!event) {
     if (Verbosity() >= VERBOSITY_SOME)
       cout << "EventInfoSummary::Process_Event - Event not found" << endl;
     return Fun4AllReturnCodes::DISCARDEVENT;
@@ -250,11 +250,6 @@ void EventInfoSummary::CreateNodeTree(PHCompositeNode *topNode) {
     dst_node->addNode(new PHIODataNode<PdbParameterMap>(new PdbParameterMap(),
                                                         eventinfo_node_name));
   }
-}
-
-//___________________________________
-int EventInfoSummary::End(PHCompositeNode *topNode) {
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 void EventInfoSummary::add_channel(

@@ -7,22 +7,17 @@
 #include <fun4all/SubsysReco.h>
 
 class Event;
-class Packet;
 class Packet_hbd_fpgashort;
 class RawTowerContainer;
-class RawTower;
 
 class CaloUnpackPRDF : public SubsysReco {
 public:
   CaloUnpackPRDF();
 
-  int Init(PHCompositeNode *topNode);
-
   int InitRun(PHCompositeNode *topNode);
 
   int process_event(PHCompositeNode *topNode);
 
-  int End(PHCompositeNode *topNode);
 
   void CreateNodeTree(PHCompositeNode *topNode);
 

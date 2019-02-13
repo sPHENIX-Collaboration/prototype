@@ -6,18 +6,19 @@
 #include <calobase/RawTower.h>
 
 #include <calobase/RawTowerDefs.h>
+
 #include <ctime>
 #include <map>
 
 class RawTower_Prototype3 : public RawTower {
 public:
   RawTower_Prototype3();
-  RawTower_Prototype3(const RawTower &tower);
   RawTower_Prototype3(RawTowerDefs::keytype id);
   RawTower_Prototype3(const unsigned int icol, const unsigned int irow);
   RawTower_Prototype3(const RawTowerDefs::CalorimeterId caloid,
                       const unsigned int ieta, const unsigned int iphi);
-  virtual ~RawTower_Prototype3();
+
+  virtual ~RawTower_Prototype3(){}
 
   void Reset();
   int isValid() const;

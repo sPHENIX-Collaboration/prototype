@@ -5,23 +5,14 @@
 
 #include <map>
 #include <string>
-#include <utility>
-
-class Event;
-class Packet;
-class RawTowerContainer;
 
 class RunInfoUnpackPRDF : public SubsysReco {
 public:
   RunInfoUnpackPRDF();
 
-  int Init(PHCompositeNode *topNode);
-
   int InitRun(PHCompositeNode *topNode);
 
   int process_event(PHCompositeNode *topNode);
-
-  int End(PHCompositeNode *topNode);
 
   void CreateNodeTree(PHCompositeNode *topNode);
 

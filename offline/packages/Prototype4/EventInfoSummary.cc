@@ -85,7 +85,6 @@ int EventInfoSummary::process_event(PHCompositeNode* topNode)
 
       accumulator_set<double, features<tag::variance>> acc;
 
-      vector<double> vec_signal_samples;
       for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++)
       {
         acc(raw_tower->get_signal_samples(i));

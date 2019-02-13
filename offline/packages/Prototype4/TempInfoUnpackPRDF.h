@@ -6,25 +6,23 @@
 #include <map>
 #include <string>
 
-
 class Packet;
 class RawTowerContainer;
 
-class TempInfoUnpackPRDF : public SubsysReco
-{
- public:
+class TempInfoUnpackPRDF : public SubsysReco {
+public:
   TempInfoUnpackPRDF();
-  virtual ~TempInfoUnpackPRDF(){}
+  virtual ~TempInfoUnpackPRDF() {}
 
   int InitRun(PHCompositeNode *topNode);
 
   int process_event(PHCompositeNode *topNode);
 
-  void
-  CreateNodeTree(PHCompositeNode *topNode);
+  void CreateNodeTree(PHCompositeNode *topNode);
 
- protected:
-  int addPacketInfo(Packet *p, PHCompositeNode *topNode, const time_t etime, const int evtnr);
+protected:
+  int addPacketInfo(Packet *p, PHCompositeNode *topNode, const time_t etime,
+                    const int evtnr);
 
   RawTowerContainer *hcalin_temperature;
   RawTowerContainer *hcalout_temperature;

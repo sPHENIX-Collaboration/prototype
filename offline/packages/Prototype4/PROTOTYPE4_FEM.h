@@ -5,8 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace PROTOTYPE4_FEM
-{
+namespace PROTOTYPE4_FEM {
 /*! Packet ID */
 const int PACKET_ID = 21351;
 
@@ -38,41 +37,46 @@ const int DEAD_CHANNEL_ERROR = 300;
 int GetChannelNumber(const std::string &caloname, int i_column, int i_row);
 
 //! Abhisek's power-law + exp fit
-bool SampleFit_PowerLawExp(              //
-    const std::vector<double> &samples,  //
-    double &peak,                        //
-    double &peak_sample,                 //
-    double &pedstal,                     //
+bool SampleFit_PowerLawExp(             //
+    const std::vector<double> &samples, //
+    double &peak,                       //
+    double &peak_sample,                //
+    double &pedstal,                    //
     const int verbosity = 0);
 
 //! Power law double exp fit
-bool SampleFit_PowerLawDoubleExp(          //
-    const std::vector<double> &samples,    //
-    double &peak,                          //! peak amplitude.
-    double &peak_sample,                   //! peak sample position. Fixed to the input value if NOT NAN
-    double &pedestal,                      //! pedestal
-    std::map<int, double> &parameters_io,  //! IO for fullset of parameters. If a parameter exist and not an NAN, the fit parameter will be fixed to that value. The order of the parameters are ("Amplitude 1", "Sample Start", "Power", "Peak Time 1", "Pedestal", "Amplitude 2", "Peak Time 2")
+bool SampleFit_PowerLawDoubleExp(       //
+    const std::vector<double> &samples, //
+    double &peak,                       //! peak amplitude.
+    double &peak_sample, //! peak sample position. Fixed to the input value if
+                         //! NOT NAN
+    double &pedestal,    //! pedestal
+    std::map<int, double>
+        &parameters_io, //! IO for fullset of parameters. If a parameter exist
+                        //! and not an NAN, the fit parameter will be fixed to
+                        //! that value. The order of the parameters are
+                        //! ("Amplitude 1", "Sample Start", "Power", "Peak Time
+                        //! 1", "Pedestal", "Amplitude 2", "Peak Time 2")
     const int verbosity = 0);
 
 //! Just return the max sample...
-bool SampleFit_PeakSample(          //
-    const std::vector<double> &samples,    //
-    double &peak,                          //! peak amplitude.
-    double &peak_sample,                   //! peak sample position. Fixed to the input value if NOT NAN
-    double &pedestal,                      //! pedestal
+bool SampleFit_PeakSample(              //
+    const std::vector<double> &samples, //
+    double &peak,                       //! peak amplitude.
+    double &peak_sample, //! peak sample position. Fixed to the input value if
+                         //! NOT NAN
+    double &pedestal,    //! pedestal
     const int verbosity = 0);
 
-
 // Abhisek's power-law + exp signal shape model
-double
-SignalShape_PowerLawExp(double *x, double *par);
-double
-SignalShape_PowerLawDoubleExp(double *x, double *par);
+double SignalShape_PowerLawExp(double *x, double *par);
+double SignalShape_PowerLawDoubleExp(double *x, double *par);
 
 //! special treatment for EMCal tagging packet
-//! See also https://wiki.bnl.gov/sPHENIX/index.php/2017_calorimeter_beam_test#What_is_new_in_the_data_structures_in_2017
+//! See also
+//! https://wiki.bnl.gov/sPHENIX/index.php/2017_calorimeter_beam_test#What_is_new_in_the_data_structures_in_2017
 //! Result stored in RUN_INFO node under variable EMCAL_Is_HighEta
 const int PACKET_EMCAL_HIGHETA_FLAG = 905;
-}
+} // namespace PROTOTYPE4_FEM
 
 #endif

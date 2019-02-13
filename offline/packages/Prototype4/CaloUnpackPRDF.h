@@ -2,44 +2,41 @@
 #define PROTOTYPE4_CALOUNPACKPRDFF_H
 
 //* Unpacks raw HCAL PRDF files *//
-//Abhisek Sen
+// Abhisek Sen
 
 #include <fun4all/SubsysReco.h>
-
 
 class Event;
 class Packet;
 class RawTowerContainer;
 
-class CaloUnpackPRDF : public SubsysReco
-{
- public:
+class CaloUnpackPRDF : public SubsysReco {
+public:
   CaloUnpackPRDF();
 
-  int InitRun(PHCompositeNode* topNode);
+  int InitRun(PHCompositeNode *topNode);
 
-  int process_event(PHCompositeNode* topNode);
+  int process_event(PHCompositeNode *topNode);
 
-  void
-  CreateNodeTree(PHCompositeNode* topNode);
+  void CreateNodeTree(PHCompositeNode *topNode);
 
- private:
-  Event* _event;
-  Packet* _packet;
+private:
+  Event *_event;
+  Packet *_packet;
   int _nevents;
 
   // HCAL node
-  PHCompositeNode* dst_node;
-  PHCompositeNode* data_node;
+  PHCompositeNode *dst_node;
+  PHCompositeNode *data_node;
 
-  //Towers
-  RawTowerContainer* hcalin_towers_lg;
-  RawTowerContainer* hcalout_towers_lg;
+  // Towers
+  RawTowerContainer *hcalin_towers_lg;
+  RawTowerContainer *hcalout_towers_lg;
 
-  RawTowerContainer* hcalin_towers_hg;
-  RawTowerContainer* hcalout_towers_hg;
+  RawTowerContainer *hcalin_towers_hg;
+  RawTowerContainer *hcalout_towers_hg;
 
-  RawTowerContainer* emcal_towers;
+  RawTowerContainer *emcal_towers;
 };
 
-#endif  //**CaloUnpackPRDFF**//
+#endif //**CaloUnpackPRDFF**//

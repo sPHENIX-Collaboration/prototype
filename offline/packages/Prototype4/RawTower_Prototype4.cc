@@ -1,12 +1,15 @@
 #include "RawTower_Prototype4.h"
+
+#include "PROTOTYPE4_FEM.h"
+
 #include <calobase/RawTowerDefs.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <iostream>
 #include <map>
 
-#include "PROTOTYPE4_FEM.h"
 
 using namespace std;
 
@@ -17,7 +20,7 @@ using namespace std;
   , time(NAN)
   , HBD_channel(-1)
 {
-  for (int i = 0; i < NSAMPLES; ++i) signal_samples[i] = -9999;
+fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 RawTower_Prototype4::RawTower_Prototype4(const RawTower& tower)
@@ -26,7 +29,7 @@ RawTower_Prototype4::RawTower_Prototype4(const RawTower& tower)
   energy = (tower.get_energy());
   time = (tower.get_time());
   HBD_channel = -1;
-  for (int i = 0; i < NSAMPLES; ++i) signal_samples[i] = -9999;
+fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 RawTower_Prototype4::RawTower_Prototype4(RawTowerDefs::keytype id)
@@ -35,7 +38,7 @@ RawTower_Prototype4::RawTower_Prototype4(RawTowerDefs::keytype id)
   , time(NAN)
   , HBD_channel(-1)
 {
-  for (int i = 0; i < NSAMPLES; ++i) signal_samples[i] = -9999;
+fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 RawTower_Prototype4::RawTower_Prototype4(const unsigned int icol, const unsigned int irow)
@@ -45,7 +48,7 @@ RawTower_Prototype4::RawTower_Prototype4(const unsigned int icol, const unsigned
   , HBD_channel(-1)
 {
   towerid = RawTowerDefs::encode_towerid(RawTowerDefs::NONE, icol, irow);
-  for (int i = 0; i < NSAMPLES; ++i) signal_samples[i] = -9999;
+fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 RawTower_Prototype4::RawTower_Prototype4(const RawTowerDefs::CalorimeterId caloid,
@@ -56,17 +59,14 @@ RawTower_Prototype4::RawTower_Prototype4(const RawTowerDefs::CalorimeterId caloi
   , HBD_channel(-1)
 {
   towerid = RawTowerDefs::encode_towerid(caloid, ieta, iphi);
-  for (int i = 0; i < NSAMPLES; ++i) signal_samples[i] = -9999;
-}
-
-RawTower_Prototype4::~RawTower_Prototype4()
-{
+fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 void RawTower_Prototype4::Reset()
 {
   energy = 0;
   time = NAN;
+fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 int RawTower_Prototype4::isValid() const

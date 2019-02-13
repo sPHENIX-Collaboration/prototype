@@ -1,16 +1,21 @@
 #include "GenericUnpackPRDF.h"
+
 #include "PROTOTYPE4_FEM.h"
 #include "RawTower_Prototype4.h"
+
+#include <calobase/RawTowerContainer.h>
+
+#include <fun4all/Fun4AllReturnCodes.h>
+
+#include <phool/PHCompositeNode.h>
+#include <phool/getClass.h>
+#include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
-#include <Event/packetConstants.h>
-#include <calobase/RawTowerContainer.h>
-#include <fun4all/Fun4AllReturnCodes.h>
-#include <phool/PHCompositeNode.h>
-#include <phool/getClass.h>
-#include <phool/phool.h>
+//#include <Event/packetConstants.h>
+
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -23,14 +28,8 @@ GenericUnpackPRDF::GenericUnpackPRDF(const string &detector)
   ,  //
   _detector(detector)
   ,
-   _towers(NULL)
+   _towers(nullptr)
 {
-}
-
-//____________________________________
-int GenericUnpackPRDF::Init(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 //_____________________________________
@@ -147,12 +146,6 @@ void GenericUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode)
   PHIODataNode<PHObject> *towerNode = new PHIODataNode<PHObject>(_towers,
                                                                  "TOWER_RAW_" + _detector, "PHObject");
   data_node->addNode(towerNode);
-}
-
-//___________________________________
-int GenericUnpackPRDF::End(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 void GenericUnpackPRDF::add_channel(const int packet_id,  //! packet id

@@ -4,9 +4,7 @@
 
 #include <calobase/RawTowerDefs.h>
 
-#include <algorithm>
 #include <cassert>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <map>

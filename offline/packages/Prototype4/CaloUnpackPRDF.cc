@@ -1,18 +1,23 @@
 #include "CaloUnpackPRDF.h"
+
 #include "PROTOTYPE4_FEM.h"
 #include "RawTower_Prototype4.h"
+
+#include <calobase/RawTowerContainer.h>
+
+#include <phparameter/PHParameters.h>
+
+#include <pdbcalbase/PdbParameterMap.h>
+
+#include <fun4all/Fun4AllReturnCodes.h>
+
+#include <phool/PHCompositeNode.h>
+#include <phool/getClass.h>
+#include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
-#include <Event/packetConstants.h>
-#include <calobase/RawTowerContainer.h>
-#include <fun4all/Fun4AllReturnCodes.h>
-#include <pdbcalbase/PdbParameterMap.h>
-#include <phool/PHCompositeNode.h>
-#include <phool/getClass.h>
-#include <phool/phool.h>
-#include <phparameter/PHParameters.h>
 
 #include <cassert>
 #include <iostream>
@@ -24,32 +29,26 @@ using namespace std;
 CaloUnpackPRDF::CaloUnpackPRDF()
   : SubsysReco("CaloUnpackPRDF")
   ,
-  /*Event**/ _event(NULL)
+  /*Event**/ _event(nullptr)
   ,
-  /*Packet_hbd_fpgashort**/ _packet(NULL)
+  /*Packet_hbd_fpgashort**/ _packet(nullptr)
   ,
   /*int*/ _nevents(0)
   ,
-  /*PHCompositeNode **/ dst_node(NULL)
+  /*PHCompositeNode **/ dst_node(nullptr)
   ,
-  /*PHCompositeNode **/ data_node(NULL)
+  /*PHCompositeNode **/ data_node(nullptr)
   ,
-  /*RawTowerContainer**/ hcalin_towers_lg(NULL)
+  /*RawTowerContainer**/ hcalin_towers_lg(nullptr)
   ,
-  /*RawTowerContainer**/ hcalout_towers_lg(NULL)
+  /*RawTowerContainer**/ hcalout_towers_lg(nullptr)
   ,
-  /*RawTowerContainer**/ hcalin_towers_hg(NULL)
+  /*RawTowerContainer**/ hcalin_towers_hg(nullptr)
   ,
-  /*RawTowerContainer**/ hcalout_towers_hg(NULL)
+  /*RawTowerContainer**/ hcalout_towers_hg(nullptr)
   ,
-  /*RawTowerContainer**/ emcal_towers(NULL)
+  /*RawTowerContainer**/ emcal_towers(nullptr)
 {
-}
-
-//____________________________________
-int CaloUnpackPRDF::Init(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 //_____________________________________
@@ -90,8 +89,8 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode)
     }
     return Fun4AllReturnCodes::DISCARDEVENT;
   }
-  RawTower_Prototype4 *tower_lg = NULL;
-  RawTower_Prototype4 *tower_hg = NULL;
+  RawTower_Prototype4 *tower_lg = nullptr;
+  RawTower_Prototype4 *tower_hg = nullptr;
 
   //HCALIN
   assert(hcalin_towers_lg);
@@ -169,7 +168,7 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode)
   }
 
   //EMCAL
-  RawTower_Prototype4 *tower = NULL;
+  RawTower_Prototype4 *tower = nullptr;
   assert(emcal_towers);
   for (int ibinz = 0; ibinz < PROTOTYPE4_FEM::NCH_EMCAL_ROWS; ibinz++)
   {
@@ -243,11 +242,9 @@ void CaloUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode)
     dst_node->addNode(data_node);
   }
 
-  PHIODataNode<PHObject> *tower_node = NULL;
-
   //HCAL Towers
   hcalin_towers_lg = new RawTowerContainer(RawTowerDefs::HCALIN);
-  tower_node = new PHIODataNode<PHObject>(hcalin_towers_lg,
+  PHIODataNode<PHObject> *tower_node = new PHIODataNode<PHObject>(hcalin_towers_lg,
                                           "TOWER_RAW_LG_HCALIN", "PHObject");
   data_node->addNode(tower_node);
   hcalin_towers_hg = new RawTowerContainer(RawTowerDefs::HCALIN);
@@ -271,8 +268,3 @@ void CaloUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode)
   data_node->addNode(emcal_towerNode);
 }
 
-//___________________________________
-int CaloUnpackPRDF::End(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
-}

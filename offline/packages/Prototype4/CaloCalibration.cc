@@ -1,19 +1,19 @@
 #include "CaloCalibration.h"
+
 #include "PROTOTYPE4_FEM.h"
 #include "RawTower_Prototype4.h"
 
-#include <TString.h>
 #include <calobase/RawTowerContainer.h>
+
 #include <fun4all/Fun4AllReturnCodes.h>
+
 #include <phool/PHCompositeNode.h>
 #include <phool/getClass.h>
-#include <phool/phool.h>
+
+#include <boost/format.hpp>
 
 #include <cassert>
-#include <cfloat>
-#include <cmath>
 #include <iostream>
-#include <limits>
 #include <string>
 
 using namespace std;
@@ -21,8 +21,8 @@ using namespace std;
 //____________________________________
 CaloCalibration::CaloCalibration(const std::string &name)
   : SubsysReco(string("CaloCalibration_") + name)
-  , _calib_towers(NULL)
-  , _raw_towers(NULL)
+  , _calib_towers(nullptr)
+  , _raw_towers(nullptr)
   , detector(name)
   , _calib_tower_node_prefix("CALIB")
   , _raw_tower_node_prefix("RAW")
@@ -32,11 +32,6 @@ CaloCalibration::CaloCalibration(const std::string &name)
   SetDefaultParameters(_calib_params);
 }
 
-//____________________________________
-int CaloCalibration::Init(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
-}
 
 //_____________________________________
 int CaloCalibration::InitRun(PHCompositeNode *topNode)
@@ -180,7 +175,7 @@ int CaloCalibration::process_event(PHCompositeNode *topNode)
       assert(column >= 0);
       assert(row >= 0);
 
-      string calib_const_name(Form("calib_const_column%d_row%d", column, row));
+      string calib_const_name((boost::format("calib_const_column%d_row%d") % column % row).str());
 
       calibration_const *= _calib_params.get_double_param(calib_const_name);
     }
@@ -328,12 +323,6 @@ void CaloCalibration::CreateNodeTree(PHCompositeNode *topNode)
   //   this step is moved to after detector construction
   //   save updated persistant copy on node tree
   _calib_params.SaveToNodeTree(parNode, paramnodename);
-}
-
-//___________________________________
-int CaloCalibration::End(PHCompositeNode *topNode)
-{
-  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 void CaloCalibration::SetDefaultParameters(PHParameters &param)

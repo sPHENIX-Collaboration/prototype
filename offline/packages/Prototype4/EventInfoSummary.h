@@ -12,13 +12,9 @@ class EventInfoSummary : public SubsysReco
  public:
   EventInfoSummary();
 
-  int Init(PHCompositeNode *topNode);
-
   int InitRun(PHCompositeNode *topNode);
 
   int process_event(PHCompositeNode *topNode);
-
-  int End(PHCompositeNode *topNode);
 
   void
   CreateNodeTree(PHCompositeNode *topNode);

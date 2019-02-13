@@ -18,7 +18,7 @@ public:
   RawTower_Prototype3(const RawTowerDefs::CalorimeterId caloid,
                       const unsigned int ieta, const unsigned int iphi);
 
-  virtual ~RawTower_Prototype3(){}
+  virtual ~RawTower_Prototype3() {}
 
   void Reset();
   int isValid() const;
@@ -36,7 +36,7 @@ public:
   void set_time(const float t) { time = t; }
 
   //---Raw data
-  //access------------------------------------------------------------
+  // access------------------------------------------------------------
 
   enum { NSAMPLES = PROTOTYPE3_FEM::NSAMPLES };
   typedef float signal_type;

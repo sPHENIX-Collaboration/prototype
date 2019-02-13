@@ -18,7 +18,6 @@ public:
 
   int process_event(PHCompositeNode *topNode);
 
-
   void CreateNodeTree(PHCompositeNode *topNode);
 
   //! whether to use high eta EMCal

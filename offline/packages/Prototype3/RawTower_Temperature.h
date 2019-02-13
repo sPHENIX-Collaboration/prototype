@@ -13,7 +13,7 @@ public:
   RawTower_Temperature();
   RawTower_Temperature(const unsigned int icol, const unsigned int irow);
   RawTower_Temperature(RawTowerDefs::keytype id);
-  virtual ~RawTower_Temperature(){}
+  virtual ~RawTower_Temperature() {}
 
   void Reset();
   int isValid() const { return get_nr_entries(); }
@@ -56,7 +56,7 @@ public:
   float get_temperature_from_time(const time_t t) const;
 
   //---Raw data
-  //access------------------------------------------------------------
+  // access------------------------------------------------------------
 
 protected:
   RawTowerDefs::keytype towerid;

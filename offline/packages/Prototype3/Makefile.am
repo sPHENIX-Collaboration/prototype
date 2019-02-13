@@ -1,76 +1,119 @@
+##############################################
+# please add new classes in alphabetical order
+
 AUTOMAKE_OPTIONS = foreign
+
+lib_LTLIBRARIES = \
+  libPrototype3_io.la \
+  libPrototype3.la
+
+AM_CXXFLAGS = \
+ -Werror
 
 AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \
   -I`root-config --incdir`
 
-libPrototype3_la_LDFLAGS = \
-  -nodefaultlibs \
+AM_LDFLAGS = \
   -L$(libdir) \
   -L$(OFFLINE_MAIN)/lib \
   `root-config --libs`
 
-lib_LTLIBRARIES = \
-  libPrototype3.la
-
 pkginclude_HEADERS = \
+  CaloCalibration.h \
+  CaloUnpackPRDF.h \
+  EventInfoSummary.h \
+  GenericUnpackPRDF.h \
+  PROTOTYPE3_FEM.h \
+  Prototype3DSTReader.h \
   RawTower_Prototype3.h \
   RawTower_Temperature.h \
-  PROTOTYPE3_FEM.h
+  RunInfoUnpackPRDF.h \
+  TempInfoUnpackPRDF.h
+
+ROOTDICTS = \
+  RawTower_Prototype3_Dict.cc \
+  RawTower_Temperature_Dict.cc
+if MAKEROOT6
+  pcmdir = $(libdir)
+  nobase_dist_pcm_DATA = \
+    RawTower_Prototype3_Dict_rdict.pcm \
+    RawTower_Temperature_Dict_rdict.pcm
+else
+  ROOT5_IO_DICTS = \
+    PROTOTYPE3_FEM_Dict.cc
+  ROOT5_DICTS = \
+    CaloCalibration_Dict.cc \
+    CaloUnpackPRDF_Dict.cc \
+    EventInfoSummary_Dict.cc \
+    GenericUnpackPRDF_Dict.cc \
+    Prototype3DSTReader_Dict.cc \
+    RunInfoUnpackPRDF_Dict.cc \
+    TempInfoUnpackPRDF_Dict.cc
+endif
+
+libPrototype3_io_la_SOURCES = \
+  $(ROOTDICTS) \
+  $(ROOT5_IO_DICTS) \
+  PROTOTYPE3_FEM.cc \
+  RawTower_Prototype3.cc \
+  RawTower_Temperature.cc
 
 libPrototype3_la_SOURCES = \
-  RawTower_Prototype3.cc \
-  RawTower_Prototype3Dict.C \
+  $(ROOT5_DICTS) \
   Prototype3DSTReader.cc \
-  Prototype3DSTReaderDict.C \
-  CaloUnpackPRDF.C \
-  CaloUnpackPRDFDict.C \
-  TempInfoUnpackPRDF.C \
-  TempInfoUnpackPRDFDict.C \
-  RunInfoUnpackPRDF.C \
-  RunInfoUnpackPRDFDict.C \
-  EventInfoSummary.C \
-  EventInfoSummaryDict.C \
-  CaloCalibration.C \
-  CaloCalibrationDict.C \
-  GenericUnpackPRDF.C \
-  GenericUnpackPRDFDict.C \
-  PROTOTYPE3_FEM.C \
-  PROTOTYPE3_FEMDict.C \
-  RawTower_Temperature.cc \
-  RawTower_TemperatureDict.C
+  CaloUnpackPRDF.cc \
+  TempInfoUnpackPRDF.cc \
+  RunInfoUnpackPRDF.cc \
+  EventInfoSummary.cc \
+  CaloCalibration.cc \
+  GenericUnpackPRDF.cc
+
+libPrototype3_io_la_LIBADD = \
+  -lcalo_io \
+  -lphool
 
 libPrototype3_la_LIBADD = \
+  libPrototype3_io.la \
   -lSubsysReco \
-  -lphool \
   -lfun4all \
   -lcalo_util \
   -lphparameter
 
+# Rule for generating CINT dictionaries from class headers.
+%_Dict.cc: %.h %LinkDef.h
+	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
+
+#just to get the dependency
+%_Dict_rdict.pcm: %_Dict.cc ;
+
 BUILT_SOURCES = \
-  testexternals.C
+  testexternals.cc
 
 noinst_PROGRAMS = \
+  testexternals_io \
   testexternals
+
+testexternals_io_SOURCES = \
+  testexternals.cc
+
+testexternals_io_LDADD = \
+  libPrototype3_io.la
+
+testexternals_SOURCES = \
+  testexternals.cc
 
 testexternals_LDADD = \
   libPrototype3.la
 
-testexternals.C:
+testexternals.cc:
 	echo "//*** this is a generated file. Do not commit, do not edit" > $@
 	echo "int main()" >> $@
 	echo "{" >> $@
 	echo "  return 0;" >> $@
 	echo "}" >> $@
 
-##############################################
-# please add new classes in alphabetical order
-# Rule for generating CINT dictionaries from class headers.
-%Dict.C: %.h %LinkDef.h
-	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
-
 clean-local:
-	rm -f *Dict*
+	rm -f *Dict* $(BUILT_SOURCES) *.pcm
 
-testexternals_SOURCES = testexternals.C

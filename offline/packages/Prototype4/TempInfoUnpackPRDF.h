@@ -1,40 +1,32 @@
-#ifndef __TempInfoUnpackPRDFF__
-#define __TempInfoUnpackPRDFF__
+#ifndef PROTOTYPE4_TEMPINFOUNPACKPRDFF_H
+#define PROTOTYPE4_TEMPINFOUNPACKPRDFF_H
 
 #include <fun4all/SubsysReco.h>
-#include <phool/PHObject.h>
+
 #include <map>
 #include <string>
-#include <utility>
 
-class Event;
 class Packet;
 class RawTowerContainer;
-class RawTower;
 
-class TempInfoUnpackPRDF : public SubsysReco
-{
- public:
+class TempInfoUnpackPRDF : public SubsysReco {
+public:
   TempInfoUnpackPRDF();
-  virtual ~TempInfoUnpackPRDF(){};
-
-  int Init(PHCompositeNode *topNode);
+  virtual ~TempInfoUnpackPRDF() {}
 
   int InitRun(PHCompositeNode *topNode);
 
   int process_event(PHCompositeNode *topNode);
 
-  int End(PHCompositeNode *topNode);
+  void CreateNodeTree(PHCompositeNode *topNode);
 
-  void
-  CreateNodeTree(PHCompositeNode *topNode);
-
- protected:
-  int addPacketInfo(Packet *p, PHCompositeNode *topNode, const time_t etime, const int evtnr);
+protected:
+  int addPacketInfo(Packet *p, PHCompositeNode *topNode, const time_t etime,
+                    const int evtnr);
 
   RawTowerContainer *hcalin_temperature;
   RawTowerContainer *hcalout_temperature;
   RawTowerContainer *emcal_temperature;
 };
 
-#endif  //**TempInfoUnpackPRDFF**//
+#endif

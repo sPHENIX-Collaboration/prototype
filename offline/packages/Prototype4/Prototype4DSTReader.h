@@ -2,14 +2,14 @@
 
 /*!
  * \file Prototype4DSTReader.h
- * \brief 
+ * \brief
  * \author Jin Huang <jhuang@bnl.gov>
  * \version $Revision: 1.7 $
  * \date $Date: 2015/02/27 23:42:23 $
  */
 
-#ifndef Prototype4DSTReader_H_
-#define Prototype4DSTReader_H_
+#ifndef PROTOTYPE4_PROTOTYPE4DSTREADER_H
+#define PROTOTYPE4_PROTOTYPE4DSTREADER_H
 
 #include "RawTower_Prototype4.h"
 #include "RawTower_Temperature.h"
@@ -26,11 +26,11 @@
 class TTree;
 
 /*!
- * \brief Prototype4DSTReader save information from DST to an evaluator, which could include hit. particle, vertex, towers and jet (to be activated)
+ * \brief Prototype4DSTReader save information from DST to an evaluator, which
+ * could include hit. particle, vertex, towers and jet (to be activated)
  */
-class Prototype4DSTReader : public SubsysReco
-{
- public:
+class Prototype4DSTReader : public SubsysReco {
+public:
   Prototype4DSTReader(const std::string &filename);
   virtual ~Prototype4DSTReader();
 
@@ -43,44 +43,24 @@ class Prototype4DSTReader : public SubsysReco
   //! end of run method
   int End(PHCompositeNode *);
 
-  void
-  AddTower(const std::string &name)
-  {
-    _tower_postfix.push_back(name);
-  }
+  void AddTower(const std::string &name) { _tower_postfix.push_back(name); }
 
-  void
-  AddTowerTemperature(const std::string &name)
-  {
+  void AddTowerTemperature(const std::string &name) {
     _towertemp_postfix.push_back(name);
   }
 
-  void
-  AddRunInfo(const std::string &name)
-  {
-    _runinfo_list.push_back(name);
-  }
-  void
-  AddEventInfo(const std::string &name)
-  {
+  void AddRunInfo(const std::string &name) { _runinfo_list.push_back(name); }
+  void AddEventInfo(const std::string &name) {
     _eventinfo_list.push_back(name);
   }
 
   //! zero suppression for all calorimeters
-  double
-  get_tower_zero_sup()
-  {
-    return _tower_zero_sup;
-  }
+  double get_tower_zero_sup() { return _tower_zero_sup; }
 
   //! zero suppression for all calorimeters
-  void
-  set_tower_zero_sup(double b)
-  {
-    _tower_zero_sup = b;
-  }
+  void set_tower_zero_sup(double b) { _tower_zero_sup = b; }
 
- protected:
+protected:
   //  std::vector<std::string> _node_postfix;
   std::vector<std::string> _tower_postfix;
   //! tower temperature
@@ -96,16 +76,14 @@ class Prototype4DSTReader : public SubsysReco
 
   typedef std::shared_ptr<TClonesArray> arr_ptr;
 
-  struct record
-  {
+  struct record {
     unsigned int _cnt;
     std::string _name;
     arr_ptr _arr;
     TClonesArray *_arr_ptr;
     double _dvalue;
 
-    enum enu_type
-    {
+    enum enu_type {
       typ_hit,
       typ_part,
       typ_vertex,
@@ -135,8 +113,7 @@ class Prototype4DSTReader : public SubsysReco
   //! zero suppression for all calorimeters
   double _tower_zero_sup;
 
-  void
-  build_tree();
+  void build_tree();
 };
 
-#endif /* Prototype4DSTReader_H_ */
+#endif

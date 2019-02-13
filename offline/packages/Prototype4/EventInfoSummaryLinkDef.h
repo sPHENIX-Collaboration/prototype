@@ -1,5 +1,5 @@
 #ifdef __CINT__
 
-#pragma link C++ class EventInfoSummary-!;
+#pragma link C++ class EventInfoSummary - !;
 
 #endif

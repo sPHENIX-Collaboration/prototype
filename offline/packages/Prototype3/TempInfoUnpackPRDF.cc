@@ -197,4 +197,3 @@ void TempInfoUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
       emcal_temperature, "TOWER_TEMPERATURE_EMCAL", "PHObject");
   run_node->addNode(tower_node);
 }
-

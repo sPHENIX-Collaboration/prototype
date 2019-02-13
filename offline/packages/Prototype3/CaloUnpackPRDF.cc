@@ -247,4 +247,3 @@ void CaloUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
       new PHIODataNode<PHObject>(emcal_towers, "TOWER_RAW_CEMC", "PHObject");
   data_node->addNode(emcal_towerNode);
 }
-

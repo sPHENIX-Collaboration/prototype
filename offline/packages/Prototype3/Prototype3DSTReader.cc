@@ -29,8 +29,8 @@
 using namespace std;
 
 Prototype3DSTReader::Prototype3DSTReader(const string &filename)
-    : SubsysReco("Prototype3DSTReader"), nblocks(0), _event(0), //
-      _out_file_name(filename), /*_file(nullptr), */ _T(nullptr),  //
+    : SubsysReco("Prototype3DSTReader"), nblocks(0), _event(0),   //
+      _out_file_name(filename), /*_file(nullptr), */ _T(nullptr), //
       _tower_zero_sup(-10000000) {}
 
 Prototype3DSTReader::~Prototype3DSTReader() {

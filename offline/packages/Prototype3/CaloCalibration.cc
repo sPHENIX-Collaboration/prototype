@@ -20,11 +20,11 @@ using namespace std;
 
 //____________________________________
 CaloCalibration::CaloCalibration(const std::string &name)
-    :                                                         //
-      SubsysReco(string("CaloCalibration_") + name),          //
+    :                                                               //
+      SubsysReco(string("CaloCalibration_") + name),                //
       _calib_towers(nullptr), _raw_towers(nullptr), detector(name), //
-      _calib_tower_node_prefix("CALIB"),                      //
-      _raw_tower_node_prefix("RAW"),                          //
+      _calib_tower_node_prefix("CALIB"),                            //
+      _raw_tower_node_prefix("RAW"),                                //
       _calib_params(name) {
   SetDefaultParameters(_calib_params);
 }
@@ -78,7 +78,8 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
       assert(column >= 0);
       assert(row >= 0);
 
-      string calib_const_name((boost::format("calib_const_column%d_row%d") % column % row).str());
+      string calib_const_name(
+          (boost::format("calib_const_column%d_row%d") % column % row).str());
 
       calibration_const *= _calib_params.get_double_param(calib_const_name);
     }

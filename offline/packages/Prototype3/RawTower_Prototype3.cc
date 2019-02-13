@@ -10,25 +10,24 @@
 #include <iostream>
 #include <map>
 
-
 using namespace std;
 
 RawTower_Prototype3::RawTower_Prototype3()
     : towerid(~0), // initialize all bits on
       energy(0), time(NAN), HBD_channel(-1) {
-fill_n(signal_samples, NSAMPLES, -9999);
+  fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 RawTower_Prototype3::RawTower_Prototype3(RawTowerDefs::keytype id)
     : towerid(id), energy(0), time(NAN), HBD_channel(-1) {
-fill_n(signal_samples, NSAMPLES, -9999);
+  fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 RawTower_Prototype3::RawTower_Prototype3(const unsigned int icol,
                                          const unsigned int irow)
     : towerid(0), energy(0), time(NAN), HBD_channel(-1) {
   towerid = RawTowerDefs::encode_towerid(RawTowerDefs::NONE, icol, irow);
-fill_n(signal_samples, NSAMPLES, -9999);
+  fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 RawTower_Prototype3::RawTower_Prototype3(
@@ -36,13 +35,13 @@ RawTower_Prototype3::RawTower_Prototype3(
     const unsigned int iphi)
     : towerid(0), energy(0), time(NAN), HBD_channel(-1) {
   towerid = RawTowerDefs::encode_towerid(caloid, ieta, iphi);
-fill_n(signal_samples, NSAMPLES, -9999);
+  fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 void RawTower_Prototype3::Reset() {
   energy = 0;
   time = NAN;
-fill_n(signal_samples, NSAMPLES, -9999);
+  fill_n(signal_samples, NSAMPLES, -9999);
 }
 
 int RawTower_Prototype3::isValid() const { return get_energy() != 0; }

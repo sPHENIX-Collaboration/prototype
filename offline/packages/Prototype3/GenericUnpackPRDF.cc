@@ -13,17 +13,16 @@
 #include <Event/Event.h>
 #include <Event/packet_hbd_fpgashort.h>
 
+#include <cassert>
 #include <iostream>
 #include <string>
-#include <cassert>
 
 using namespace std;
 
 //____________________________________
 GenericUnpackPRDF::GenericUnpackPRDF(const string &detector)
     : SubsysReco("GenericUnpackPRDF_" + detector), //
-      _detector(detector),
-      _towers(nullptr) {}
+      _detector(detector), _towers(nullptr) {}
 
 //_____________________________________
 int GenericUnpackPRDF::InitRun(PHCompositeNode *topNode) {
@@ -34,7 +33,7 @@ int GenericUnpackPRDF::InitRun(PHCompositeNode *topNode) {
 //____________________________________
 int GenericUnpackPRDF::process_event(PHCompositeNode *topNode) {
   Event *_event = findNode::getClass<Event>(topNode, "PRDF");
-  if (! _event) {
+  if (!_event) {
     if (Verbosity() >= VERBOSITY_SOME)
       cout << "GenericUnpackPRDF::Process_Event - Event not found" << endl;
     return Fun4AllReturnCodes::DISCARDEVENT;

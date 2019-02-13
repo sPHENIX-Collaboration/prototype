@@ -23,9 +23,7 @@ GenericUnpackPRDF::GenericUnpackPRDF(const string &detector)
   ,  //
   _detector(detector)
   ,
-  /*Event**/ _event(NULL)
-  ,
-  /*PHCompositeNode **/ _towers(NULL)
+   _towers(NULL)
 {
 }
 
@@ -45,8 +43,8 @@ int GenericUnpackPRDF::InitRun(PHCompositeNode *topNode)
 //____________________________________
 int GenericUnpackPRDF::process_event(PHCompositeNode *topNode)
 {
-  _event = findNode::getClass<Event>(topNode, "PRDF");
-  if (_event == NULL)
+  Event *_event = findNode::getClass<Event>(topNode, "PRDF");
+  if (!_event)
   {
     if (Verbosity() >= VERBOSITY_SOME)
       cout << "GenericUnpackPRDF::Process_Event - Event not found" << endl;

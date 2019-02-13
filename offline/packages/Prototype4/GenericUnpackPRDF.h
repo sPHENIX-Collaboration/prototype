@@ -1,16 +1,12 @@
-#ifndef __CaloUnpackPRDFF__
-#define __CaloUnpackPRDFF__
+#ifndef PROTOTYPE4_GENERICUNPACKPRDFF_H
+#define PROTOTYPE4_GENERICUNPACKPRDFF_H
 
 #include <fun4all/SubsysReco.h>
-#include <phool/PHObject.h>
+
 #include <map>
 #include <string>
-#include <utility>
 
-class Event;
-class Packet;
 class RawTowerContainer;
-class RawTower;
 
 class GenericUnpackPRDF : public SubsysReco
 {
@@ -45,10 +41,8 @@ class GenericUnpackPRDF : public SubsysReco
 
   channel_map _channel_map;
 
-  Event *_event;
-
   //output -> Towers
   RawTowerContainer *_towers;
 };
 
-#endif  //**CaloUnpackPRDFF**//
+#endif

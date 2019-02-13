@@ -1,11 +1,11 @@
-#ifndef __TempInfoUnpackPRDFF__
-#define __TempInfoUnpackPRDFF__
+#ifndef PROTOTYPE4_TEMPINFOUNPACKPRDFF_H
+#define PROTOTYPE4_TEMPINFOUNPACKPRDFF_H
 
 #include <fun4all/SubsysReco.h>
-#include <phool/PHObject.h>
+
 #include <map>
 #include <string>
-#include <utility>
+
 
 class Event;
 class Packet;
@@ -16,7 +16,7 @@ class TempInfoUnpackPRDF : public SubsysReco
 {
  public:
   TempInfoUnpackPRDF();
-  virtual ~TempInfoUnpackPRDF(){};
+  virtual ~TempInfoUnpackPRDF(){}
 
   int Init(PHCompositeNode *topNode);
 
@@ -37,4 +37,4 @@ class TempInfoUnpackPRDF : public SubsysReco
   RawTowerContainer *emcal_temperature;
 };
 
-#endif  //**TempInfoUnpackPRDFF**//
+#endif

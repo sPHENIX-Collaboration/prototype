@@ -1,10 +1,11 @@
-#ifndef RAWTOWER_TEMPERATURE_H_
-#define RAWTOWER_TEMPERATURE_H_
+#ifndef PROTOTYPE4_RAWTOWERTEMPERATURE_H
+#define PROTOTYPE4_RAWTOWERTEMPERATURE_H
 
 #include <calobase/RawTower.h>
 #include <calobase/RawTowerDefs.h>
+
 #include <vector>
-#include <stdint.h>
+#include <ctime>
 
 class RawTower_Temperature : public RawTower {
  public:
@@ -74,5 +75,5 @@ class RawTower_Temperature : public RawTower {
   ClassDef(RawTower_Temperature, 1)
 };
 
-#endif /* RAWTOWER_PROTOTYPE3_H_ */
+#endif
 

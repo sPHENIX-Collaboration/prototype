@@ -1,16 +1,15 @@
-#ifndef __CaloUnpackPRDFF__
-#define __CaloUnpackPRDFF__
+#ifndef PROTOTYPE4_CALOUNPACKPRDFF_H
+#define PROTOTYPE4_CALOUNPACKPRDFF_H
 
 //* Unpacks raw HCAL PRDF files *//
 //Abhisek Sen
 
 #include <fun4all/SubsysReco.h>
-#include <phool/PHObject.h>
+
 
 class Event;
 class Packet;
 class RawTowerContainer;
-class RawTower;
 
 class CaloUnpackPRDF : public SubsysReco
 {

@@ -8,8 +8,8 @@
  * \date $Date: 2015/02/27 23:42:23 $
  */
 
-#ifndef Prototype4DSTReader_H_
-#define Prototype4DSTReader_H_
+#ifndef PROTOTYPE4_PROTOTYPE4DSTREADER_H
+#define PROTOTYPE4_PROTOTYPE4DSTREADER_H
 
 #include "RawTower_Prototype4.h"
 #include "RawTower_Temperature.h"
@@ -139,4 +139,4 @@ class Prototype4DSTReader : public SubsysReco
   build_tree();
 };
 
-#endif /* Prototype4DSTReader_H_ */
+#endif

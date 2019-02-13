@@ -1,5 +1,5 @@
-#ifndef __PROTOTYPE4_FEM_H__
-#define __PROTOTYPE4_FEM_H__
+#ifndef PROTOTYPE4_PROTOTYPE4FEM_H
+#define PROTOTYPE4_PROTOTYPE4FEM_H
 
 #include <map>
 #include <string>

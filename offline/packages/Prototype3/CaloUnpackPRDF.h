@@ -13,8 +13,9 @@ class Packet_hbd_fpgashort;
 class PHCompositeNode;
 class RawTowerContainer;
 
-class CaloUnpackPRDF : public SubsysReco {
-public:
+class CaloUnpackPRDF : public SubsysReco
+{
+ public:
   CaloUnpackPRDF();
 
   int InitRun(PHCompositeNode *topNode);
@@ -26,7 +27,7 @@ public:
   //! whether to use high eta EMCal
   void set_use_high_eta_EMCal(bool b) { _use_high_eta_EMCal = b ? 1 : 0; }
 
-private:
+ private:
   Event *_event;
   Packet_hbd_fpgashort *_packet;
   int _nevents;

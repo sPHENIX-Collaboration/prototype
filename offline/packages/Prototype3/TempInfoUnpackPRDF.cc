@@ -3,20 +3,20 @@
 #include "PROTOTYPE3_FEM.h"
 #include "RawTower_Temperature.h"
 
-#include <calobase/RawTower.h>           // for RawTower
+#include <calobase/RawTower.h>  // for RawTower
 #include <calobase/RawTowerContainer.h>
-#include <calobase/RawTowerDefs.h>       // for CEMC, HCALIN, HCALOUT
+#include <calobase/RawTowerDefs.h>  // for CEMC, HCALIN, HCALOUT
 
 #include <phparameter/PHParameters.h>
 
-#include <fun4all/Fun4AllBase.h>         // for Fun4AllBase::VERBOSITY_SOME
+#include <fun4all/Fun4AllBase.h>  // for Fun4AllBase::VERBOSITY_SOME
 #include <fun4all/Fun4AllReturnCodes.h>
-#include <fun4all/SubsysReco.h>          // for SubsysReco
+#include <fun4all/SubsysReco.h>  // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
-#include <phool/PHIODataNode.h>          // for PHIODataNode
-#include <phool/PHNodeIterator.h>        // for PHNodeIterator
-#include <phool/PHObject.h>              // for PHObject
+#include <phool/PHIODataNode.h>    // for PHIODataNode
+#include <phool/PHNodeIterator.h>  // for PHNodeIterator
+#include <phool/PHObject.h>        // for PHObject
 #include <phool/getClass.h>
 
 #include <Event/Event.h>
@@ -29,19 +29,26 @@ using namespace std;
 
 //____________________________________
 TempInfoUnpackPRDF::TempInfoUnpackPRDF()
-    : SubsysReco("TempInfoUnpackPRDF"), hcalin_temperature(nullptr),
-      hcalout_temperature(nullptr), emcal_temperature(nullptr) {}
+  : SubsysReco("TempInfoUnpackPRDF")
+  , hcalin_temperature(nullptr)
+  , hcalout_temperature(nullptr)
+  , emcal_temperature(nullptr)
+{
+}
 
 //_____________________________________
-int TempInfoUnpackPRDF::InitRun(PHCompositeNode *topNode) {
+int TempInfoUnpackPRDF::InitRun(PHCompositeNode *topNode)
+{
   CreateNodeTree(topNode);
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
 //____________________________________
-int TempInfoUnpackPRDF::process_event(PHCompositeNode *topNode) {
+int TempInfoUnpackPRDF::process_event(PHCompositeNode *topNode)
+{
   Event *event = findNode::getClass<Event>(topNode, "PRDF");
-  if (!event) {
+  if (!event)
+  {
     if (Verbosity() >= VERBOSITY_SOME)
       cout << "TempInfoUnpackPRDF::Process_Event - Event not found" << endl;
     return Fun4AllReturnCodes::DISCARDEVENT;
@@ -57,11 +64,14 @@ int TempInfoUnpackPRDF::process_event(PHCompositeNode *topNode) {
   //     event->identify();
   //   }
 
-  if (event->getEvtType() == BEGRUNEVENT) {
+  if (event->getEvtType() == BEGRUNEVENT)
+  {
     p_hcalin = event->getPacket(974);
     p_hcalout = event->getPacket(975);
     p_emcal = event->getPacket(982);
-  } else {
+  }
+  else
+  {
     p_hcalin = event->getPacket(1074);
     p_hcalout = event->getPacket(1075);
     p_emcal = event->getPacket(1082);
@@ -70,26 +80,30 @@ int TempInfoUnpackPRDF::process_event(PHCompositeNode *topNode) {
   time_t etime = event->getTime();
   int evtnr = event->getEvtSequence();
 
-  if (Verbosity() >= VERBOSITY_SOME && (p_hcalin || p_hcalout || p_emcal)) {
+  if (Verbosity() >= VERBOSITY_SOME && (p_hcalin || p_hcalout || p_emcal))
+  {
     cout << "TempInfoUnpackPRDF::found temperature packet in Event - ";
     event->identify();
   }
 
-  if (p_hcalin) {
+  if (p_hcalin)
+  {
     addPacketInfo(p_hcalin, topNode, etime, evtnr);
     if (Verbosity() > VERBOSITY_SOME)
       p_hcalin->dump();
     delete p_hcalin;
   }
 
-  if (p_hcalout) {
+  if (p_hcalout)
+  {
     addPacketInfo(p_hcalout, topNode, etime, evtnr);
     if (Verbosity() > VERBOSITY_SOME)
       p_hcalout->dump();
     delete p_hcalout;
   }
 
-  if (p_emcal) {
+  if (p_emcal)
+  {
     addPacketInfo(p_emcal, topNode, etime, evtnr);
     if (Verbosity() > VERBOSITY_SOME)
       p_emcal->dump();
@@ -101,20 +115,23 @@ int TempInfoUnpackPRDF::process_event(PHCompositeNode *topNode) {
 
 //____________________________________
 int TempInfoUnpackPRDF::addPacketInfo(Packet *p, PHCompositeNode *topNode,
-                                      const time_t etime, const int evtnr) {
-
+                                      const time_t etime, const int evtnr)
+{
   int packetid = p->getIdentifier();
 
   RawTower_Temperature *tower;
 
-  if (packetid == 974 || packetid == 1074) // Inner Hcal
+  if (packetid == 974 || packetid == 1074)  // Inner Hcal
   {
-    for (int ibinz = 0; ibinz < PROTOTYPE3_FEM::NCH_IHCAL_ROWS; ibinz++) {
+    for (int ibinz = 0; ibinz < PROTOTYPE3_FEM::NCH_IHCAL_ROWS; ibinz++)
+    {
       for (int ibinphi = 0; ibinphi < PROTOTYPE3_FEM::NCH_IHCAL_COLUMNS;
-           ibinphi++) {
+           ibinphi++)
+      {
         tower = dynamic_cast<RawTower_Temperature *>(
             hcalin_temperature->getTower(ibinz, ibinphi));
-        if (!tower) {
+        if (!tower)
+        {
           tower = new RawTower_Temperature();
           hcalin_temperature->AddTower(ibinz, ibinphi, tower);
         }
@@ -126,14 +143,17 @@ int TempInfoUnpackPRDF::addPacketInfo(Packet *p, PHCompositeNode *topNode,
     }
   }
 
-  else if (packetid == 975 || packetid == 1075) // outer Hcal
+  else if (packetid == 975 || packetid == 1075)  // outer Hcal
   {
-    for (int ibinz = 0; ibinz < PROTOTYPE3_FEM::NCH_OHCAL_ROWS; ibinz++) {
+    for (int ibinz = 0; ibinz < PROTOTYPE3_FEM::NCH_OHCAL_ROWS; ibinz++)
+    {
       for (int ibinphi = 0; ibinphi < PROTOTYPE3_FEM::NCH_OHCAL_COLUMNS;
-           ibinphi++) {
+           ibinphi++)
+      {
         tower = dynamic_cast<RawTower_Temperature *>(
             hcalout_temperature->getTower(ibinz, ibinphi));
-        if (!tower) {
+        if (!tower)
+        {
           tower = new RawTower_Temperature();
           hcalout_temperature->AddTower(ibinz, ibinphi, tower);
         }
@@ -145,14 +165,17 @@ int TempInfoUnpackPRDF::addPacketInfo(Packet *p, PHCompositeNode *topNode,
     }
   }
 
-  else if (packetid == 982 || packetid == 1082) // emcal
+  else if (packetid == 982 || packetid == 1082)  // emcal
   {
-    for (int ibinz = 0; ibinz < PROTOTYPE3_FEM::NCH_EMCAL_ROWS; ibinz++) {
+    for (int ibinz = 0; ibinz < PROTOTYPE3_FEM::NCH_EMCAL_ROWS; ibinz++)
+    {
       for (int ibinphi = 0; ibinphi < PROTOTYPE3_FEM::NCH_EMCAL_COLUMNS;
-           ibinphi++) {
+           ibinphi++)
+      {
         tower = dynamic_cast<RawTower_Temperature *>(
             emcal_temperature->getTower(ibinz, ibinphi));
-        if (!tower) {
+        if (!tower)
+        {
           tower = new RawTower_Temperature();
           emcal_temperature->AddTower(ibinz, ibinphi, tower);
         }
@@ -171,12 +194,14 @@ int TempInfoUnpackPRDF::addPacketInfo(Packet *p, PHCompositeNode *topNode,
 }
 
 //_______________________________________
-void TempInfoUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
+void TempInfoUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode)
+{
   PHNodeIterator nodeItr(topNode);
   // DST node
   PHCompositeNode *run_node = static_cast<PHCompositeNode *>(
       nodeItr.findFirst("PHCompositeNode", "RUN"));
-  if (!run_node) {
+  if (!run_node)
+  {
     run_node = new PHCompositeNode("RUN");
     topNode->addNode(run_node);
     cout << "PHComposite node created: RUN" << endl;

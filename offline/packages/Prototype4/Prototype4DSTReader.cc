@@ -29,8 +29,8 @@
 #include <TTree.h>
 
 #include <cassert>
-#include <climits>
 #include <iostream>  // for operator<<, basic_ostream, endl
+#include <limits>
 #include <map>
 
 class PHCompositeNode;

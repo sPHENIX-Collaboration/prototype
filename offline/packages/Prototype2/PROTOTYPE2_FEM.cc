@@ -14,21 +14,27 @@
 #include <TF1.h>
 #include <TGraph.h>
 
+#include <unistd.h>  // for sleep
 #include <cassert>
 #include <cmath>
-#include <cstdlib>      // for exit
+#include <cstdlib>  // for exit
 #include <iostream>
-#include <unistd.h>      // for sleep
 
 using namespace std;
 
 int PROTOTYPE2_FEM::GetHBDCh(const std::string &caloname, int i_column,
-                             int i_row) {
-  if (caloname == "HCALIN") {
+                             int i_row)
+{
+  if (caloname == "HCALIN")
+  {
     return 64 + 8 * i_column + 2 * i_row;
-  } else if (caloname == "HCALOUT") {
+  }
+  else if (caloname == "HCALOUT")
+  {
     return 112 + 8 * i_column + 2 * i_row;
-  } else if (caloname == "EMCAL") {
+  }
+  else if (caloname == "EMCAL")
+  {
     // EMcal cable mapping from John haggerty
     assert(i_column >= 0);
     assert(i_column < NCH_EMCAL_COLUMNS);
@@ -71,30 +77,33 @@ int PROTOTYPE2_FEM::GetHBDCh(const std::string &caloname, int i_column,
   return -9999;
 }
 
-bool PROTOTYPE2_FEM::SampleFit_PowerLawExp( //
-    const std::vector<double> &samples,     //
-    double &peak,                           //
-    double &peak_sample,                    //
-    double &pedstal,                        //
-    const int verbosity) {
+bool PROTOTYPE2_FEM::SampleFit_PowerLawExp(  //
+    const std::vector<double> &samples,      //
+    double &peak,                            //
+    double &peak_sample,                     //
+    double &pedstal,                         //
+    const int verbosity)
+{
   int peakPos = 0.;
 
   assert(samples.size() == NSAMPLES);
 
   TGraph gpulse(NSAMPLES);
-  for (int i = 0; i < NSAMPLES; i++) {
+  for (int i = 0; i < NSAMPLES; i++)
+  {
     (gpulse.GetX())[i] = i;
 
     (gpulse.GetY())[i] = samples[i];
   }
 
-  double pedestal = gpulse.GetY()[0]; //(double) PEDESTAL;
+  double pedestal = gpulse.GetY()[0];  //(double) PEDESTAL;
   double peakval = pedestal;
   const double risetime = 4;
 
-  for (int iSample = 0; iSample < NSAMPLES; iSample++) {
-
-    if (abs(gpulse.GetY()[iSample] - pedestal) > abs(peakval - pedestal)) {
+  for (int iSample = 0; iSample < NSAMPLES; iSample++)
+  {
+    if (abs(gpulse.GetY()[iSample] - pedestal) > abs(peakval - pedestal))
+    {
       peakval = gpulse.GetY()[iSample];
       peakPos = iSample;
     }
@@ -105,7 +114,7 @@ bool PROTOTYPE2_FEM::SampleFit_PowerLawExp( //
   TF1 fits("f_SignalShape_PowerLawExp", SignalShape_PowerLawExp, 0., 24., 6);
 
   double par[6] = {0};
-  par[0] = peakval; // /3.;
+  par[0] = peakval;  // /3.;
   par[1] = peakPos - risetime;
   if (par[1] < 0.)
     par[1] = 0.;
@@ -124,14 +133,16 @@ bool PROTOTYPE2_FEM::SampleFit_PowerLawExp( //
 
   // Saturation correction - Abhisek
   for (int ipoint = 0; ipoint < gpulse.GetN(); ipoint++)
-    if ((gpulse.GetY())[ipoint] == 0) {
+    if ((gpulse.GetY())[ipoint] == 0)
+    {
       gpulse.RemovePoint(ipoint);
       ipoint--;
     }
 
-  gpulse.Fit(&fits, "MQRN0", "goff", 0., (double)NSAMPLES);
+  gpulse.Fit(&fits, "MQRN0", "goff", 0., (double) NSAMPLES);
 
-  if (verbosity) {
+  if (verbosity)
+  {
     TCanvas *canvas = new TCanvas("PROTOTYPE2_FEM_SampleFit_PowerLawExp",
                                   "PROTOTYPE2_FEM::SampleFit_PowerLawExp");
     gpulse.DrawClone("ap*l");
@@ -146,11 +157,11 @@ bool PROTOTYPE2_FEM::SampleFit_PowerLawExp( //
       (fits.GetParameter(0) *
        pow(fits.GetParameter(2) / fits.GetParameter(3), fits.GetParameter(2))) /
       exp(fits.GetParameter(
-          2)); // exact peak height is (p0*Power(p2/p3,p2))/Power(E,p2)
+          2));  // exact peak height is (p0*Power(p2/p3,p2))/Power(E,p2)
 
   //  peak_sample = fits.GetParameter(1); // signal start time
   peak_sample = fits.GetParameter(1) +
-                fits.GetParameter(2) / fits.GetParameter(3); // signal peak time
+                fits.GetParameter(2) / fits.GetParameter(3);  // signal peak time
 
   // peak integral = p0*Power(p3,-1 - p2)*Gamma(1 + p2). Note yet used in output
 
@@ -159,10 +170,11 @@ bool PROTOTYPE2_FEM::SampleFit_PowerLawExp( //
   return true;
 }
 
-double PROTOTYPE2_FEM::SignalShape_PowerLawExp(double *x, double *par) {
+double PROTOTYPE2_FEM::SignalShape_PowerLawExp(double *x, double *par)
+{
   double pedestal =
       par[4] + ((x[0] - 1.5 * par[1]) > 0) *
-                   par[5]; // quick fix on exting tails on the signal function
+                   par[5];  // quick fix on exting tails on the signal function
   if (x[0] < par[1])
     return pedestal;
   // double  signal =

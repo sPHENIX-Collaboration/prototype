@@ -7,13 +7,14 @@
 
 #include <map>
 #include <string>
-#include <utility>               // for pair
+#include <utility>  // for pair
 
 class PHCompositeNode;
 class RawTowerContainer;
 
-class GenericUnpackPRDF : public SubsysReco {
-public:
+class GenericUnpackPRDF : public SubsysReco
+{
+ public:
   GenericUnpackPRDF(const std::string &detector);
 
   int InitRun(PHCompositeNode *topNode);
@@ -23,12 +24,12 @@ public:
   void CreateNodeTree(PHCompositeNode *topNode);
 
   //! add stuff to be unpacked
-  void add_channel(const int packet_id, //! packet id
-                   const int channel,   //! channel in packet
-                   const int tower_id   //! output tower id
+  void add_channel(const int packet_id,  //! packet id
+                   const int channel,    //! channel in packet
+                   const int tower_id    //! output tower id
   );
 
-private:
+ private:
   std::string _detector;
 
   //! packet_id, channel number to define a hbd_channel

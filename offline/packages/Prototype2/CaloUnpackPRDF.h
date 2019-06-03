@@ -13,8 +13,9 @@ class Packet_hbd_fpgashort;
 class PHCompositeNode;
 class RawTowerContainer;
 
-class CaloUnpackPRDF : public SubsysReco {
-public:
+class CaloUnpackPRDF : public SubsysReco
+{
+ public:
   CaloUnpackPRDF();
 
   int Init(PHCompositeNode *topNode);
@@ -27,7 +28,7 @@ public:
 
   void CreateNodeTree(PHCompositeNode *topNode);
 
-private:
+ private:
   Event *_event;
   Packet_hbd_fpgashort *_packet;
   int _nevents;

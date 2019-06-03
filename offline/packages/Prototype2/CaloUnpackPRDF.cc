@@ -2,17 +2,17 @@
 #include "PROTOTYPE2_FEM.h"
 #include "RawTower_Prototype2.h"
 
-#include <calobase/RawTower.h>           // for RawTower
+#include <calobase/RawTower.h>  // for RawTower
 #include <calobase/RawTowerContainer.h>
-#include <calobase/RawTowerDefs.h>       // for HCALIN, HCALOUT, CEMC
+#include <calobase/RawTowerDefs.h>  // for HCALIN, HCALOUT, CEMC
 
 #include <fun4all/Fun4AllReturnCodes.h>
-#include <fun4all/SubsysReco.h>          // for SubsysReco
+#include <fun4all/SubsysReco.h>  // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
-#include <phool/PHIODataNode.h>          // for PHIODataNode
-#include <phool/PHNodeIterator.h>        // for PHNodeIterator
-#include <phool/PHObject.h>              // for PHObject
+#include <phool/PHIODataNode.h>    // for PHIODataNode
+#include <phool/PHNodeIterator.h>  // for PHNodeIterator
+#include <phool/PHObject.h>        // for PHObject
 #include <phool/getClass.h>
 #include <phool/phool.h>
 
@@ -21,49 +21,66 @@
 #include <Event/packet_hbd_fpgashort.h>
 
 #include <cassert>
-#include <cmath>                        // for NAN
-#include <cstddef>                      // for NULL
+#include <cmath>    // for NAN
+#include <cstddef>  // for NULL
 #include <iostream>
-#include <map>                           // for _Rb_tree_const_iterator
-#include <utility>                       // for pair
+#include <map>      // for _Rb_tree_const_iterator
+#include <utility>  // for pair
 
 using namespace std;
 
 //____________________________________
 CaloUnpackPRDF::CaloUnpackPRDF()
-    : SubsysReco("CaloUnpackPRDF"),
-      /*Event**/ _event(NULL),
-      /*Packet_hbd_fpgashort**/ _packet(NULL),
-      /*int*/ _nevents(0),
-      /*PHCompositeNode **/ dst_node(NULL),
-      /*PHCompositeNode **/ data_node(NULL),
-      /*RawTowerContainer**/ hcalin_towers_lg(NULL),
-      /*RawTowerContainer**/ hcalout_towers_lg(NULL),
-      /*RawTowerContainer**/ hcalin_towers_hg(NULL),
-      /*RawTowerContainer**/ hcalout_towers_hg(NULL),
-      /*RawTowerContainer**/ emcal_towers(NULL) {}
+  : SubsysReco("CaloUnpackPRDF")
+  ,
+  /*Event**/ _event(NULL)
+  ,
+  /*Packet_hbd_fpgashort**/ _packet(NULL)
+  ,
+  /*int*/ _nevents(0)
+  ,
+  /*PHCompositeNode **/ dst_node(NULL)
+  ,
+  /*PHCompositeNode **/ data_node(NULL)
+  ,
+  /*RawTowerContainer**/ hcalin_towers_lg(NULL)
+  ,
+  /*RawTowerContainer**/ hcalout_towers_lg(NULL)
+  ,
+  /*RawTowerContainer**/ hcalin_towers_hg(NULL)
+  ,
+  /*RawTowerContainer**/ hcalout_towers_hg(NULL)
+  ,
+  /*RawTowerContainer**/ emcal_towers(NULL)
+{
+}
 
 //____________________________________
-int CaloUnpackPRDF::Init(PHCompositeNode *topNode) {
+int CaloUnpackPRDF::Init(PHCompositeNode *topNode)
+{
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
 //_____________________________________
-int CaloUnpackPRDF::InitRun(PHCompositeNode *topNode) {
+int CaloUnpackPRDF::InitRun(PHCompositeNode *topNode)
+{
   CreateNodeTree(topNode);
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
 //____________________________________
-int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
+int CaloUnpackPRDF::process_event(PHCompositeNode *topNode)
+{
   _nevents++;
   _event = findNode::getClass<Event>(topNode, "PRDF");
-  if (_event == 0) {
+  if (_event == 0)
+  {
     cout << "CaloUnpackPRDF::Process_Event - Event not found" << endl;
     return -1;
   }
 
-  if (Verbosity()) {
+  if (Verbosity())
+  {
     cout << PHWHERE << "Process event entered" << std::endl;
   }
 
@@ -72,9 +89,11 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
   _packet = dynamic_cast<Packet_hbd_fpgashort *>(
       _event->getPacket(PROTOTYPE2_FEM::PACKET_ID));
 
-  if (!_packet) {
+  if (!_packet)
+  {
     // They could be special events at the beginning or end of run
-    if (_event->getEvtType() == 1) {
+    if (_event->getEvtType() == 1)
+    {
       cout << "CaloUnpackPRDF::Process_Event - Packet not found" << endl;
       _event->identify();
     }
@@ -88,19 +107,23 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
   // HCALIN
   assert(hcalin_towers_lg);
   assert(hcalin_towers_hg);
-  for (int ibinz = 0; ibinz < PROTOTYPE2_FEM::NCH_IHCAL_ROWS; ibinz++) {
+  for (int ibinz = 0; ibinz < PROTOTYPE2_FEM::NCH_IHCAL_ROWS; ibinz++)
+  {
     for (int ibinphi = 0; ibinphi < PROTOTYPE2_FEM::NCH_IHCAL_COLUMNS;
-         ibinphi++) {
+         ibinphi++)
+    {
       tower_lg = dynamic_cast<RawTower_Prototype2 *>(
           hcalin_towers_lg->getTower(ibinz, ibinphi));
-      if (!tower_lg) {
+      if (!tower_lg)
+      {
         tower_lg = new RawTower_Prototype2();
         tower_lg->set_energy(NAN);
         hcalin_towers_lg->AddTower(ibinz, ibinphi, tower_lg);
       }
       tower_hg = dynamic_cast<RawTower_Prototype2 *>(
           hcalin_towers_hg->getTower(ibinz, ibinphi));
-      if (!tower_hg) {
+      if (!tower_hg)
+      {
         tower_hg = new RawTower_Prototype2();
         tower_hg->set_energy(NAN);
         hcalin_towers_hg->AddTower(ibinz, ibinphi, tower_hg);
@@ -109,7 +132,8 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
       int ich = PROTOTYPE2_FEM::GetHBDCh("HCALIN", ibinz, ibinphi);
       tower_lg->set_HBD_channel_number(ich);
       tower_hg->set_HBD_channel_number(ich);
-      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++) {
+      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++)
+      {
         tower_hg->set_signal_samples(isamp, _packet->iValue(ich, isamp));
         tower_lg->set_signal_samples(isamp, _packet->iValue(ich + 1, isamp));
       }
@@ -119,19 +143,23 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
   // HCALOUT
   assert(hcalout_towers_lg);
   assert(hcalout_towers_hg);
-  for (int ibinz = 0; ibinz < PROTOTYPE2_FEM::NCH_OHCAL_ROWS; ibinz++) {
+  for (int ibinz = 0; ibinz < PROTOTYPE2_FEM::NCH_OHCAL_ROWS; ibinz++)
+  {
     for (int ibinphi = 0; ibinphi < PROTOTYPE2_FEM::NCH_OHCAL_COLUMNS;
-         ibinphi++) {
+         ibinphi++)
+    {
       tower_lg = dynamic_cast<RawTower_Prototype2 *>(
           hcalout_towers_lg->getTower(ibinz, ibinphi));
-      if (!tower_lg) {
+      if (!tower_lg)
+      {
         tower_lg = new RawTower_Prototype2();
         tower_lg->set_energy(NAN);
         hcalout_towers_lg->AddTower(ibinz, ibinphi, tower_lg);
       }
       tower_hg = dynamic_cast<RawTower_Prototype2 *>(
           hcalout_towers_hg->getTower(ibinz, ibinphi));
-      if (!tower_hg) {
+      if (!tower_hg)
+      {
         tower_hg = new RawTower_Prototype2();
         tower_hg->set_energy(NAN);
         hcalout_towers_hg->AddTower(ibinz, ibinphi, tower_hg);
@@ -139,7 +167,8 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
       int ich = PROTOTYPE2_FEM::GetHBDCh("HCALOUT", ibinz, ibinphi);
       tower_lg->set_HBD_channel_number(ich);
       tower_hg->set_HBD_channel_number(ich);
-      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++) {
+      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++)
+      {
         tower_hg->set_signal_samples(isamp, _packet->iValue(ich, isamp));
         tower_lg->set_signal_samples(isamp, _packet->iValue(ich + 1, isamp));
       }
@@ -149,35 +178,42 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
   // EMCAL
   RawTower_Prototype2 *tower = NULL;
   assert(emcal_towers);
-  for (int ibinz = 0; ibinz < PROTOTYPE2_FEM::NCH_EMCAL_ROWS; ibinz++) {
+  for (int ibinz = 0; ibinz < PROTOTYPE2_FEM::NCH_EMCAL_ROWS; ibinz++)
+  {
     for (int ibinphi = 0; ibinphi < PROTOTYPE2_FEM::NCH_EMCAL_COLUMNS;
-         ibinphi++) {
+         ibinphi++)
+    {
       tower = dynamic_cast<RawTower_Prototype2 *>(
           emcal_towers->getTower(ibinz, ibinphi));
-      if (!tower) {
+      if (!tower)
+      {
         tower = new RawTower_Prototype2();
         tower->set_energy(NAN);
         emcal_towers->AddTower(ibinz, ibinphi, tower);
       }
       int ich = PROTOTYPE2_FEM::GetHBDCh("EMCAL", ibinz, ibinphi);
       tower->set_HBD_channel_number(ich);
-      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++) {
+      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++)
+      {
         tower->set_signal_samples(isamp, _packet->iValue(ich, isamp));
       }
     }
   }
 
-  if (Verbosity()) {
+  if (Verbosity())
+  {
     cout << "HCALIN Towers: " << endl;
     hcalin_towers_hg->identify();
     RawTowerContainer::ConstRange begin_end = hcalin_towers_lg->getTowers();
     RawTowerContainer::ConstIterator iter;
-    for (iter = begin_end.first; iter != begin_end.second; ++iter) {
+    for (iter = begin_end.first; iter != begin_end.second; ++iter)
+    {
       RawTower_Prototype2 *tower =
           dynamic_cast<RawTower_Prototype2 *>(iter->second);
       tower->identify();
       cout << "Signal Samples: [" << endl;
-      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++) {
+      for (int isamp = 0; isamp < PROTOTYPE2_FEM::NSAMPLES; isamp++)
+      {
         cout << tower->get_signal_samples(isamp) << ", ";
       }
       cout << " ]" << endl;
@@ -188,12 +224,14 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode) {
 }
 
 //_______________________________________
-void CaloUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
+void CaloUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode)
+{
   PHNodeIterator nodeItr(topNode);
   // DST node
   dst_node = static_cast<PHCompositeNode *>(
       nodeItr.findFirst("PHCompositeNode", "DST"));
-  if (!dst_node) {
+  if (!dst_node)
+  {
     cout << "PHComposite node created: DST" << endl;
     dst_node = new PHCompositeNode("DST");
     topNode->addNode(dst_node);
@@ -202,7 +240,8 @@ void CaloUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
   // DATA nodes
   data_node = static_cast<PHCompositeNode *>(
       nodeItr.findFirst("PHCompositeNode", "RAW_DATA"));
-  if (!data_node) {
+  if (!data_node)
+  {
     if (Verbosity())
       cout << "PHComposite node created: RAW_DATA" << endl;
     data_node = new PHCompositeNode("RAW_DATA");
@@ -238,6 +277,7 @@ void CaloUnpackPRDF::CreateNodeTree(PHCompositeNode *topNode) {
 }
 
 //___________________________________
-int CaloUnpackPRDF::End(PHCompositeNode *topNode) {
+int CaloUnpackPRDF::End(PHCompositeNode *topNode)
+{
   return Fun4AllReturnCodes::EVENT_OK;
 }

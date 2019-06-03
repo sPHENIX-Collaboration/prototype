@@ -18,7 +18,7 @@
 
 #include <memory>
 #include <string>
-#include <utility>                 // for swap
+#include <utility>  // for swap
 #include <vector>
 
 class PHCompositeNode;
@@ -29,8 +29,9 @@ class TTree;
  * \brief Prototype2DSTReader save information from DST to an evaluator, which
  * could include hit. particle, vertex, towers and jet (to be activated)
  */
-class Prototype2DSTReader : public SubsysReco {
-public:
+class Prototype2DSTReader : public SubsysReco
+{
+ public:
   Prototype2DSTReader(const std::string &filename);
   virtual ~Prototype2DSTReader();
 
@@ -45,7 +46,8 @@ public:
 
   void AddTower(const std::string &name) { _tower_postfix.push_back(name); }
 
-  void AddTowerTemperature(const std::string &name) {
+  void AddTowerTemperature(const std::string &name)
+  {
     _towertemp_postfix.push_back(name);
   }
 
@@ -57,7 +59,7 @@ public:
   //! zero suppression for all calorimeters
   void set_tower_zero_sup(double b) { _tower_zero_sup = b; }
 
-protected:
+ protected:
   std::vector<std::string> _tower_postfix;
   //! tower temperature
   std::vector<std::string> _towertemp_postfix;
@@ -69,14 +71,16 @@ protected:
 
   typedef std::shared_ptr<TClonesArray> arr_ptr;
 
-  struct record {
+  struct record
+  {
     unsigned int _cnt;
     std::string _name;
     arr_ptr _arr;
     TClonesArray *_arr_ptr;
     double _dvalue;
 
-    enum enu_type {
+    enum enu_type
+    {
       typ_hit,
       typ_part,
       typ_vertex,

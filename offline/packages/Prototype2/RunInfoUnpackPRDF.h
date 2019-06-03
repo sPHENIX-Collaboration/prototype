@@ -8,8 +8,11 @@
 #include <map>
 #include <string>
 
-class RunInfoUnpackPRDF : public SubsysReco {
-public:
+class PHCompositeNode;
+
+class RunInfoUnpackPRDF : public SubsysReco
+{
+ public:
   RunInfoUnpackPRDF();
 
   int InitRun(PHCompositeNode *topNode);
@@ -20,18 +23,23 @@ public:
 
   //! add stuff to be unpacked
   void
-  add_channel(const std::string &name,   //! name of the channel
-              const int packet_id,       //! packet id
-              const unsigned int offset, //! offset in packet data
+  add_channel(const std::string &name,    //! name of the channel
+              const int packet_id,        //! packet id
+              const unsigned int offset,  //! offset in packet data
               const double calibration_const =
-                  +1 //! conversion constant from integer to meaningful value
+                  +1  //! conversion constant from integer to meaningful value
   );
 
-private:
-  class channel_info {
-  public:
+ private:
+  class channel_info
+  {
+   public:
     channel_info(int p, unsigned int o, double c)
-        : packet_id(p), offset(o), calibration_const(c) {}
+      : packet_id(p)
+      , offset(o)
+      , calibration_const(c)
+    {
+    }
 
     int packet_id;
     unsigned offset;

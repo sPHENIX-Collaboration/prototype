@@ -8,10 +8,11 @@
 #include <calobase/RawTower.h>
 #include <calobase/RawTowerDefs.h>
 
-#include <iostream>                 // for cout, ostream
+#include <iostream>  // for cout, ostream
 
-class RawTower_Prototype4 : public RawTower {
-public:
+class RawTower_Prototype4 : public RawTower
+{
+ public:
   RawTower_Prototype4();
   RawTower_Prototype4(const RawTower &tower);
   RawTower_Prototype4(RawTowerDefs::keytype id);
@@ -37,7 +38,10 @@ public:
   //---Raw data
   //access------------------------------------------------------------
 
-  enum { NSAMPLES = PROTOTYPE4_FEM::NSAMPLES };
+  enum
+  {
+    NSAMPLES = PROTOTYPE4_FEM::NSAMPLES
+  };
   typedef float signal_type;
 
   void set_signal_samples(int i, signal_type sig);
@@ -51,7 +55,7 @@ public:
   double get_energy_power_law_exp(int verbosity = 0);
   double get_energy_power_law_double_exp(int verbosity = 0);
 
-protected:
+ protected:
   RawTowerDefs::keytype towerid;
 
   //! energy assigned to the tower. Depending on stage of process and DST node
@@ -62,7 +66,7 @@ protected:
   float time;
 
   // Signal samples from DATA
-  signal_type signal_samples[NSAMPLES]; // Low Gain
+  signal_type signal_samples[NSAMPLES];  // Low Gain
   int HBD_channel;
 
   ClassDef(RawTower_Prototype4, 3)

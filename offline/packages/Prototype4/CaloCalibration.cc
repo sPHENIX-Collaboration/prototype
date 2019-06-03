@@ -3,51 +3,58 @@
 #include "PROTOTYPE4_FEM.h"
 #include "RawTower_Prototype4.h"
 
-#include <calobase/RawTower.h>                     // for RawTower
+#include <calobase/RawTower.h>  // for RawTower
 #include <calobase/RawTowerContainer.h>
-#include <calobase/RawTowerDefs.h>                 // for keytype
+#include <calobase/RawTowerDefs.h>  // for keytype
 
-#include <phparameter/PHParameters.h>              // for PHParameters
+#include <phparameter/PHParameters.h>  // for PHParameters
 
 #include <fun4all/Fun4AllReturnCodes.h>
-#include <fun4all/SubsysReco.h>                    // for SubsysReco
+#include <fun4all/SubsysReco.h>  // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
-#include <phool/PHIODataNode.h>                    // for PHIODataNode
-#include <phool/PHNode.h>                          // for PHNode
-#include <phool/PHNodeIterator.h>                  // for PHNodeIterator
-#include <phool/PHObject.h>                        // for PHObject
+#include <phool/PHIODataNode.h>    // for PHIODataNode
+#include <phool/PHNode.h>          // for PHNode
+#include <phool/PHNodeIterator.h>  // for PHNodeIterator
+#include <phool/PHObject.h>        // for PHObject
 #include <phool/getClass.h>
 
 #include <boost/format.hpp>
 
 #include <cassert>
-#include <climits>                                  // for numeric_limits
-#include <cmath>                                   // for NAN, isnan
-#include <cstdlib>                                // for exit
+#include <climits>  // for numeric_limits
+#include <cmath>    // for NAN, isnan
+#include <cstdlib>  // for exit
 #include <iostream>
-#include <map>                                     // for map, _Rb_tree_iter...
-#include <stdexcept>                               // for runtime_error
+#include <map>        // for map, _Rb_tree_iter...
+#include <stdexcept>  // for runtime_error
 #include <string>
-#include <utility>                                 // for pair
-#include <vector>                                  // for vector
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 using namespace std;
 
 //____________________________________
 CaloCalibration::CaloCalibration(const std::string &name)
-    : SubsysReco(string("CaloCalibration_") + name), _calib_towers(nullptr),
-      _raw_towers(nullptr), detector(name), _calib_tower_node_prefix("CALIB"),
-      _raw_tower_node_prefix("RAW"), _calib_params(name),
-      _fit_type(kPowerLawDoubleExpWithGlobalFitConstraint) {
+  : SubsysReco(string("CaloCalibration_") + name)
+  , _calib_towers(nullptr)
+  , _raw_towers(nullptr)
+  , detector(name)
+  , _calib_tower_node_prefix("CALIB")
+  , _raw_tower_node_prefix("RAW")
+  , _calib_params(name)
+  , _fit_type(kPowerLawDoubleExpWithGlobalFitConstraint)
+{
   SetDefaultParameters(_calib_params);
 }
 
 //_____________________________________
-int CaloCalibration::InitRun(PHCompositeNode *topNode) {
+int CaloCalibration::InitRun(PHCompositeNode *topNode)
+{
   CreateNodeTree(topNode);
 
-  if (Verbosity()) {
+  if (Verbosity())
+  {
     std::cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
               << " - print calibration parameters: " << endl;
     _calib_params.Print();
@@ -57,16 +64,20 @@ int CaloCalibration::InitRun(PHCompositeNode *topNode) {
 }
 
 //____________________________________
-int CaloCalibration::process_event(PHCompositeNode *topNode) {
-  if (Verbosity()) {
+int CaloCalibration::process_event(PHCompositeNode *topNode)
+{
+  if (Verbosity())
+  {
     std::cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
               << "Process event entered" << std::endl;
   }
 
   map<int, double> parameters_constraints;
   if (_fit_type == kPowerLawDoubleExpWithGlobalFitConstraint and
-      _raw_towers->size() > 1) {
-    if (Verbosity()) {
+      _raw_towers->size() > 1)
+  {
+    if (Verbosity())
+    {
       std::cout
           << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
           << "Extract global fit parameter for constraining individual fits"
@@ -81,7 +92,8 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
 
     RawTowerContainer::Range begin_end = _raw_towers->getTowers();
     RawTowerContainer::Iterator rtiter;
-    for (rtiter = begin_end.first; rtiter != begin_end.second; ++rtiter) {
+    for (rtiter = begin_end.first; rtiter != begin_end.second; ++rtiter)
+    {
       RawTower_Prototype4 *raw_tower =
           dynamic_cast<RawTower_Prototype4 *>(rtiter->second);
       assert(raw_tower);
@@ -101,19 +113,22 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
       //      {
       ++count;
 
-      for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++) {
+      for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++)
+      {
         if (raw_tower->get_signal_samples(i) <= 10 or
             raw_tower->get_signal_samples(i) >= ((1 << 14) - 10))
           vec_signal_samples[i] =
-              numeric_limits<double>::quiet_NaN(); // invalidate this sample
+              numeric_limits<double>::quiet_NaN();  // invalidate this sample
         else
           vec_signal_samples[i] += raw_tower->get_signal_samples(i);
       }
       //      }
     }
 
-    if (count > 0) {
-      for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++) {
+    if (count > 0)
+    {
+      for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++)
+      {
         vec_signal_samples[i] /= count;
       }
 
@@ -157,7 +172,9 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
       //        parameters_constraints[3] = average_peak_time;
       //        parameters_constraints[5] = 0;
       //      }
-    } else {
+    }
+    else
+    {
       std::cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
                 << ": Failed to build signal template! Fit each channel "
                    "individually instead"
@@ -172,7 +189,8 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
 
   RawTowerContainer::Range begin_end = _raw_towers->getTowers();
   RawTowerContainer::Iterator rtiter;
-  for (rtiter = begin_end.first; rtiter != begin_end.second; ++rtiter) {
+  for (rtiter = begin_end.first; rtiter != begin_end.second; ++rtiter)
+  {
     RawTowerDefs::keytype key = rtiter->first;
     RawTower_Prototype4 *raw_tower =
         dynamic_cast<RawTower_Prototype4 *>(rtiter->second);
@@ -180,7 +198,8 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
 
     double calibration_const = calib_const_scale;
 
-    if (use_chan_calibration) {
+    if (use_chan_calibration)
+    {
       // channel to channel calibration.
       const int column = raw_tower->get_column();
       const int row = raw_tower->get_row();
@@ -195,7 +214,8 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
     }
 
     vector<double> vec_signal_samples;
-    for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++) {
+    for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++)
+    {
       vec_signal_samples.push_back(raw_tower->get_signal_samples(i));
     }
 
@@ -203,7 +223,8 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
     double peak_sample = NAN;
     double pedstal = NAN;
 
-    switch (_fit_type) {
+    switch (_fit_type)
+    {
     case kPowerLawExp:
       PROTOTYPE4_FEM::SampleFit_PowerLawExp(vec_signal_samples, peak,
                                             peak_sample, pedstal, Verbosity());
@@ -214,21 +235,25 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
                                            peak_sample, pedstal, Verbosity());
       break;
 
-    case kPowerLawDoubleExp: {
+    case kPowerLawDoubleExp:
+    {
       map<int, double> parameters_io;
 
       PROTOTYPE4_FEM::SampleFit_PowerLawDoubleExp(vec_signal_samples, peak,
                                                   peak_sample, pedstal,
                                                   parameters_io, Verbosity());
-    } break;
+    }
+    break;
 
-    case kPowerLawDoubleExpWithGlobalFitConstraint: {
+    case kPowerLawDoubleExpWithGlobalFitConstraint:
+    {
       map<int, double> parameters_io(parameters_constraints);
 
       PROTOTYPE4_FEM::SampleFit_PowerLawDoubleExp(vec_signal_samples, peak,
                                                   peak_sample, pedstal,
                                                   parameters_io, Verbosity());
-    } break;
+    }
+    break;
     default:
       cout << __PRETTY_FUNCTION__ << " - FATAL error - unkown fit type "
            << _fit_type << endl;
@@ -237,13 +262,15 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
     }
 
     // store the result - raw_tower
-    if (std::isnan(raw_tower->get_energy())) {
+    if (std::isnan(raw_tower->get_energy()))
+    {
       // Raw tower was never fit, store the current fit
 
       raw_tower->set_energy(peak);
       raw_tower->set_time(peak_sample);
 
-      if (Verbosity()) {
+      if (Verbosity())
+      {
         raw_tower->identify();
       }
     }
@@ -253,16 +280,18 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
     calib_tower->set_energy(peak * calibration_const);
     calib_tower->set_time(peak_sample);
 
-    for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++) {
+    for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++)
+    {
       calib_tower->set_signal_samples(i, (vec_signal_samples[i] - pedstal) *
                                              calibration_const);
     }
 
     _calib_towers->AddTower(key, calib_tower);
 
-  } //  for (rtiter = begin_end.first; rtiter != begin_end.second; ++rtiter)
+  }  //  for (rtiter = begin_end.first; rtiter != begin_end.second; ++rtiter)
 
-  if (Verbosity()) {
+  if (Verbosity())
+  {
     std::cout << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
               << "input sum energy = " << _raw_towers->getTotalEdep()
               << ", output sum digitalized value = "
@@ -273,12 +302,14 @@ int CaloCalibration::process_event(PHCompositeNode *topNode) {
 }
 
 //_______________________________________
-void CaloCalibration::CreateNodeTree(PHCompositeNode *topNode) {
+void CaloCalibration::CreateNodeTree(PHCompositeNode *topNode)
+{
   PHNodeIterator iter(topNode);
 
   PHCompositeNode *dstNode =
       dynamic_cast<PHCompositeNode *>(iter.findFirst("PHCompositeNode", "DST"));
-  if (!dstNode) {
+  if (!dstNode)
+  {
     std::cerr << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
               << "DST Node missing, doing nothing." << std::endl;
     throw std::runtime_error(
@@ -288,7 +319,8 @@ void CaloCalibration::CreateNodeTree(PHCompositeNode *topNode) {
   RawTowerNodeName = "TOWER_" + _raw_tower_node_prefix + "_" + detector;
   _raw_towers =
       findNode::getClass<RawTowerContainer>(dstNode, RawTowerNodeName.c_str());
-  if (!_raw_towers) {
+  if (!_raw_towers)
+  {
     std::cerr << Name() << "::" << detector << "::" << __PRETTY_FUNCTION__
               << " " << RawTowerNodeName << " Node missing, doing bail out!"
               << std::endl;
@@ -300,7 +332,8 @@ void CaloCalibration::CreateNodeTree(PHCompositeNode *topNode) {
   PHNodeIterator dstiter(dstNode);
   PHCompositeNode *DetNode = dynamic_cast<PHCompositeNode *>(
       dstiter.findFirst("PHCompositeNode", detector));
-  if (!DetNode) {
+  if (!DetNode)
+  {
     DetNode = new PHCompositeNode(detector);
     dstNode->addNode(DetNode);
   }
@@ -310,7 +343,8 @@ void CaloCalibration::CreateNodeTree(PHCompositeNode *topNode) {
   CaliTowerNodeName = "TOWER_" + _calib_tower_node_prefix + "_" + detector;
   _calib_towers =
       findNode::getClass<RawTowerContainer>(DetNode, CaliTowerNodeName.c_str());
-  if (!_calib_towers) {
+  if (!_calib_towers)
+  {
     _calib_towers = new RawTowerContainer(_raw_towers->getCalorimeterID());
     PHIODataNode<PHObject> *towerNode = new PHIODataNode<PHObject>(
         _calib_towers, CaliTowerNodeName.c_str(), "PHObject");
@@ -328,7 +362,8 @@ void CaloCalibration::CreateNodeTree(PHCompositeNode *topNode) {
   _calib_params.SaveToNodeTree(parNode, paramnodename);
 }
 
-void CaloCalibration::SetDefaultParameters(PHParameters &param) {
+void CaloCalibration::SetDefaultParameters(PHParameters &param)
+{
   param.set_int_param("use_chan_calibration", 0);
 
   // additional scale for the calibration constant

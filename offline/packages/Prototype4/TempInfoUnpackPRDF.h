@@ -5,14 +5,15 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <ctime>                // for time_t
+#include <ctime>  // for time_t
 
 class Packet;
 class PHCompositeNode;
 class RawTowerContainer;
 
-class TempInfoUnpackPRDF : public SubsysReco {
-public:
+class TempInfoUnpackPRDF : public SubsysReco
+{
+ public:
   TempInfoUnpackPRDF();
   virtual ~TempInfoUnpackPRDF() {}
 
@@ -22,7 +23,7 @@ public:
 
   void CreateNodeTree(PHCompositeNode *topNode);
 
-protected:
+ protected:
   int addPacketInfo(Packet *p, PHCompositeNode *topNode, const time_t etime,
                     const int evtnr);
 

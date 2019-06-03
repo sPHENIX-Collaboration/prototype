@@ -7,11 +7,12 @@
 #include <calobase/RawTowerDefs.h>
 
 #include <ctime>
-#include <iostream>                 // for cout, ostream
+#include <iostream>  // for cout, ostream
 #include <vector>
 
-class RawTower_Temperature : public RawTower {
-public:
+class RawTower_Temperature : public RawTower
+{
+ public:
   RawTower_Temperature();
   RawTower_Temperature(const unsigned int icol, const unsigned int irow);
   RawTower_Temperature(RawTowerDefs::keytype id);
@@ -30,26 +31,30 @@ public:
 
   int get_nr_entries() const { return temperatures.size(); }
 
-  int add_entry(const int eventnr, const time_t t, const float temp) {
+  int add_entry(const int eventnr, const time_t t, const float temp)
+  {
     eventnumbers.push_back(eventnr);
     times.push_back(t);
     temperatures.push_back(temp);
     return get_nr_entries();
   }
 
-  float get_temperature_from_entry(const unsigned int entry) const {
+  float get_temperature_from_entry(const unsigned int entry) const
+  {
     if (entry >= temperatures.size())
       return -1;
     return temperatures[entry];
   }
 
-  time_t get_time_from_entry(const unsigned int entry) const {
+  time_t get_time_from_entry(const unsigned int entry) const
+  {
     if (entry >= times.size())
-      return 0; // 1970...
+      return 0;  // 1970...
     return times[entry];
   }
 
-  int get_eventnumber_from_entry(const unsigned int entry) const {
+  int get_eventnumber_from_entry(const unsigned int entry) const
+  {
     if (entry >= eventnumbers.size())
       return -1;
     return eventnumbers[entry];
@@ -60,7 +65,7 @@ public:
   //---Raw data
   //access------------------------------------------------------------
 
-protected:
+ protected:
   RawTowerDefs::keytype towerid;
 
   //! Temperature readings

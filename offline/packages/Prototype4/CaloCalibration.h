@@ -15,8 +15,9 @@
 class PHCompositeNode;
 class RawTowerContainer;
 
-class CaloCalibration : public SubsysReco {
-public:
+class CaloCalibration : public SubsysReco
+{
+ public:
   CaloCalibration(const std::string &name);
 
   int InitRun(PHCompositeNode *topNode);
@@ -25,19 +26,23 @@ public:
 
   void CreateNodeTree(PHCompositeNode *topNode);
 
-  std::string get_calib_tower_node_prefix() const {
+  std::string get_calib_tower_node_prefix() const
+  {
     return _calib_tower_node_prefix;
   }
 
-  void set_calib_tower_node_prefix(const std::string &calibTowerNodePrefix) {
+  void set_calib_tower_node_prefix(const std::string &calibTowerNodePrefix)
+  {
     _calib_tower_node_prefix = calibTowerNodePrefix;
   }
 
-  std::string get_raw_tower_node_prefix() const {
+  std::string get_raw_tower_node_prefix() const
+  {
     return _raw_tower_node_prefix;
   }
 
-  void set_raw_tower_node_prefix(const std::string &rawTowerNodePrefix) {
+  void set_raw_tower_node_prefix(const std::string &rawTowerNodePrefix)
+  {
     _raw_tower_node_prefix = rawTowerNodePrefix;
   }
 
@@ -50,11 +55,13 @@ public:
 
   //! Overwrite the parameter. Useful fields are listed in
   //! SetDefaultParameters();
-  void SetCalibrationParameters(const PHParameters &calib_params) {
+  void SetCalibrationParameters(const PHParameters &calib_params)
+  {
     _calib_params = calib_params;
   }
 
-  enum FitMethodType {
+  enum FitMethodType
+  {
     //! single power-low-exp fit, PROTOTYPE4_FEM::SampleFit_PowerLawExp()
     kPowerLawExp,
 
@@ -72,7 +79,7 @@ public:
 
   void SetFitType(FitMethodType t) { _fit_type = t; }
 
-private:
+ private:
   RawTowerContainer *_calib_towers;
   RawTowerContainer *_raw_towers;
 

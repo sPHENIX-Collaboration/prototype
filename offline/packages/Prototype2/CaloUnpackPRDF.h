@@ -1,5 +1,7 @@
-#ifndef PROTOTYPE2_CALOUNPACKPRDFF_H
-#define PROTOTYPE2_CALOUNPACKPRDFF_H
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef PROTOTYPE2_CALOUNPACKPRDF_H
+#define PROTOTYPE2_CALOUNPACKPRDF_H
 
 //* Unpacks raw HCAL PRDF files *//
 // Abhisek Sen

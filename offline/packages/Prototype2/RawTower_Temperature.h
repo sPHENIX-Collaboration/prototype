@@ -1,3 +1,5 @@
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
 #ifndef PROTOTYPE2_RAWTOWERTEMPERATURE_H
 #define PROTOTYPE2_RAWTOWERTEMPERATURE_H
 

@@ -3,20 +3,27 @@
 #include "PROTOTYPE4_FEM.h"
 #include "RawTower_Prototype4.h"
 
+#include <calobase/RawTower.h>           // for RawTower
 #include <calobase/RawTowerContainer.h>
+#include <calobase/RawTowerDefs.h>       // for NONE
 
+#include <fun4all/Fun4AllBase.h>         // for Fun4AllBase::VERBOSITY_SOME
 #include <fun4all/Fun4AllReturnCodes.h>
+#include <fun4all/SubsysReco.h>          // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>          // for PHIODataNode
+#include <phool/PHNodeIterator.h>        // for PHNodeIterator
+#include <phool/PHObject.h>              // for PHObject
 #include <phool/getClass.h>
-#include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
-//#include <Event/packetConstants.h>
 
 #include <cassert>
+#include <cmath>                        // for NAN
+#include <cstdlib>                      // for exit
 #include <iostream>
 #include <string>
 

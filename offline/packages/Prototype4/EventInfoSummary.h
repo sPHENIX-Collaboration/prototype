@@ -6,6 +6,8 @@
 #include <map>
 #include <string>
 
+class PHCompositeNode;
+
 class EventInfoSummary : public SubsysReco {
 public:
   EventInfoSummary();

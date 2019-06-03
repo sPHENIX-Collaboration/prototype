@@ -1,13 +1,9 @@
 #include "RawTower_Temperature.h"
 
-#include "PROTOTYPE4_FEM.h"
-
 #include <calobase/RawTowerDefs.h>
 
-#include <cassert>
 #include <iomanip>
 #include <iostream>
-#include <map>
 
 using namespace std;
 

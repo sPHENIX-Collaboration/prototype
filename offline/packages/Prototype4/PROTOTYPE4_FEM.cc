@@ -10,16 +10,17 @@
 
 #include "PROTOTYPE4_FEM.h"
 
+#include <TAttMarker.h>        // for kFullCircle
 #include <TCanvas.h>
 #include <TF1.h>
 #include <TGraph.h>
-#include <TStyle.h>
-#include <TVirtualFitter.h>
 
 #include <cassert>
+#include <climits>
 #include <cmath>
+#include <cstdlib>            // for exit
 #include <iostream>
-#include <limits>
+#include <memory>              // for allocator_traits<>::value_type
 #include <string>
 
 using namespace std;
@@ -442,7 +443,7 @@ bool PROTOTYPE4_FEM::SampleFit_PowerLawDoubleExp( //
     g_max.SetMarkerSize(2);
     g_max.SetMarkerColor(kRed);
 
-    static_cast<TGraph *>(g_max.DrawClone("p"));
+    g_max.DrawClone("p");
   }
 
   for (int i = 0; i < n_parameter; ++i) {

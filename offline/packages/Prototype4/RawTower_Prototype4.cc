@@ -2,6 +2,7 @@
 
 #include "PROTOTYPE4_FEM.h"
 
+#include <calobase/RawTower.h>      // for RawTower
 #include <calobase/RawTowerDefs.h>
 
 #include <algorithm>
@@ -9,6 +10,7 @@
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <vector>                   // for vector
 
 using namespace std;
 

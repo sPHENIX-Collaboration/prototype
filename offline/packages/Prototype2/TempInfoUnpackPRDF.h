@@ -5,8 +5,8 @@
 
 #include <ctime>
 
-class Event;
 class Packet;
+class PHCompositeNode;
 class RawTowerContainer;
 
 class TempInfoUnpackPRDF : public SubsysReco {

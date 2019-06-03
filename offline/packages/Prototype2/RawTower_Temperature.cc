@@ -1,7 +1,5 @@
 #include "RawTower_Temperature.h"
 
-#include "PROTOTYPE2_FEM.h"
-
 #include <calobase/RawTowerDefs.h>
 
 #include <iomanip>

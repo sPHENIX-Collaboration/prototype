@@ -5,8 +5,9 @@
 
 #include <map>
 #include <string>
+#include <utility>               // for pair
 
-class Event;
+class PHCompositeNode;
 class RawTowerContainer;
 
 class GenericUnpackPRDF : public SubsysReco {

@@ -2,13 +2,14 @@
 
 #include "PROTOTYPE2_FEM.h"
 
+#include <calobase/RawTower.h>      // for RawTower
 #include <calobase/RawTowerDefs.h>
 
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <iostream>
-#include <map>
+#include <vector>                   // for vector
 
 using namespace std;
 

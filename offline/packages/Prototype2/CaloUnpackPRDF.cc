@@ -2,19 +2,30 @@
 #include "PROTOTYPE2_FEM.h"
 #include "RawTower_Prototype2.h"
 
-#include <Event/Event.h>
-#include <Event/EventTypes.h>
-#include <Event/packet.h>
-#include <Event/packetConstants.h>
-#include <Event/packet_hbd_fpgashort.h>
+#include <calobase/RawTower.h>           // for RawTower
 #include <calobase/RawTowerContainer.h>
-#include <cassert>
+#include <calobase/RawTowerDefs.h>       // for HCALIN, HCALOUT, CEMC
+
 #include <fun4all/Fun4AllReturnCodes.h>
-#include <iostream>
+#include <fun4all/SubsysReco.h>          // for SubsysReco
+
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>          // for PHIODataNode
+#include <phool/PHNodeIterator.h>        // for PHNodeIterator
+#include <phool/PHObject.h>              // for PHObject
 #include <phool/getClass.h>
 #include <phool/phool.h>
-#include <string>
+
+#include <Event/Event.h>
+#include <Event/packetConstants.h>
+#include <Event/packet_hbd_fpgashort.h>
+
+#include <cassert>
+#include <cmath>                        // for NAN
+#include <cstddef>                      // for NULL
+#include <iostream>
+#include <map>                           // for _Rb_tree_const_iterator
+#include <utility>                       // for pair
 
 using namespace std;
 

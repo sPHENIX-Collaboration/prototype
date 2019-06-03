@@ -3,23 +3,23 @@
 #include "PROTOTYPE2_FEM.h"
 #include "RawTower_Temperature.h"
 
-#include <Event/Event.h>
-#include <Event/EventTypes.h>
-#include <Event/packet.h>
-
+#include <calobase/RawTower.h>           // for RawTower
 #include <calobase/RawTowerContainer.h>
-
-#include <pdbcalbase/PdbParameterMap.h>
-#include <phparameter/PHParameters.h>
+#include <calobase/RawTowerDefs.h>       // for CEMC, HCALIN, HCALOUT
 
 #include <fun4all/Fun4AllReturnCodes.h>
 
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>          // for PHIODataNode
+#include <phool/PHNodeIterator.h>        // for PHNodeIterator
+#include <phool/PHObject.h>              // for PHObject
 #include <phool/getClass.h>
-#include <phool/phool.h>
+
+#include <Event/Event.h>
+#include <Event/EventTypes.h>
+#include <Event/packet.h>
 
 #include <iostream>
-#include <string>
 
 using namespace std;
 

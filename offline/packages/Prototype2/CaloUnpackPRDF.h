@@ -8,6 +8,7 @@
 
 class Event;
 class Packet_hbd_fpgashort;
+class PHCompositeNode;
 class RawTowerContainer;
 
 class CaloUnpackPRDF : public SubsysReco {

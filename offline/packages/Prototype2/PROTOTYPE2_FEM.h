@@ -1,11 +1,13 @@
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
 #ifndef PROTOTYPE2_PROTOTYPE2FEM_H
 #define PROTOTYPE2_PROTOTYPE2FEM_H
 
 #include <string>
 #include <vector>
 
-namespace PROTOTYPE2_FEM {
-
+namespace PROTOTYPE2_FEM
+{
 /*! Packet ID */
 const int PACKET_ID = 21101;
 
@@ -34,16 +36,16 @@ const int DEAD_CHANNEL_ERROR = 300;
 int GetHBDCh(const std::string &caloname, int i_column, int i_row);
 
 //! Abhisek's power-law + exp fit
-bool SampleFit_PowerLawExp(             //
-    const std::vector<double> &samples, //
-    double &peak,                       //
-    double &peak_sample,                //
-    double &pedstal,                    //
+bool SampleFit_PowerLawExp(              //
+    const std::vector<double> &samples,  //
+    double &peak,                        //
+    double &peak_sample,                 //
+    double &pedstal,                     //
     const int verbosity = 0);
 
 // Abhisek's power-law + exp signal shape model
 double SignalShape_PowerLawExp(double *x, double *par);
 
-} // namespace PROTOTYPE2_FEM
+}  // namespace PROTOTYPE2_FEM
 
 #endif

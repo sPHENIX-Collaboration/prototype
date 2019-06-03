@@ -1,3 +1,5 @@
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
 #ifndef PROTOTYPE2_RAWTOWERPROTOTYPE2_H
 #define PROTOTYPE2_RAWTOWERPROTOTYPE2_H
 
@@ -6,8 +8,11 @@
 #include <calobase/RawTower.h>
 #include <calobase/RawTowerDefs.h>
 
-class RawTower_Prototype2 : public RawTower {
-public:
+#include <iostream>  // for cout, ostream
+
+class RawTower_Prototype2 : public RawTower
+{
+ public:
   RawTower_Prototype2();
   RawTower_Prototype2(const RawTower &tower);
   RawTower_Prototype2(RawTowerDefs::keytype id);
@@ -32,9 +37,12 @@ public:
   void set_time(const float t) { time = t; }
 
   //---Raw data
-  //access------------------------------------------------------------
+  // access------------------------------------------------------------
 
-  enum { NSAMPLES = PROTOTYPE2_FEM::NSAMPLES };
+  enum
+  {
+    NSAMPLES = PROTOTYPE2_FEM::NSAMPLES
+  };
   typedef float signal_type;
 
   void set_signal_samples(int i, signal_type sig);
@@ -46,7 +54,7 @@ public:
 
   double get_energy_power_law_exp(int verbosity = 0);
 
-protected:
+ protected:
   RawTowerDefs::keytype towerid;
 
   //! energy assigned to the tower. Depending on stage of process and DST node
@@ -57,7 +65,7 @@ protected:
   float time;
 
   // Signal samples from DATA
-  signal_type signal_samples[NSAMPLES]; // Low Gain
+  signal_type signal_samples[NSAMPLES];  // Low Gain
   int HBD_channel;
 
   ClassDef(RawTower_Prototype2, 3)

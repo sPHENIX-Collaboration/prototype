@@ -1,11 +1,13 @@
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
 #ifndef PROTOTYPE3_PROTOTYPE3FEM_H
 #define PROTOTYPE3_PROTOTYPE3FEM_H
 
 #include <string>
 #include <vector>
 
-namespace PROTOTYPE3_FEM {
-
+namespace PROTOTYPE3_FEM
+{
 /*! Packet ID */
 const int PACKET_ID = 21101;
 
@@ -34,11 +36,11 @@ const int DEAD_CHANNEL_ERROR = 300;
 int GetHBDCh(const std::string &caloname, int i_column, int i_row);
 
 //! Abhisek's power-law + exp fit
-bool SampleFit_PowerLawExp(             //
-    const std::vector<double> &samples, //
-    double &peak,                       //
-    double &peak_sample,                //
-    double &pedstal,                    //
+bool SampleFit_PowerLawExp(              //
+    const std::vector<double> &samples,  //
+    double &peak,                        //
+    double &peak_sample,                 //
+    double &pedstal,                     //
     const int verbosity = 0);
 
 // Abhisek's power-law + exp signal shape model
@@ -50,6 +52,6 @@ double SignalShape_PowerLawExp(double *x, double *par);
 //! Result stored in RUN_INFO node under variable EMCAL_Is_HighEta
 const int PACKET_EMCAL_HIGHETA_FLAG = 905;
 
-} // namespace PROTOTYPE3_FEM
+}  // namespace PROTOTYPE3_FEM
 
 #endif

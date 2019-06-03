@@ -1,16 +1,19 @@
-#ifndef PROTOTYPE2_TEMPINFOUNPACKPRDFF_H
-#define PROTOTYPE2_TEMPINFOUNPACKPRDFF_H
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef PROTOTYPE2_TEMPINFOUNPACKPRDF_H
+#define PROTOTYPE2_TEMPINFOUNPACKPRDF_H
 
 #include <fun4all/SubsysReco.h>
 
 #include <ctime>
 
-class Event;
 class Packet;
+class PHCompositeNode;
 class RawTowerContainer;
 
-class TempInfoUnpackPRDF : public SubsysReco {
-public:
+class TempInfoUnpackPRDF : public SubsysReco
+{
+ public:
   TempInfoUnpackPRDF();
   virtual ~TempInfoUnpackPRDF() {}
 
@@ -20,7 +23,7 @@ public:
 
   void CreateNodeTree(PHCompositeNode *topNode);
 
-protected:
+ protected:
   int addPacketInfo(Packet *p, PHCompositeNode *topNode, const time_t etime,
                     const int evtnr);
 

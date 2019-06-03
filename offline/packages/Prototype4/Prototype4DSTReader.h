@@ -1,3 +1,5 @@
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
 // $Id: Prototype4DSTReader.h,v 1.7 2015/02/27 23:42:23 jinhuang Exp $
 
 /*!
@@ -16,21 +18,22 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <TClonesArray.h>
-
-#include <iostream>
 #include <memory>
 #include <string>
+#include <utility>  // for swap
 #include <vector>
 
+class PHCompositeNode;
+class TClonesArray;
 class TTree;
 
 /*!
  * \brief Prototype4DSTReader save information from DST to an evaluator, which
  * could include hit. particle, vertex, towers and jet (to be activated)
  */
-class Prototype4DSTReader : public SubsysReco {
-public:
+class Prototype4DSTReader : public SubsysReco
+{
+ public:
   Prototype4DSTReader(const std::string &filename);
   virtual ~Prototype4DSTReader();
 
@@ -45,12 +48,14 @@ public:
 
   void AddTower(const std::string &name) { _tower_postfix.push_back(name); }
 
-  void AddTowerTemperature(const std::string &name) {
+  void AddTowerTemperature(const std::string &name)
+  {
     _towertemp_postfix.push_back(name);
   }
 
   void AddRunInfo(const std::string &name) { _runinfo_list.push_back(name); }
-  void AddEventInfo(const std::string &name) {
+  void AddEventInfo(const std::string &name)
+  {
     _eventinfo_list.push_back(name);
   }
 
@@ -60,7 +65,7 @@ public:
   //! zero suppression for all calorimeters
   void set_tower_zero_sup(double b) { _tower_zero_sup = b; }
 
-protected:
+ protected:
   //  std::vector<std::string> _node_postfix;
   std::vector<std::string> _tower_postfix;
   //! tower temperature
@@ -76,14 +81,16 @@ protected:
 
   typedef std::shared_ptr<TClonesArray> arr_ptr;
 
-  struct record {
+  struct record
+  {
     unsigned int _cnt;
     std::string _name;
     arr_ptr _arr;
     TClonesArray *_arr_ptr;
     double _dvalue;
 
-    enum enu_type {
+    enum enu_type
+    {
       typ_hit,
       typ_part,
       typ_vertex,

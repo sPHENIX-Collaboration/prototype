@@ -1,5 +1,7 @@
-#ifndef PROTOTYPE4_CALOUNPACKPRDFF_H
-#define PROTOTYPE4_CALOUNPACKPRDFF_H
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef PROTOTYPE4_CALOUNPACKPRDF_H
+#define PROTOTYPE4_CALOUNPACKPRDF_H
 
 //* Unpacks raw HCAL PRDF files *//
 // Abhisek Sen
@@ -8,10 +10,12 @@
 
 class Event;
 class Packet;
+class PHCompositeNode;
 class RawTowerContainer;
 
-class CaloUnpackPRDF : public SubsysReco {
-public:
+class CaloUnpackPRDF : public SubsysReco
+{
+ public:
   CaloUnpackPRDF();
 
   int InitRun(PHCompositeNode *topNode);
@@ -20,7 +24,7 @@ public:
 
   void CreateNodeTree(PHCompositeNode *topNode);
 
-private:
+ private:
   Event *_event;
   Packet *_packet;
   int _nevents;
@@ -39,4 +43,4 @@ private:
   RawTowerContainer *emcal_towers;
 };
 
-#endif //**CaloUnpackPRDFF**//
+#endif  //**CaloUnpackPRDFF**//

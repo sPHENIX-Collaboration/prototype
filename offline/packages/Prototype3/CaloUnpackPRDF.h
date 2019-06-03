@@ -1,5 +1,7 @@
-#ifndef PROTOTYPE3_CALOUNPACKPRDFF_H
-#define PROTOTYPE3_CALOUNPACKPRDFF_H
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef PROTOTYPE3_CALOUNPACKPRDF_H
+#define PROTOTYPE3_CALOUNPACKPRDF_H
 
 //* Unpacks raw HCAL PRDF files *//
 // Abhisek Sen
@@ -8,10 +10,12 @@
 
 class Event;
 class Packet_hbd_fpgashort;
+class PHCompositeNode;
 class RawTowerContainer;
 
-class CaloUnpackPRDF : public SubsysReco {
-public:
+class CaloUnpackPRDF : public SubsysReco
+{
+ public:
   CaloUnpackPRDF();
 
   int InitRun(PHCompositeNode *topNode);
@@ -23,7 +27,7 @@ public:
   //! whether to use high eta EMCal
   void set_use_high_eta_EMCal(bool b) { _use_high_eta_EMCal = b ? 1 : 0; }
 
-private:
+ private:
   Event *_event;
   Packet_hbd_fpgashort *_packet;
   int _nevents;

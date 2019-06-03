@@ -10,52 +10,70 @@
 
 #include "Prototype4DSTReader.h"
 
+#include <calobase/RawTower.h>  // for RawTower
 #include <calobase/RawTowerContainer.h>
 
 #include <pdbcalbase/PdbParameterMap.h>
 
 #include <phparameter/PHParameters.h>
 
-#include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/PHTFileServer.h>
+#include <fun4all/SubsysReco.h>  // for SubsysReco
 
 #include <phool/getClass.h>
 
+#include <TClass.h>        // for TClass
+#include <TClonesArray.h>  // for TClonesArray
+#include <TObject.h>       // for TObject
+#include <TString.h>       // for Form
 #include <TTree.h>
 
 #include <cassert>
-#include <limits>
+#include <climits>
+#include <iostream>  // for operator<<, basic_ostream, endl
 #include <map>
-#include <set>
-#include <sstream>
+
+class PHCompositeNode;
 
 using namespace std;
 
 Prototype4DSTReader::Prototype4DSTReader(const string &filename)
-    : SubsysReco("Prototype4DSTReader"), nblocks(0), _event(0),   //
-      _out_file_name(filename), /*_file(nullptr), */ _T(nullptr), //
-      _tower_zero_sup(-10000000) {}
+  : SubsysReco("Prototype4DSTReader")
+  , nblocks(0)
+  , _event(0)
+  ,  //
+  _out_file_name(filename)
+  , /*_file(nullptr), */ _T(nullptr)
+  ,  //
+  _tower_zero_sup(-10000000)
+{
+}
 
-Prototype4DSTReader::~Prototype4DSTReader() {
+Prototype4DSTReader::~Prototype4DSTReader()
+{
   cout << "Prototype4DSTReader::destructor - Clean ups" << endl;
 
-  if (_T) {
+  if (_T)
+  {
     _T->ResetBranchAddresses();
   }
 
   _records.clear();
 }
 
-int Prototype4DSTReader::Init(PHCompositeNode *) {
+int Prototype4DSTReader::Init(PHCompositeNode *)
+{
   const static int arr_size = 100;
 
-  if (_tower_postfix.size()) {
+  if (_tower_postfix.size())
+  {
     cout << "Prototype4DSTReader::Init - zero suppression for calorimeter "
             "towers = "
          << _tower_zero_sup << " GeV" << endl;
   }
   for (vector<string>::const_iterator it = _runinfo_list.begin();
-       it != _runinfo_list.end(); ++it) {
+       it != _runinfo_list.end(); ++it)
+  {
     const string &nodenam = *it;
 
     record rec;
@@ -71,7 +89,8 @@ int Prototype4DSTReader::Init(PHCompositeNode *) {
     nblocks++;
   }
   for (vector<string>::const_iterator it = _eventinfo_list.begin();
-       it != _eventinfo_list.end(); ++it) {
+       it != _eventinfo_list.end(); ++it)
+  {
     const string &nodenam = *it;
 
     record rec;
@@ -88,7 +107,8 @@ int Prototype4DSTReader::Init(PHCompositeNode *) {
   }
 
   for (vector<string>::const_iterator it = _tower_postfix.begin();
-       it != _tower_postfix.end(); ++it) {
+       it != _tower_postfix.end(); ++it)
+  {
     const char *class_name = RawTower_type::Class()->GetName();
 
     const string &nodenam = *it;
@@ -112,7 +132,8 @@ int Prototype4DSTReader::Init(PHCompositeNode *) {
   }
 
   for (vector<string>::const_iterator it = _towertemp_postfix.begin();
-       it != _towertemp_postfix.end(); ++it) {
+       it != _towertemp_postfix.end(); ++it)
+  {
     const string &nodenam = *it;
     string hname = Form("TOWER_TEMPERATURE_%s", nodenam.c_str());
 
@@ -140,7 +161,8 @@ int Prototype4DSTReader::Init(PHCompositeNode *) {
   return 0;
 }
 
-void Prototype4DSTReader::build_tree() {
+void Prototype4DSTReader::build_tree()
+{
   cout << "Prototype4DSTReader::build_tree - output to " << _out_file_name
        << endl;
 
@@ -152,29 +174,36 @@ void Prototype4DSTReader::build_tree() {
   _T = new TTree("T", "Prototype4DSTReader");
 
   nblocks = 0;
-  for (records_t::iterator it = _records.begin(); it != _records.end(); ++it) {
+  for (records_t::iterator it = _records.begin(); it != _records.end(); ++it)
+  {
     record &rec = *it;
 
     cout << "Prototype4DSTReader::build_tree - Add " << rec._name << endl;
 
-    if (rec._type == record::typ_runinfo) {
+    if (rec._type == record::typ_runinfo)
+    {
       const string name_cnt = rec._name;
       const string name_cnt_desc = name_cnt + "/D";
       _T->Branch(name_cnt.c_str(), &(rec._dvalue), name_cnt_desc.c_str(),
                  BUFFER_SIZE);
     }
-    if (rec._type == record::typ_eventinfo) {
+    if (rec._type == record::typ_eventinfo)
+    {
       const string name_cnt = rec._name;
       const string name_cnt_desc = name_cnt + "/D";
       _T->Branch(name_cnt.c_str(), &(rec._dvalue), name_cnt_desc.c_str(),
                  BUFFER_SIZE);
-    } else if (rec._type == record::typ_tower) {
+    }
+    else if (rec._type == record::typ_tower)
+    {
       const string name_cnt = "n_" + rec._name;
       const string name_cnt_desc = name_cnt + "/I";
       _T->Branch(name_cnt.c_str(), &(rec._cnt), name_cnt_desc.c_str(),
                  BUFFER_SIZE);
       _T->Branch(rec._name.c_str(), &(rec._arr_ptr), BUFFER_SIZE, 99);
-    } else if (rec._type == record::typ_towertemp) {
+    }
+    else if (rec._type == record::typ_towertemp)
+    {
       const string name_cnt = rec._name + "_AVG";
       const string name_cnt_desc = name_cnt + "/D";
       _T->Branch(name_cnt.c_str(), &(rec._dvalue), name_cnt_desc.c_str(),
@@ -190,7 +219,8 @@ void Prototype4DSTReader::build_tree() {
   _T->SetAutoSave(16000);
 }
 
-int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
+int Prototype4DSTReader::process_event(PHCompositeNode *topNode)
+{
   //  const double significand = _event / TMath::Power(10, (int)
   //  (log10(_event)));
   //
@@ -198,15 +228,18 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
   //    cout << "Prototype4DSTReader::process_event - " << _event << endl;
   _event++;
 
-  for (records_t::iterator it = _records.begin(); it != _records.end(); ++it) {
+  for (records_t::iterator it = _records.begin(); it != _records.end(); ++it)
+  {
     record &rec = *it;
 
     rec._cnt = 0;
 
-    if (rec._type == record::typ_hit) {
+    if (rec._type == record::typ_hit)
+    {
       assert(0);
-    } //      if (rec._type == record::typ_hit)
-    else if (rec._type == record::typ_tower) {
+    }  //      if (rec._type == record::typ_hit)
+    else if (rec._type == record::typ_tower)
+    {
       assert(rec._arr.get() == rec._arr_ptr);
       assert(rec._arr.get());
       rec._arr->Clear();
@@ -217,12 +250,15 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
 
       RawTowerContainer *hits =
           findNode::getClass<RawTowerContainer>(topNode, rec._name);
-      if (!hits) {
+      if (!hits)
+      {
         if (_event < 2)
           cout << "Prototype4DSTReader::process_event - Error - can not find "
                   "node "
                << rec._name << endl;
-      } else {
+      }
+      else
+      {
         RawTowerContainer::ConstRange hit_range = hits->getTowers();
 
         if (Verbosity() >= 2)
@@ -231,7 +267,8 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
                << endl;
 
         for (RawTowerContainer::ConstIterator hit_iter = hit_range.first;
-             hit_iter != hit_range.second; hit_iter++) {
+             hit_iter != hit_range.second; hit_iter++)
+        {
           RawTower *hit_raw = hit_iter->second;
 
           RawTower_type *hit = dynamic_cast<RawTower_type *>(hit_raw);
@@ -239,7 +276,8 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
 
           assert(hit);
 
-          if (hit->get_energy() < _tower_zero_sup) {
+          if (hit->get_energy() < _tower_zero_sup)
+          {
             if (Verbosity() >= 2)
               cout << "Prototype4DSTReader::process_event - suppress low "
                       "energy tower hit "
@@ -273,9 +311,10 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
 
           rec._cnt++;
         }
-      } // if (!hits)
-    }   //      if (rec._type == record::typ_hit)
-    else if (rec._type == record::typ_towertemp) {
+      }  // if (!hits)
+    }    //      if (rec._type == record::typ_hit)
+    else if (rec._type == record::typ_towertemp)
+    {
       if (Verbosity() >= 2)
         cout << "Prototype4DSTReader::process_event - processing tower "
                 "temperature "
@@ -283,12 +322,15 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
 
       RawTowerContainer *hits =
           findNode::getClass<RawTowerContainer>(topNode, rec._name);
-      if (!hits) {
+      if (!hits)
+      {
         if (_event < 2)
           cout << "Prototype4DSTReader::process_event - Error - can not find "
                   "node "
                << rec._name << endl;
-      } else {
+      }
+      else
+      {
         RawTowerContainer::ConstRange hit_range = hits->getTowers();
 
         if (Verbosity() >= 2)
@@ -299,7 +341,8 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
         rec._cnt = 0;
 
         for (RawTowerContainer::ConstIterator hit_iter = hit_range.first;
-             hit_iter != hit_range.second; hit_iter++) {
+             hit_iter != hit_range.second; hit_iter++)
+        {
           RawTower *hit_raw = hit_iter->second;
 
           RawTowerT_type *hit = dynamic_cast<RawTowerT_type *>(hit_raw);
@@ -314,9 +357,10 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
         }
 
         rec._dvalue /= rec._cnt;
-      } // if (!hits)
-    }   //      if (rec._type == record::typ_hit)
-    else if (rec._type == record::typ_runinfo) {
+      }  // if (!hits)
+    }    //      if (rec._type == record::typ_hit)
+    else if (rec._type == record::typ_runinfo)
+    {
       PdbParameterMap *info =
           findNode::getClass<PdbParameterMap>(topNode, "RUN_INFO");
 
@@ -327,8 +371,9 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
 
       rec._dvalue = run_info_copy.get_double_param(rec._name);
 
-    } //
-    else if (rec._type == record::typ_eventinfo) {
+    }  //
+    else if (rec._type == record::typ_eventinfo)
+    {
       PdbParameterMap *info =
           findNode::getClass<PdbParameterMap>(topNode, "EVENT_INFO");
 
@@ -342,28 +387,32 @@ int Prototype4DSTReader::process_event(PHCompositeNode *topNode) {
       if (event_info_copy.exist_double_param(rec._name))
         rec._dvalue = event_info_copy.get_double_param(rec._name);
 
-    } //      if (rec._type == record::typ_hit)
-    else if (rec._type == record::typ_part) {
+    }  //      if (rec._type == record::typ_hit)
+    else if (rec._type == record::typ_part)
+    {
       assert(0);
-    } //      if (rec._type == record::typ_part)
-    else if (rec._type == record::typ_vertex) {
+    }  //      if (rec._type == record::typ_part)
+    else if (rec._type == record::typ_vertex)
+    {
       assert(0);
-    } //          if (_load_all_particle)
+    }  //          if (_load_all_particle)
 
-  } //  for (records_t::iterator it = _records.begin(); it != _records.end();
-    //  ++it)
+  }  //  for (records_t::iterator it = _records.begin(); it != _records.end();
+  //  ++it)
 
   if (_T)
     _T->Fill();
 
   return 0;
-} //  for (records_t::iterator it = _records.begin(); it != _records.end();
-  //  ++it)
+}  //  for (records_t::iterator it = _records.begin(); it != _records.end();
+//  ++it)
 
-int Prototype4DSTReader::End(PHCompositeNode * /*topNode*/) {
+int Prototype4DSTReader::End(PHCompositeNode * /*topNode*/)
+{
   cout << "Prototype4DSTReader::End - Clean ups" << endl;
 
-  if (_T) {
+  if (_T)
+  {
     PHTFileServer::get().cd(_out_file_name);
     _T->Write();
     _T->ResetBranchAddresses();

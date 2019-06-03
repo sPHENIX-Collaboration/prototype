@@ -1,33 +1,35 @@
 #include "EventInfoSummary.h"
 
-#include "PROTOTYPE3_FEM.h"
 #include "RawTower_Prototype3.h"
 
+#include <calobase/RawTower.h>                               // for RawTower
 #include <calobase/RawTowerContainer.h>
-
-#include <ffaobjects/EventHeaderv1.h>
 
 #include <phparameter/PHParameters.h>
 
 #include <pdbcalbase/PdbParameterMap.h>
 
+#include <fun4all/Fun4AllBase.h>                             // for Fun4AllB...
 #include <fun4all/Fun4AllReturnCodes.h>
+#include <fun4all/SubsysReco.h>                              // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>                              // for PHIOData...
+#include <phool/PHNodeIterator.h>                            // for PHNodeIt...
 #include <phool/getClass.h>
-#include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
-#include <Event/packetConstants.h>
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 
 #include <cassert>
+#include <cmath>                                            // for NAN
 #include <iostream>
 #include <string>
+#include <utility>                                           // for pair
 
 using namespace std;
 using namespace boost::accumulators;

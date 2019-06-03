@@ -6,6 +6,8 @@
 #include <map>
 #include <string>
 
+class PHCompositeNode;
+
 class RunInfoUnpackPRDF : public SubsysReco {
 public:
   RunInfoUnpackPRDF();

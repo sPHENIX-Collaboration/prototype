@@ -3,25 +3,34 @@
 #include "PROTOTYPE3_FEM.h"
 #include "RawTower_Prototype3.h"
 
+#include <calobase/RawTower.h>  // for RawTower
 #include <calobase/RawTowerContainer.h>
+#include <calobase/RawTowerDefs.h>  // for HCALIN, HCALOUT, CEMC
 
 #include <phparameter/PHParameters.h>
 
 #include <pdbcalbase/PdbParameterMap.h>
 
 #include <fun4all/Fun4AllReturnCodes.h>
+#include <fun4all/SubsysReco.h>          // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>          // for PHIODataNode
+#include <phool/PHNodeIterator.h>        // for PHNodeIterator
+#include <phool/PHObject.h>              // for PHObject
 #include <phool/getClass.h>
 #include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
-#include <Event/packetConstants.h>
+#include <Event/packet.h>                // for Packet
 #include <Event/packet_hbd_fpgashort.h>
 
+#include <cassert>                      // for assert
+#include <cmath>                        // for NAN
 #include <iostream>
-#include <string>
+#include <map>                           // for _Rb_tree_const_iterator
+#include <utility>                       // for pair
 
 using namespace std;
 

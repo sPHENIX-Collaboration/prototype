@@ -3,18 +3,32 @@
 #include "PROTOTYPE3_FEM.h"
 #include "RawTower_Prototype3.h"
 
+#include <calobase/RawTower.h>                     // for RawTower
 #include <calobase/RawTowerContainer.h>
+#include <calobase/RawTowerDefs.h>                 // for keytype
+
+#include <phparameter/PHParameters.h>              // for PHParameters
 
 #include <fun4all/Fun4AllReturnCodes.h>
+#include <fun4all/SubsysReco.h>                    // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>                    // for PHIODataNode
+#include <phool/PHNode.h>                          // for PHNode
+#include <phool/PHNodeIterator.h>                  // for PHNodeIterator
+#include <phool/PHObject.h>                        // for PHObject
 #include <phool/getClass.h>
 
 #include <boost/format.hpp>
 
 #include <cassert>
+#include <cmath>                                   // for NAN, isnan
 #include <iostream>
+#include <map>                                     // for _Rb_tree_iterator
+#include <stdexcept>                               // for runtime_error
 #include <string>
+#include <utility>                                 // for pair
+#include <vector>                                  // for vector
 
 using namespace std;
 

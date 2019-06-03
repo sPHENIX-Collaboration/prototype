@@ -10,21 +10,29 @@
 
 #include "Prototype3DSTReader.h"
 
-#include <fun4all/Fun4AllReturnCodes.h>
+#include <calobase/RawTower.h>           // for RawTower
+#include <calobase/RawTowerContainer.h>
+
+#include <pdbcalbase/PdbParameterMap.h>
+
+#include <phparameter/PHParameters.h>
+
 #include <fun4all/PHTFileServer.h>
+#include <fun4all/SubsysReco.h>          // for SubsysReco
 
 #include <phool/getClass.h>
 
-#include <calobase/RawTowerContainer.h>
-#include <pdbcalbase/PdbParameterMap.h>
-#include <phparameter/PHParameters.h>
-
+#include <TClass.h>                      // for TClass
+#include <TClonesArray.h>                // for TClonesArray
+#include <TObject.h>                     // for TObject
+#include <TString.h>                     // for Form
 #include <TTree.h>
 
 #include <cassert>
+#include <iostream>                      // for operator<<, basic_ostream, endl
 #include <map>
-#include <set>
-#include <sstream>
+
+class PHCompositeNode;
 
 using namespace std;
 

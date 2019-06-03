@@ -1,7 +1,6 @@
 #include "RunInfoUnpackPRDF.h"
 
 #include "PROTOTYPE3_FEM.h"
-#include "RawTower_Prototype3.h"
 
 #include <ffaobjects/EventHeaderv1.h>
 
@@ -9,20 +8,24 @@
 
 #include <pdbcalbase/PdbParameterMap.h>
 
+#include <fun4all/Fun4AllBase.h>         // for Fun4AllBase::VERBOSITY_SOME
 #include <fun4all/Fun4AllReturnCodes.h>
+#include <fun4all/SubsysReco.h>          // for SubsysReco
 
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>          // for PHIODataNode
+#include <phool/PHNodeIterator.h>        // for PHNodeIterator
+#include <phool/PHObject.h>              // for PHObject
 #include <phool/getClass.h>
-#include <phool/phool.h>
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
-#include <Event/packetConstants.h>
 
-#include <cassert>
+#include <cmath>                        // for NAN
 #include <iostream>
 #include <string>
+#include <utility>                       // for pair, make_pair
 
 using namespace std;
 

@@ -16,13 +16,13 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <TClonesArray.h>
-
-#include <iostream>
 #include <memory>
 #include <string>
+#include <utility>                 // for swap
 #include <vector>
 
+class PHCompositeNode;
+class TClonesArray;
 class TTree;
 
 /*!

@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
-#include <map>
+#include <vector>                   // for vector
 
 using namespace std;
 

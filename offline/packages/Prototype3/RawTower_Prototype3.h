@@ -7,8 +7,7 @@
 
 #include <calobase/RawTowerDefs.h>
 
-#include <ctime>
-#include <map>
+#include <iostream>                 // for cout, ostream
 
 class RawTower_Prototype3 : public RawTower {
 public:

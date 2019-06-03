@@ -10,6 +10,7 @@
 
 #include <string>
 
+class PHCompositeNode;
 class RawTowerContainer;
 
 class CaloCalibration : public SubsysReco {

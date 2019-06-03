@@ -16,7 +16,9 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstdlib>      // for exit
 #include <iostream>
+#include <unistd.h>      // for sleep
 
 using namespace std;
 

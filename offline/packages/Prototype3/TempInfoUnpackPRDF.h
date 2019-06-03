@@ -3,11 +3,10 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <map>
-#include <string>
-#include <utility>
+#include <ctime>                // for time_t
 
 class Packet;
+class PHCompositeNode;
 class RawTowerContainer;
 
 class TempInfoUnpackPRDF : public SubsysReco {

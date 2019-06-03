@@ -6,6 +6,7 @@
 #include <calobase/RawTowerDefs.h>
 
 #include <ctime>
+#include <iostream>                 // for cout, ostream
 #include <vector>
 
 class RawTower_Temperature : public RawTower {

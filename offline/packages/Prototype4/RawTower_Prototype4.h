@@ -1,3 +1,5 @@
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
 #ifndef PROTOTYPE4_RAWTOWERPROTOTYPE4_H
 #define PROTOTYPE4_RAWTOWERPROTOTYPE4_H
 

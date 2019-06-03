@@ -1,3 +1,5 @@
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
 // $Id: Prototype4DSTReader.h,v 1.7 2015/02/27 23:42:23 jinhuang Exp $
 
 /*!

@@ -1,5 +1,7 @@
-#ifndef PROTOTYPE4_TEMPINFOUNPACKPRDFF_H
-#define PROTOTYPE4_TEMPINFOUNPACKPRDFF_H
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef PROTOTYPE4_TEMPINFOUNPACKPRDF_H
+#define PROTOTYPE4_TEMPINFOUNPACKPRDF_H
 
 #include <fun4all/SubsysReco.h>
 

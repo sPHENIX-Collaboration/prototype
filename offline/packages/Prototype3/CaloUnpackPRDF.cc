@@ -23,8 +23,7 @@
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
-#include <Event/packet.h>  // for Packet
-#include <Event/packet_hbd_fpgashort.h>
+#include <Event/packet.h>
 
 #include <cassert>  // for assert
 #include <cmath>    // for NAN
@@ -40,7 +39,7 @@ CaloUnpackPRDF::CaloUnpackPRDF()
   ,
   /*Event**/ _event(nullptr)
   ,
-  /*Packet_hbd_fpgashort**/ _packet(nullptr)
+  /*Packet**/ _packet(nullptr)
   ,
   /*int*/ _nevents(0)
   , _use_high_eta_EMCal(-1)
@@ -105,8 +104,7 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode)
 
   if (Verbosity())
     _event->identify();
-  _packet = dynamic_cast<Packet_hbd_fpgashort *>(
-      _event->getPacket(PROTOTYPE3_FEM::PACKET_ID));
+  _packet = _event->getPacket(PROTOTYPE3_FEM::PACKET_ID);
 
   if (!_packet)
   {
@@ -119,7 +117,7 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode)
     return Fun4AllReturnCodes::ABORTEVENT;
   }
 
-  _packet->setNumSamples(PROTOTYPE3_FEM::NSAMPLES);
+  _packet->setInternalParameter(PROTOTYPE3_FEM::NSAMPLES);
   RawTower_Prototype3 *tower_lg = nullptr;
   RawTower_Prototype3 *tower_hg = nullptr;
 

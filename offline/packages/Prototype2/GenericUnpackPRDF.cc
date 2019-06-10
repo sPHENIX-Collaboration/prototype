@@ -19,7 +19,6 @@
 
 #include <Event/Event.h>
 #include <Event/packet.h>
-#include <Event/packet_hbd_fpgashort.h>
 
 #include <cassert>
 #include <cmath>    // for NAN
@@ -59,7 +58,7 @@ int GenericUnpackPRDF::process_event(PHCompositeNode *topNode)
   if (Verbosity() >= VERBOSITY_SOME)
     _event->identify();
 
-  map<int, Packet_hbd_fpgashort *> packet_list;
+  map<int, Packet *> packet_list;
 
   for (hbd_channel_map::const_iterator it = _hbd_channel_map.begin();
        it != _hbd_channel_map.end(); ++it)
@@ -70,11 +69,10 @@ int GenericUnpackPRDF::process_event(PHCompositeNode *topNode)
 
     if (packet_list.find(packet_id) == packet_list.end())
     {
-      packet_list[packet_id] =
-          dynamic_cast<Packet_hbd_fpgashort *>(_event->getPacket(packet_id));
+      packet_list[packet_id] =_event->getPacket(packet_id);
     }
 
-    Packet_hbd_fpgashort *packet = packet_list[packet_id];
+    Packet *packet = packet_list[packet_id];
 
     if (!packet)
     {
@@ -85,7 +83,7 @@ int GenericUnpackPRDF::process_event(PHCompositeNode *topNode)
     }
     assert(packet);
 
-    packet->setNumSamples(PROTOTYPE2_FEM::NSAMPLES);
+    packet->setInternalParameter(PROTOTYPE2_FEM::NSAMPLES);
 
     RawTower_Prototype2 *tower =
         dynamic_cast<RawTower_Prototype2 *>(_towers->getTower(tower_id));
@@ -102,7 +100,7 @@ int GenericUnpackPRDF::process_event(PHCompositeNode *topNode)
     }
   }
 
-  for (map<int, Packet_hbd_fpgashort *>::iterator it = packet_list.begin();
+  for (map<int, Packet *>::iterator it = packet_list.begin();
        it != packet_list.end(); ++it)
   {
     if (it->second)

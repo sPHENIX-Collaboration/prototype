@@ -19,7 +19,7 @@
 
 #include <Event/Event.h>
 #include <Event/packetConstants.h>
-#include <Event/packet_hbd_fpgashort.h>
+#include <Event/packet.h>
 
 #include <cassert>
 #include <cmath>    // for NAN
@@ -36,7 +36,7 @@ CaloUnpackPRDF::CaloUnpackPRDF()
   ,
   /*Event**/ _event(NULL)
   ,
-  /*Packet_hbd_fpgashort**/ _packet(NULL)
+  /*Packet**/ _packet(NULL)
   ,
   /*int*/ _nevents(0)
   ,
@@ -87,8 +87,7 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode)
 
   if (Verbosity())
     _event->identify();
-  _packet = dynamic_cast<Packet_hbd_fpgashort *>(
-      _event->getPacket(PROTOTYPE2_FEM::PACKET_ID));
+  _packet =    _event->getPacket(PROTOTYPE2_FEM::PACKET_ID);
 
   if (!_packet)
   {
@@ -101,7 +100,7 @@ int CaloUnpackPRDF::process_event(PHCompositeNode *topNode)
     return Fun4AllReturnCodes::ABORTEVENT;
   }
 
-  _packet->setNumSamples(PROTOTYPE2_FEM::NSAMPLES);
+  _packet->setInternalParameter(PROTOTYPE2_FEM::NSAMPLES);
   RawTower_Prototype2 *tower_lg = NULL;
   RawTower_Prototype2 *tower_hg = NULL;
 

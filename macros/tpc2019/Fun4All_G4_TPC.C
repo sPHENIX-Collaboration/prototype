@@ -104,7 +104,7 @@ int Fun4All_G4_TPC(int nEvents = 1)
 
   // simulated setup sits at eta=1, theta=40.395 degrees
   double theta = 90 - 5;
-  double phi = 180 + 360/12/2;
+  double phi = 180 + 360 / 12 / 2;
   // shift in x with respect to midrapidity setup
   double add_place_z = -20;
   // Test beam generator
@@ -200,6 +200,12 @@ int Fun4All_G4_TPC(int nEvents = 1)
 
   PHG4TpcPadPlane *padplane = new PHG4TpcPadPlaneReadout();
 
+  // The pad plane readout default is set in PHG4TpcPadPlaneReadout
+  // We may want to change the number of inner layers, and can do that here
+  padplane->set_int_param("tpc_minlayer_inner", 0);  // sPHENIX layer number of first Tpc readout layer
+  padplane->set_int_param("ntpc_layers_inner", n_tpc_layer_inner);
+  padplane->set_int_param("ntpc_phibins_inner", tpc_layer_rphi_count_inner);
+
   PHG4TpcElectronDrift *edrift = new PHG4TpcElectronDrift();
   edrift->Detector("TPC");
   // fudge factors to get drphi 150 microns (in mid and outer Tpc) and dz 500 microns cluster resolution
@@ -208,13 +214,21 @@ int Fun4All_G4_TPC(int nEvents = 1)
   edrift->set_double_param("added_smear_trans", 0.12);
   edrift->set_double_param("added_smear_long", 0.15);
   edrift->registerPadPlane(padplane);
+  edrift->Verbosity(3);
   se->registerSubsystem(edrift);
 
-  // The pad plane readout default is set in PHG4TpcPadPlaneReadout
-  // We may want to change the number of inner layers, and can do that here
-  padplane->set_int_param("tpc_minlayer_inner", 0);  // sPHENIX layer number of first Tpc readout layer
-  padplane->set_int_param("ntpc_layers_inner", n_tpc_layer_inner);
-  padplane->set_int_param("ntpc_phibins_inner", tpc_layer_rphi_count_inner);
+  // Tpc
+  //====
+  PHG4TpcDigitizer *digitpc = new PHG4TpcDigitizer();
+  digitpc->SetTpcMinLayer(0);
+  double ENC = 670.0;  // standard
+  digitpc->SetENC(ENC);
+  double ADC_threshold = 4.0 * ENC;
+  digitpc->SetADCThreshold(ADC_threshold);  // 4 * ENC seems OK
+
+  cout << " Tpc digitizer: Setting ENC to " << ENC << " ADC threshold to " << ADC_threshold << endl;
+
+  se->registerSubsystem(digitpc);
 
   // For the Tpc
   //==========
@@ -256,12 +270,13 @@ int Fun4All_G4_TPC(int nEvents = 1)
     //--------------------------------------------------
 
     PHInitVertexing *init_vtx = new PHTruthVertexing("PHTruthVertexing");
-    init_vtx->Verbosity(0);
+    init_vtx->Verbosity(2);
     se->registerSubsystem(init_vtx);
 
     // For each truth particle, create a track and associate clusters with it using truth information
     PHTruthTrackSeeding *pat_rec = new PHTruthTrackSeeding("PHTruthTrackSeeding");
-    pat_rec->Verbosity(2);
+    pat_rec->Verbosity(4);
+    pat_rec->set_min_clusters_per_track(10);
     se->registerSubsystem(pat_rec);
   }
   //
@@ -271,6 +286,7 @@ int Fun4All_G4_TPC(int nEvents = 1)
 
   PHGenFitTrkFitter *kalman = new PHGenFitTrkFitter();
   kalman->Verbosity(2);
+  se->registerSubsystem(kalman);
 
   //----------------
   // Tracking evaluation

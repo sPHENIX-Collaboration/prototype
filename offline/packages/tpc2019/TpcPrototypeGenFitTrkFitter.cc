@@ -10,6 +10,7 @@
 #include <trackbase/TrkrCluster.h>  // for TrkrCluster
 #include <trackbase/TrkrClusterContainer.h>
 #include <trackbase/TrkrDefs.h>
+#include <trackbase_historic/SvtxTrack_v1.h>
 
 #include <trackbase_historic/SvtxTrack.h>
 #include <trackbase_historic/SvtxTrackMap.h>
@@ -367,32 +368,71 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
 	 */
   if (_do_evt_display)
   {
+    //search for unused clusters
+
+//    TrkrClusterContainer *_cluster_map = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
+//    if (!_cluster_map)
+//    {
+//      cerr << PHWHERE << " ERROR: Can't find node TRKR_CLUSTER" << endl;
+//      return Fun4AllReturnCodes::ABORTEVENT;
+//    }
+
+//    set<TrkrDefs::cluskey> cluster_ids;
+
+    // add tracks
     vector<genfit::Track*> copy;
     for (genfit::Track* t : rf_gf_tracks)
     {
       copy.push_back(new genfit::Track(*t));
     }
+
+//    TrkrClusterContainer::ConstRange clusrange = _cluster_map->getClusters();
+//    for (TrkrClusterContainer::ConstIterator clusiter = clusrange.first; clusiter != clusrange.second; ++clusiter)
+//    {
+//      TrkrCluster* cluster = clusiter->second;
+//      TrkrDefs::cluskey cluskey = clusiter->first;
+//      unsigned int trkrid = TrkrDefs::getTrkrId(cluskey);
+//
+//      if (trkrid == TrkrDefs::tpcId)
+//      {
+////        cluster_ids.insert(cluskey);
+//
+//        std::shared_ptr<SvtxTrack> cluster_holder(new SvtxTrack_v1());
+//        cluster_holder->set_px(0);
+//        cluster_holder->set_py(0);
+//        cluster_holder->set_pz(0);
+//        cluster_holder->set_x(cluster->getX());
+//        cluster_holder->set_y(cluster->getY());
+//        cluster_holder->set_z(cluster->getZ());
+//        cluster_holder->insert_cluster_key(cluskey);
+//        std::shared_ptr<PHGenFit::Track> rf_phgf_track (ReFitTrack(topNode, cluster_holder.get()));
+//
+//        copy.push_back(new genfit::Track(*rf_phgf_track->getGenFitTrack()));
+//      }
+//    }
+
+
     _fitter->getEventDisplay()->addEvent(copy);
   }
 
-  //! find vertex using tracks
-  std::vector<genfit::GFRaveVertex*> rave_vertices;
-  rave_vertices.clear();
-  if (rf_gf_tracks.size() >= 2)
-  {
-    //_vertex_finder->findVertices(&rave_vertices,rf_gf_tracks,rf_gf_states);
-    try
-    {
-      _vertex_finder->findVertices(&rave_vertices, rf_gf_tracks);
-    }
-    catch (...)
-    {
-      if (Verbosity() > 1)
-        std::cout << PHWHERE << "GFRaveVertexFactory::findVertices failed!";
-    }
-  }
-
-  FillSvtxVertexMap(rave_vertices, rf_gf_tracks);
+//  //! find vertex using tracks
+//  std::vector<genfit::GFRaveVertex*> rave_vertices;
+//  rave_vertices.clear();
+//  if (rf_gf_tracks.size() >= 2)
+//  {
+//    //_vertex_finder->findVertices(&rave_vertices,rf_gf_tracks,rf_gf_states);
+//    try
+//    {
+//      _vertex_finder->findVertices(&rave_vertices, rf_gf_tracks);
+//    }
+//    catch (...)
+//    {
+//      if (Verbosity() > 1)
+//        std::cout << PHWHERE << "GFRaveVertexFactory::findVertices failed!";
+//    }
+//  }
+//
+//  FillSvtxVertexMap(rave_vertices, rf_gf_tracks);
 
   for (SvtxTrackMap::Iter iter = _trackmap->begin(); iter != _trackmap->end();)
   {
@@ -519,72 +559,72 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
   /*!
 	 * Fit track as primary track, This part need to be called after FillSvtxVertexMap
 	 */
-  if (_fit_primary_tracks && rave_vertices.size() > 0)
-  {
-    _primary_trackmap->empty();
-
-    //FIXME figure out which vertex to use.
-    SvtxVertex* vertex = NULL;
-    if (_over_write_svtxvertexmap)
-    {
-      if (_vertexmap->size() > 0)
-        vertex = _vertexmap->get(0);
-    }
-    else
-    {
-      if (_vertexmap_refit->size() > 0)
-        vertex = _vertexmap_refit->get(0);
-    }
-
-    if (vertex)
-    {
-      for (SvtxTrackMap::ConstIter iter = _trackmap->begin();
-           iter != _trackmap->end(); ++iter)
-      {
-        SvtxTrack* svtx_track = iter->second;
-        if (!svtx_track)
-          continue;
-        if (!(svtx_track->get_pt() > _fit_min_pT))
-          continue;
-        /*!
-				 * rf_phgf_track stands for Refit_PHGenFit_Track
-				 */
-        std::shared_ptr<PHGenFit::Track> rf_phgf_track = ReFitTrack(topNode, svtx_track,
-                                                                    vertex);
-        if (rf_phgf_track)
-        {
-          //					//FIXME figure out which vertex to use.
-          //					SvtxVertex* vertex = NULL;
-          //					if (_vertexmap_refit->size() > 0)
-          //						vertex = _vertexmap_refit->get(0);
-
-          std::shared_ptr<SvtxTrack> rf_track = MakeSvtxTrack(svtx_track,
-                                                              rf_phgf_track, vertex);
-          //delete rf_phgf_track;
-          if (!rf_track)
-          {
-#ifdef _DEBUG_
-            LogDebug("!rf_track, continue.");
-#endif
-            continue;
-          }
-          _primary_trackmap->insert(rf_track.get());
-        }
-      }
-    }
-    else
-    {
-      LogError("No vertex in SvtxVertexMapRefit!");
-    }
-  }
+//  if (_fit_primary_tracks && rave_vertices.size() > 0)
+//  {
+//    _primary_trackmap->empty();
+//
+//    //FIXME figure out which vertex to use.
+//    SvtxVertex* vertex = NULL;
+//    if (_over_write_svtxvertexmap)
+//    {
+//      if (_vertexmap->size() > 0)
+//        vertex = _vertexmap->get(0);
+//    }
+//    else
+//    {
+//      if (_vertexmap_refit->size() > 0)
+//        vertex = _vertexmap_refit->get(0);
+//    }
+//
+//    if (vertex)
+//    {
+//      for (SvtxTrackMap::ConstIter iter = _trackmap->begin();
+//           iter != _trackmap->end(); ++iter)
+//      {
+//        SvtxTrack* svtx_track = iter->second;
+//        if (!svtx_track)
+//          continue;
+//        if (!(svtx_track->get_pt() > _fit_min_pT))
+//          continue;
+//        /*!
+//				 * rf_phgf_track stands for Refit_PHGenFit_Track
+//				 */
+//        std::shared_ptr<PHGenFit::Track> rf_phgf_track = ReFitTrack(topNode, svtx_track,
+//                                                                    vertex);
+//        if (rf_phgf_track)
+//        {
+//          //					//FIXME figure out which vertex to use.
+//          //					SvtxVertex* vertex = NULL;
+//          //					if (_vertexmap_refit->size() > 0)
+//          //						vertex = _vertexmap_refit->get(0);
+//
+//          std::shared_ptr<SvtxTrack> rf_track = MakeSvtxTrack(svtx_track,
+//                                                              rf_phgf_track, vertex);
+//          //delete rf_phgf_track;
+//          if (!rf_track)
+//          {
+//#ifdef _DEBUG_
+//            LogDebug("!rf_track, continue.");
+//#endif
+//            continue;
+//          }
+//          _primary_trackmap->insert(rf_track.get());
+//        }
+//      }
+//    }
+//    else
+//    {
+//      LogError("No vertex in SvtxVertexMapRefit!");
+//    }
+//  }
 #ifdef _DEBUG_
   cout << __LINE__ << endl;
 #endif
-  for (genfit::GFRaveVertex* vertex : rave_vertices)
-  {
-    delete vertex;
-  }
-  rave_vertices.clear();
+//  for (genfit::GFRaveVertex* vertex : rave_vertices)
+//  {
+//    delete vertex;
+//  }
+//  rave_vertices.clear();
 
   if (_do_eval)
   {
@@ -1125,6 +1165,8 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
   //TODO unsorted measurements, should use sorted ones?
   track->addMeasurements(measurements);
 
+//  if (measurements.size()==1) return track;
+
   /*!
 	 *  Fit the track
 	 *  ret code 0 means 0 error or good status
@@ -1141,7 +1183,7 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
            << endl;
     }
     //delete track;
-    return NULL;
+    return nullptr;
   }
 
   if (Verbosity() > 50)

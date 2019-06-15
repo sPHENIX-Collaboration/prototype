@@ -67,7 +67,7 @@ int n_tpc_layer_mid = 16;
 int n_tpc_layer_outer = 16;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
-int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 0)
+int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
 {
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors");

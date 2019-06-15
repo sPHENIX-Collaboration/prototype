@@ -58,6 +58,7 @@ libtpc2019_la_LIBADD = \
   -lPHGenFit \
   -ltrackbase_historic_io \
   -lphparameter \
+  -lphgeom \
   -ltpc
 
 # Rule for generating CINT dictionaries from class headers.

@@ -67,7 +67,7 @@ int n_tpc_layer_mid = 16;
 int n_tpc_layer_outer = 16;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
-int Fun4All_G4_TPC(int nEvents = 1)
+int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 0)
 {
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors");
@@ -133,7 +133,7 @@ int Fun4All_G4_TPC(int nEvents = 1)
   tpc->SetActive();
   tpc->SuperDetector("TPC");
   tpc->set_double_param("steplimits", 1);
-  tpc->set_double_param("tpc_length", 80); // 2x 40 cm drift
+  tpc->set_double_param("tpc_length", 80);  // 2x 40 cm drift
   // By default uses "sPHENIX_TPC_Gas", defined in PHG4Reco. That is 90:10 Ne:C4
   tpc->SetAbsorberActive();
   g4Reco->registerSubsystem(tpc);
@@ -213,7 +213,7 @@ int Fun4All_G4_TPC(int nEvents = 1)
   edrift->set_double_param("added_smear_trans", 0.12);
   edrift->set_double_param("added_smear_long", 0.15);
   edrift->registerPadPlane(padplane);
-  edrift->Verbosity(3);
+  edrift->Verbosity(verbosity);;
   se->registerSubsystem(edrift);
 
   // Tpc
@@ -232,7 +232,7 @@ int Fun4All_G4_TPC(int nEvents = 1)
   // For the Tpc
   //==========
   TpcPrototypeClusterizer *tpcclusterizer = new TpcPrototypeClusterizer();
-  tpcclusterizer->Verbosity(3);
+  tpcclusterizer->Verbosity(verbosity);;
   se->registerSubsystem(tpcclusterizer);
 
   //-------------
@@ -249,17 +249,17 @@ int Fun4All_G4_TPC(int nEvents = 1)
 
     // for now, we cheat to get the initial vertex for the full track reconstruction case
     PHInitVertexing *init_vtx = new PHTruthVertexing("PHTruthVertexing");
-    init_vtx->Verbosity(0);
+    init_vtx->Verbosity(verbosity);;
     se->registerSubsystem(init_vtx);
 
     // find seed tracks using a subset of TPC layers
     PHTrackSeeding *track_seed = new PHHoughSeeding("PHHoughSeeding", 0, 0, n_gas_layer);
-    track_seed->Verbosity(0);
+    track_seed->Verbosity(verbosity);;
     se->registerSubsystem(track_seed);
 
     // Find all clusters associated with each seed track
     PHGenFitTrkProp *track_prop = new PHGenFitTrkProp("PHGenFitTrkProp", 0, 0, n_gas_layer);
-    track_prop->Verbosity(0);
+    track_prop->Verbosity(verbosity);;
     se->registerSubsystem(track_prop);
   }
   else
@@ -269,12 +269,12 @@ int Fun4All_G4_TPC(int nEvents = 1)
     //--------------------------------------------------
 
     PHInitVertexing *init_vtx = new PHTruthVertexing("PHTruthVertexing");
-    init_vtx->Verbosity(2);
+    init_vtx->Verbosity(verbosity);;
     se->registerSubsystem(init_vtx);
 
     // For each truth particle, create a track and associate clusters with it using truth information
     PHTruthTrackSeeding *pat_rec = new PHTruthTrackSeeding("PHTruthTrackSeeding");
-    pat_rec->Verbosity(4);
+    pat_rec->Verbosity(verbosity);;
     pat_rec->set_min_clusters_per_track(10);
     se->registerSubsystem(pat_rec);
   }
@@ -284,8 +284,9 @@ int Fun4All_G4_TPC(int nEvents = 1)
   //------------------------------------------------
 
   TpcPrototypeGenFitTrkFitter *kalman = new TpcPrototypeGenFitTrkFitter();
-  kalman->Verbosity(2);
-  kalman->set_do_evt_display(true);
+  kalman->Verbosity(verbosity);;
+  kalman->set_do_evt_display(eventDisp);
+  kalman->set_do_eval(true);
   se->registerSubsystem(kalman);
 
   //----------------
@@ -300,7 +301,7 @@ int Fun4All_G4_TPC(int nEvents = 1)
   eval->do_gpoint_eval(true);
   eval->do_eval_light(false);
   eval->scan_for_embedded(false);  // take all tracks if false - take only embedded tracks if true
-  eval->Verbosity(3);
+  eval->Verbosity(verbosity);;
   se->registerSubsystem(eval);
 
   //----------------------

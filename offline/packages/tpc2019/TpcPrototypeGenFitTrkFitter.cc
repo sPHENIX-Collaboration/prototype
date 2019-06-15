@@ -212,7 +212,7 @@ TpcPrototypeGenFitTrkFitter::TpcPrototypeGenFitTrkFitter(const string& name)
   , _vertex_min_ndf(20)
   , _vertex_finder(NULL)
   , _vertexing_method("avf-smoothing:1")
-  , _truth_container(NULL)
+  //  , _truth_container(NULL)
   , _clustermap(NULL)
   , _trackmap(NULL)
   , _vertexmap(NULL)
@@ -634,20 +634,6 @@ void TpcPrototypeGenFitTrkFitter::fill_eval_tree(PHCompositeNode* topNode)
   reset_eval_variables();
 
   int i = 0;
-  for (PHG4TruthInfoContainer::ConstIterator itr =
-           _truth_container->GetPrimaryParticleRange().first;
-       itr != _truth_container->GetPrimaryParticleRange().second; ++itr)
-    new ((*_tca_particlemap)[i++])(PHG4Particlev2)(
-        *dynamic_cast<PHG4Particlev2*>(itr->second));
-
-  i = 0;
-  for (PHG4TruthInfoContainer::ConstVtxIterator itr =
-           _truth_container->GetPrimaryVtxRange().first;
-       itr != _truth_container->GetPrimaryVtxRange().second; ++itr)
-    new ((*_tca_vtxmap)[i++])(PHG4VtxPointv1)(
-        *dynamic_cast<PHG4VtxPointv1*>(itr->second));
-
-  i = 0;
   for (SvtxTrackMap::ConstIter itr = _trackmap->begin();
        itr != _trackmap->end(); ++itr)
     new ((*_tca_trackmap)[i++])(SvtxTrack_v1)(
@@ -837,14 +823,14 @@ int TpcPrototypeGenFitTrkFitter::GetNodes(PHCompositeNode* topNode)
 {
   //DST objects
   //Truth container
-  _truth_container = findNode::getClass<PHG4TruthInfoContainer>(topNode,
-                                                                "G4TruthInfo");
-  if (!_truth_container && _event < 2)
-  {
-    cout << PHWHERE << " PHG4TruthInfoContainer node not found on node tree"
-         << endl;
-    return Fun4AllReturnCodes::ABORTEVENT;
-  }
+  //  _truth_container = findNode::getClass<PHG4TruthInfoContainer>(topNode,
+  //                                                                "G4TruthInfo");
+  //  if (!_truth_container && _event < 2)
+  //  {
+  //    cout << PHWHERE << " PHG4TruthInfoContainer node not found on node tree"
+  //         << endl;
+  //    return Fun4AllReturnCodes::ABORTEVENT;
+  //  }
 
   // Input Svtx Clusters
   //_clustermap = findNode::getClass<SvtxClusterMap>(topNode, "SvtxClusterMap");
@@ -938,12 +924,6 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
     cerr << PHWHERE << " Input SvtxTrack is NULL!" << endl;
     return NULL;
   }
-
-  PHG4CylinderGeomContainer* geom_container_intt = findNode::getClass<
-      PHG4CylinderGeomContainer>(topNode, "CYLINDERGEOM_INTT");
-
-  PHG4CylinderGeomContainer* geom_container_mvtx = findNode::getClass<
-      PHG4CylinderGeomContainer>(topNode, "CYLINDERGEOM_MVTX");
 
   // prepare seed
   TVector3 seed_mom(100, 0, 0);
@@ -1103,33 +1083,11 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
 
     if (trkrid == TrkrDefs::mvtxId)
     {
-      int stave_index = MvtxDefs::getStaveId(cluster_key);
-      int chip_index = MvtxDefs::getChipId(cluster_key);
-
-      double ladder_location[3] = {0.0, 0.0, 0.0};
-      CylinderGeom_Mvtx* geom =
-          dynamic_cast<CylinderGeom_Mvtx*>(geom_container_mvtx->GetLayerGeom(layer));
-      // returns the center of the sensor in world coordinates - used to get the ladder phi location
-      geom->find_sensor_center(stave_index, 0,
-                               0, chip_index, ladder_location);
-
-      //cout << " MVTX stave phi tilt = " <<  geom->get_stave_phi_tilt()
-      //   << " seg.X " << ladder_location[0] << " seg.Y " << ladder_location[1] << " seg.Z " << ladder_location[2] << endl;
-      n.SetXYZ(ladder_location[0], ladder_location[1], 0);
-      n.RotateZ(geom->get_stave_phi_tilt());
+      assert(0);
     }
     else if (trkrid == TrkrDefs::inttId)
     {
-      CylinderGeomIntt* geom =
-          dynamic_cast<CylinderGeomIntt*>(geom_container_intt->GetLayerGeom(layer));
-      double hit_location[3] = {0.0, 0.0, 0.0};
-      geom->find_segment_center(InttDefs::getLadderZId(cluster_key),
-                                InttDefs::getLadderPhiId(cluster_key), hit_location);
-
-      //cout << " Intt strip phi tilt = " <<  geom->get_strip_phi_tilt()
-      //   << " seg.X " << hit_location[0] << " seg.Y " << hit_location[1] << " seg.Z " << hit_location[2] << endl;
-      n.SetXYZ(hit_location[0], hit_location[1], 0);
-      n.RotateZ(geom->get_strip_phi_tilt());
+      assert(0);
     }
     // end new
     //-----------------
@@ -1211,26 +1169,26 @@ std::shared_ptr<SvtxTrack> TpcPrototypeGenFitTrkFitter::MakeSvtxTrack(const Svtx
   double dvr2 = 0;
   double dvz2 = 0;
 
-  if (_use_truth_vertex)
-  {
-    PHG4VtxPoint* first_point = _truth_container->GetPrimaryVtx(_truth_container->GetPrimaryVertexIndex());
-    vertex_position.SetXYZ(first_point->get_x(), first_point->get_y(), first_point->get_z());
-    if (Verbosity() > 1)
-    {
-      cout << PHWHERE << "Using: truth vertex: {" << vertex_position.X() << ", " << vertex_position.Y() << ", " << vertex_position.Z() << "} " << endl;
-    }
-  }
-  else if (vertex)
-  {
-    vertex_position.SetXYZ(vertex->get_x(), vertex->get_y(),
-                           vertex->get_z());
-    dvr2 = vertex->get_error(0, 0) + vertex->get_error(1, 1);
-    dvz2 = vertex->get_error(2, 2);
-
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
-        vertex_cov[i][j] = vertex->get_error(i, j);
-  }
+  //  if (_use_truth_vertex)
+  //  {
+  //    PHG4VtxPoint* first_point = _truth_container->GetPrimaryVtx(_truth_container->GetPrimaryVertexIndex());
+  //    vertex_position.SetXYZ(first_point->get_x(), first_point->get_y(), first_point->get_z());
+  //    if (Verbosity() > 1)
+  //    {
+  //      cout << PHWHERE << "Using: truth vertex: {" << vertex_position.X() << ", " << vertex_position.Y() << ", " << vertex_position.Z() << "} " << endl;
+  //    }
+  //  }
+  //  else if (vertex)
+  //  {
+  //    vertex_position.SetXYZ(vertex->get_x(), vertex->get_y(),
+  //                           vertex->get_z());
+  //    dvr2 = vertex->get_error(0, 0) + vertex->get_error(1, 1);
+  //    dvz2 = vertex->get_error(2, 2);
+  //
+  //    for (int i = 0; i < 3; i++)
+  //      for (int j = 0; j < 3; j++)
+  //        vertex_cov[i][j] = vertex->get_error(i, j);
+  //  }
 
   //genfit::MeasuredStateOnPlane* gf_state_beam_line_ca = NULL;
   std::shared_ptr<genfit::MeasuredStateOnPlane> gf_state_beam_line_ca = NULL;

@@ -8,12 +8,13 @@ lib_LTLIBRARIES = \
   libtpc2019.la
 
 AM_CXXFLAGS = \
- -Werror
+ -Werror -DRAVE -DRaveDllExport=
 
 AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \
-  -I`root-config --incdir`
+  -I`root-config --incdir` \
+	-I$(OFFLINE_MAIN)/include/eigen3
 
 AM_LDFLAGS = \
   -L$(libdir) \
@@ -21,7 +22,8 @@ AM_LDFLAGS = \
   `root-config --libs`
 
 pkginclude_HEADERS = \
-  TpcPrototypeClusterizer.h
+  TpcPrototypeClusterizer.h \
+  TpcPrototypeGenFitTrkFitter.h
 
 ROOTDICTS = 
 if MAKEROOT6
@@ -30,7 +32,8 @@ if MAKEROOT6
 else
   ROOT5_IO_DICTS = 
   ROOT5_DICTS = \
-    TpcPrototypeClusterizer_Dict.cc 
+    TpcPrototypeClusterizer_Dict.cc \
+    TpcPrototypeGenFitTrkFitter_Dict.cc
 endif
 
 libtpc2019_io_la_SOURCES = \
@@ -39,7 +42,8 @@ libtpc2019_io_la_SOURCES = \
 
 libtpc2019_la_SOURCES = \
   $(ROOT5_DICTS) \
-  TpcPrototypeClusterizer.cc 
+  TpcPrototypeClusterizer.cc \
+  TpcPrototypeGenFitTrkFitter.cc 
 
 libtpc2019_io_la_LIBADD = \
   -ltpc_io \
@@ -47,6 +51,13 @@ libtpc2019_io_la_LIBADD = \
 
 libtpc2019_la_LIBADD = \
   libtpc2019_io.la \
+  -lgsl \
+  -lgslcblas \
+  -lgenfit2 \
+  -lgenfit2exp \
+  -lPHGenFit \
+  -ltrackbase_historic_io \
+  -lphparameter \
   -ltpc
 
 # Rule for generating CINT dictionaries from class headers.

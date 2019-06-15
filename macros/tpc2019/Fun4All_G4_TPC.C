@@ -20,11 +20,6 @@
 #include <g4tpc/PHG4TpcPadPlane.h>
 #include <g4tpc/PHG4TpcPadPlaneReadout.h>
 #include <g4tpc/PHG4TpcSubsystem.h>
-
-#include <intt/InttClusterizer.h>
-#include <mvtx/MvtxClusterizer.h>
-#include <tpc2019/TpcPrototypeClusterizer.h>
-
 #include <trackreco/PHGenFitTrkFitter.h>
 #include <trackreco/PHGenFitTrkProp.h>
 #include <trackreco/PHHoughSeeding.h>
@@ -44,6 +39,9 @@
 #include <g4main/PHG4TruthSubsystem.h>
 
 #include <phool/recoConsts.h>
+
+#include <tpc2019/TpcPrototypeClusterizer.h>
+#include <tpc2019/TpcPrototypeGenFitTrkFitter.h>
 
 R__LOAD_LIBRARY(libcalo_reco.so)
 R__LOAD_LIBRARY(libfun4all.so)
@@ -135,6 +133,7 @@ int Fun4All_G4_TPC(int nEvents = 1)
   tpc->SetActive();
   tpc->SuperDetector("TPC");
   tpc->set_double_param("steplimits", 1);
+  tpc->set_double_param("tpc_length", 80); // 2x 40 cm drift
   // By default uses "sPHENIX_TPC_Gas", defined in PHG4Reco. That is 90:10 Ne:C4
   tpc->SetAbsorberActive();
   g4Reco->registerSubsystem(tpc);
@@ -284,8 +283,9 @@ int Fun4All_G4_TPC(int nEvents = 1)
   // Fitting of tracks using Kalman Filter
   //------------------------------------------------
 
-  PHGenFitTrkFitter *kalman = new PHGenFitTrkFitter();
+  TpcPrototypeGenFitTrkFitter *kalman = new TpcPrototypeGenFitTrkFitter();
   kalman->Verbosity(2);
+  kalman->set_do_evt_display(true);
   se->registerSubsystem(kalman);
 
   //----------------

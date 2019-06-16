@@ -68,7 +68,7 @@ int n_tpc_layer_mid = 16;
 int n_tpc_layer_outer = 16;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
-int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
+int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
 {
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors");
@@ -101,7 +101,7 @@ int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
   recoConsts *rc = recoConsts::instance();
   // only set this if you want a fixed random seed to make
   // results reproducible for testing
-  // rc->set_IntFlag("RANDOMSEED",12345678);
+   rc->set_IntFlag("RANDOMSEED",12345678);
 
   // simulated setup sits at eta=1, theta=40.395 degrees
   double theta = 90 - 5;

@@ -28,7 +28,8 @@ class TpcPrototypeTrack : public PHObject
   TpcPrototypeTrack();
   virtual ~TpcPrototypeTrack();
 
-  static const int nLayer = 8;
+  //max number of layer under consideration
+  static const int nLayer = 16;
 
   unsigned int trackID;
   float chisq;
@@ -69,7 +70,7 @@ class TpcPrototypeTrack : public PHObject
   float clusterY[nLayer];
   float clusterZ[nLayer];
   float clusterE[nLayer];
-  float clusterSizePhi[nLayer];
+  int clusterSizePhi[nLayer];
   float clusterResidualPhi[nLayer];
   float clusterResidualZ[nLayer];
 

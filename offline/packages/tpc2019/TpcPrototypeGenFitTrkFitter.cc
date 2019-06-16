@@ -374,17 +374,11 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
   {
     //search for unused clusters
 
-    TrkrClusterContainer* _cluster_map = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
-    if (!_cluster_map)
-    {
-      cerr << PHWHERE << " ERROR: Can't find node TRKR_CLUSTER" << endl;
-      return Fun4AllReturnCodes::ABORTEVENT;
-    }
-
+    assert(_clustermap);
     //unused clusters
     set<TrkrDefs::cluskey> cluster_ids;
     //all clusters
-    auto cluster_range = _cluster_map->getClusters(TrkrDefs::tpcId);
+    auto cluster_range = _clustermap->getClusters(TrkrDefs::tpcId);
     for (auto iter = cluster_range.first; iter != cluster_range.second; ++iter)
     {
       cluster_ids.insert(iter->first);
@@ -413,7 +407,7 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
     for (const auto cluster_id : cluster_ids)
     {
       const TrkrCluster* cluster =
-          _cluster_map->findCluster(cluster_id);
+          _clustermap->findCluster(cluster_id);
       assert(cluster);
 
       std::shared_ptr<PHGenFit::Track> cluster_holder = DisplayCluster(cluster);
@@ -1065,15 +1059,6 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
       continue;
     }
 
-#ifdef _DEBUG_
-    int output_layer = TrkrDefs::getLayer(cluster_key);
-    cout
-        << __LINE__
-        << ": ID: " << cluster_key
-        << ": layer: " << output_layer
-        << endl;
-#endif
-
     TVector3 pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
 
     seed_mom.SetPhi(pos.Phi());
@@ -1131,8 +1116,6 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
   genfit::AbsTrackRep* rep = new genfit::RKTrackRep(_primary_pid_guess);
   std::shared_ptr<PHGenFit::Track> track(new PHGenFit::Track(rep, seed_pos, seed_mom,
                                                              seed_cov));
-
-  //TODO unsorted measurements, should use sorted ones?
   track->addMeasurements(measurements);
 
   //  if (measurements.size()==1) return track;
@@ -1146,7 +1129,7 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
     if (Verbosity() >= 1)
     {
       LogWarning("Track fitting failed");
-      cout <<__PRETTY_FUNCTION__<< " track->getChisq() " << track->get_chi2() << " get_ndf " << track->get_ndf()
+      cout << __PRETTY_FUNCTION__ << " track->getChisq() " << track->get_chi2() << " get_ndf " << track->get_ndf()
            << " mom.X " << track->get_mom().X()
            << " mom.Y " << track->get_mom().Y()
            << " mom.Z " << track->get_mom().Z()
@@ -1171,8 +1154,8 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
   assert(svtxtrack);
   if (Verbosity() >= 1)
   {
-    cout <<__PRETTY_FUNCTION__<< " refit "
-     ; svtxtrack->identify();
+    cout << __PRETTY_FUNCTION__ << " refit ";
+    svtxtrack->identify();
   }
 
   shared_ptr<TpcPrototypeTrack> track(new TpcPrototypeTrack);
@@ -1180,27 +1163,187 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
   track->chisq = svtxtrack->get_chisq();
   track->ndf = svtxtrack->get_ndf();
 
-  // refit by "excluding" each cluster
-  for (int layer= 0 ; layer<track->nLayer; ++layer)
+  track->nCluster = 0;
+
+  // sort intput cluters to one per layer
+  assert(_clustermap);
+  vector<TrkrCluster*> clusterLayer(track->nLayer, nullptr);
+  for (auto iter = svtxtrack->begin_cluster_keys();
+       iter != svtxtrack->end_cluster_keys(); ++iter)
   {
+    TrkrDefs::cluskey cluster_key = *iter;
+    TrkrCluster* cluster = _clustermap->findCluster(cluster_key);
+    int layer = TrkrDefs::getLayer(cluster_key);
 
-    // prepare seed
-    TVector3 seed_mom(svtxtrack->get_px(), svtxtrack->get_py(), svtxtrack->get_pz());
-    seed_mom.SetMag(120);
-
-    TVector3 seed_pos(svtxtrack->get_x(), svtxtrack->get_y(), svtxtrack->get_z());
-    TMatrixDSym seed_cov(6);
-    for (int i = 0; i < 6; i++)
+    if (Verbosity())
     {
-      for (int j = 0; j < 6; j++)
-      {
-        seed_cov[i][j] = 100.;
-      }
+      cout << __PRETTY_FUNCTION__ << " - layer sorting cluster ";
+      cluster->identify();
     }
 
+    assert(layer >= 0);
+    assert(layer < track->nLayer);
+    assert(cluster);
 
-
+    if (clusterLayer[layer])
+    {
+      cout << __PRETTY_FUNCTION__ << " -WARNING- more than one cluster at layer " << layer << ": " << endl;
+      clusterLayer[layer]->identify();
+      cluster->identify();
+    }
+    else
+    {
+      clusterLayer[layer] = cluster;
+      track->nCluster += 1;
+    }
   }
+
+  if (track->nCluster < 4)
+    return track;
+
+  // refit by "excluding" each cluster
+  // prepare seed
+  TVector3 seed_mom(svtxtrack->get_px(), svtxtrack->get_py(), svtxtrack->get_pz());
+  seed_mom.SetMag(120);
+
+  TVector3 seed_pos(svtxtrack->get_x(), svtxtrack->get_y(), svtxtrack->get_z());
+  TMatrixDSym seed_cov(6);
+  for (int i = 0; i < 6; i++)
+  {
+    for (int j = 0; j < 6; j++)
+    {
+      seed_cov[i][j] = 100.;
+    }
+  }
+  for (int layerStudy = 0; layerStudy < track->nLayer; ++layerStudy)
+  {
+    //scale uncertainty for the cluster in study with this factor
+    const static double errorScaleFactor = 100;
+
+    if (clusterLayer[layerStudy] == nullptr) continue;
+
+    // Create measurements
+    std::vector<PHGenFit::Measurement*> measurements;
+
+    int indexStudy = -1;
+    int currentIndex = 0;
+    for (const auto cluster : clusterLayer)
+    {
+      if (!cluster) continue;
+
+      assert(cluster);
+      TrkrDefs::cluskey cluster_key = cluster->getClusKey();
+      int layer = TrkrDefs::getLayer(cluster_key);
+
+      const double scale_this_layer = (layer == layerStudy) ? errorScaleFactor : 1;
+
+      TVector3 pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
+
+      seed_mom.SetPhi(pos.Phi());
+      seed_mom.SetTheta(pos.Theta());
+
+      //TODO use u, v explicitly?
+      TVector3 n(cluster->getPosition(0), cluster->getPosition(1), 0);
+
+      PHGenFit::Measurement* meas = new PHGenFit::PlanarMeasurement(pos, n,
+                                                                    cluster->getRPhiError() * scale_this_layer,
+                                                                    cluster->getZError() * scale_this_layer);
+
+      measurements.push_back(meas);
+
+      if ((layer == layerStudy)) indexStudy = currentIndex;
+      ++currentIndex;
+    }  //    for (const auto cluster : clusterLayer)
+    assert(indexStudy >= 0);
+    assert(indexStudy < track->nLayer);
+
+    // do the fit
+    genfit::AbsTrackRep* rep = new genfit::RKTrackRep(_primary_pid_guess);
+    std::shared_ptr<PHGenFit::Track> phgf_track(new PHGenFit::Track(rep, seed_pos, seed_mom,
+                                                                    seed_cov));
+    phgf_track->addMeasurements(measurements);
+    if (_fitter->processTrack(phgf_track.get(), false) != 0)
+    {
+      if (Verbosity() >= 1)
+      {
+        LogWarning("Track fitting failed");
+        cout << __PRETTY_FUNCTION__ << " track->getChisq() " << phgf_track->get_chi2() << " get_ndf " << phgf_track->get_ndf()
+             << " mom.X " << phgf_track->get_mom().X()
+             << " mom.Y " << phgf_track->get_mom().Y()
+             << " mom.Z " << phgf_track->get_mom().Z()
+             << endl;
+      }
+      //delete track;
+      continue;
+    }
+
+    //propagate to state
+    {
+      std::shared_ptr<const genfit::MeasuredStateOnPlane> gf_state = NULL;
+      try
+      {
+        const genfit::Track* gftrack = phgf_track->getGenFitTrack();
+        assert(gftrack);
+        const genfit::AbsTrackRep* rep = gftrack->getCardinalRep();
+        assert(rep);
+        genfit::TrackPoint* trpoint = gftrack->getPointWithMeasurementAndFitterInfo(indexStudy, gftrack->getCardinalRep());
+        assert(trpoint);
+        genfit::KalmanFitterInfo* kfi = static_cast<genfit::KalmanFitterInfo*>(trpoint->getFitterInfo(rep));
+        assert(kfi);
+        //gf_state = std::shared_ptr <genfit::MeasuredStateOnPlane> (const_cast<genfit::MeasuredStateOnPlane*> (&(kfi->getFittedState(true))));
+        const genfit::MeasuredStateOnPlane* temp_state = &(kfi->getFittedState(true));
+        gf_state = std::shared_ptr<genfit::MeasuredStateOnPlane>(new genfit::MeasuredStateOnPlane(*temp_state));
+      }
+      catch (...)
+      {
+        if (Verbosity() > 1)
+          LogWarning("Exrapolation failed!");
+        continue;
+      }
+      if (!gf_state)
+      {
+        if (Verbosity() > 1)
+          LogWarning("Exrapolation failed!");
+        continue;
+      }
+      TVector3 extra_pos(gf_state->getPos());
+
+      const TrkrCluster* cluster(clusterLayer[layerStudy]);
+      assert(cluster);
+      TVector3 cluster_pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
+
+      TVector3 n_dir(cluster->getPosition(0), cluster->getPosition(1), 0);
+      n_dir.SetMag(1);
+      TVector3 z_dir(0, 0, 1);
+      TVector3 azimuth_dir(z_dir.Cross(n_dir));
+      TVector3 pos_diff = cluster_pos - extra_pos;
+      const double n_residual = pos_diff.Dot(n_dir);
+      const double z_residual = pos_diff.Dot(z_dir);
+      const double azimuth_residual = pos_diff.Dot(azimuth_dir);
+
+      if (Verbosity() >= 1)
+      {
+        cout << __PRETTY_FUNCTION__;
+        cout << " - layer " << layerStudy << " at index " << indexStudy;
+        cout << " cluster @ " << cluster_pos.x() << ", " << cluster_pos.y() << ", " << cluster_pos.z();
+        cout << " extrapolate to " << extra_pos.x() << ", " << extra_pos.y() << ", " << extra_pos.z();
+        cout << ", n_residual = " << n_residual;
+        cout << ", z_residual = " << z_residual;
+        cout << ", azimuth_residual = " << azimuth_residual;
+        cout << endl;
+      }
+      assert(abs(n_residual) < 1e-4);//same layer check
+
+      (track->clusterX)[layerStudy] = cluster->getPosition(0);
+      (track->clusterY)[layerStudy] = cluster->getPosition(1);
+      (track->clusterZ)[layerStudy] = cluster->getPosition(2);
+      (track->clusterE)[layerStudy] = cluster->getAdc();
+      (track->clusterSizePhi)[layerStudy] = cluster->getPhiSize();
+      (track->clusterResidualPhi)[layerStudy] = azimuth_residual;
+      (track->clusterResidualZ)[layerStudy] = z_residual;
+    }  //propagate to state
+
+  }  // refit by "excluding" each cluster  for (int layer = 0; layer < track->nLayer; ++layer)
 
   return track;
 }

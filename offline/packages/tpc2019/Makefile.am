@@ -24,19 +24,26 @@ AM_LDFLAGS = \
 pkginclude_HEADERS = \
   TpcPrototypeTrack.h \
   TpcPrototypeClusterizer.h \
-  TpcPrototypeGenFitTrkFitter.h
+  TpcPrototypeGenFitTrkFitter.h \
+  TpcPrototypeDefs.h \
+  TpcPrototypeUnpacker.h
 
 ROOTDICTS = \
-	TpcPrototypeTrack_Dict.cc
+	TpcPrototypeTrack_Dict.cc \
+	TpcPrototypeDefs_Dict.cc
 	
 if MAKEROOT6
   pcmdir = $(libdir)
   nobase_dist_pcm_DATA =  \
-  	TpcPrototypeTrack_Dict_rdict.pcm
+  	TpcPrototypeTrack_Dict_rdict.pcm \
+  	TpcPrototypeDefs_Dict_rdict.pcm \
+  	TpcPrototypeUnpacker_Dict_rdict.pcm
 else
   ROOT5_IO_DICTS = 	\
-    TpcPrototypeTrack_Dict.cc
+    TpcPrototypeTrack_Dict.cc \
+    TpcPrototypeDefs_Dict.cc
   ROOT5_DICTS = \
+    TpcPrototypeUnpacker_Dict.cc \
     TpcPrototypeClusterizer_Dict.cc \
     TpcPrototypeGenFitTrkFitter_Dict.cc
 endif
@@ -44,12 +51,15 @@ endif
 libtpc2019_io_la_SOURCES = \
   $(ROOTDICTS) \
   $(ROOT5_IO_DICTS) \
-  TpcPrototypeTrack.cc
+  TpcPrototypeTrack.cc \
+  TpcPrototypeDefs.cc
 
 libtpc2019_la_SOURCES = \
   $(ROOT5_DICTS) \
   TpcPrototypeClusterizer.cc \
-  TpcPrototypeGenFitTrkFitter.cc 
+  TpcPrototypeGenFitTrkFitter.cc  \
+  TpcPrototypeUnpacker.cc  \
+  TpcPrototypeUnpacker_Dict.cc
 
 libtpc2019_io_la_LIBADD = \
   -ltpc_io \

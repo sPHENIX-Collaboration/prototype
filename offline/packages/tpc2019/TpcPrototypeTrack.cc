@@ -10,8 +10,8 @@
 
 #include "TpcPrototypeTrack.h"
 
-#include <limits>
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -28,7 +28,7 @@ TpcPrototypeTrack::TpcPrototypeTrack()
     clusterZ[i] = numeric_limits<float>::signaling_NaN();
     clusterE[i] = numeric_limits<float>::signaling_NaN();
     clusterSizePhi[i] = 0;
-    clusterResidualIsolated[i] = numeric_limits<float>::signaling_NaN();
+    clusterResidualPhi[i] = clusterResidualZ[i] = numeric_limits<float>::signaling_NaN();
   }
 }
 

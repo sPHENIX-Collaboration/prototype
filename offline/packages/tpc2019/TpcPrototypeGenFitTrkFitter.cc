@@ -330,7 +330,7 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
   rf_gf_tracks.clear();
 
   vector<std::shared_ptr<PHGenFit::Track> > rf_phgf_tracks;
-  rf_phgf_tracks.clear();
+  //  rf_phgf_tracks.clear();
 
   map<unsigned int, unsigned int> svtxtrack_genfittrack_map;
 
@@ -572,12 +572,7 @@ void TpcPrototypeGenFitTrkFitter::fill_eval_tree(PHCompositeNode* topNode)
     new ((*_tca_trackmap)[i])(SvtxTrack_v1)(
         *dynamic_cast<SvtxTrack_v1*>(itr->second));
 
-    new ((*_tca_tpctrackmap)[i])(TpcPrototypeTrack)();
-    TpcPrototypeTrack* track = dynamic_cast<TpcPrototypeTrack*>(_tca_tpctrackmap->At(i));
-    assert(track);
-    track->trackID = itr->second->get_id();
-    track->chisq = itr->second->get_chisq();
-    track->ndf = itr->second->get_ndf();
+    new ((*_tca_tpctrackmap)[i])(TpcPrototypeTrack)(*(MakeTpcPrototypeTrack(itr->second)));
 
     i++;
   }
@@ -1151,7 +1146,7 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
     if (Verbosity() >= 1)
     {
       LogWarning("Track fitting failed");
-      cout << " track->getChisq() " << track->get_chi2() << " get_ndf " << track->get_ndf()
+      cout <<__PRETTY_FUNCTION__<< " track->getChisq() " << track->get_chi2() << " get_ndf " << track->get_ndf()
            << " mom.X " << track->get_mom().X()
            << " mom.Y " << track->get_mom().Y()
            << " mom.Z " << track->get_mom().Z()
@@ -1167,6 +1162,45 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
          << " mom.Y " << track->get_mom().Y()
          << " mom.Z " << track->get_mom().Z()
          << endl;
+
+  return track;
+}
+
+shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack(const SvtxTrack* svtxtrack)
+{
+  assert(svtxtrack);
+  if (Verbosity() >= 1)
+  {
+    cout <<__PRETTY_FUNCTION__<< " refit "
+     ; svtxtrack->identify();
+  }
+
+  shared_ptr<TpcPrototypeTrack> track(new TpcPrototypeTrack);
+  track->trackID = svtxtrack->get_id();
+  track->chisq = svtxtrack->get_chisq();
+  track->ndf = svtxtrack->get_ndf();
+
+  // refit by "excluding" each cluster
+  for (int layer= 0 ; layer<track->nLayer; ++layer)
+  {
+
+    // prepare seed
+    TVector3 seed_mom(svtxtrack->get_px(), svtxtrack->get_py(), svtxtrack->get_pz());
+    seed_mom.SetMag(120);
+
+    TVector3 seed_pos(svtxtrack->get_x(), svtxtrack->get_y(), svtxtrack->get_z());
+    TMatrixDSym seed_cov(6);
+    for (int i = 0; i < 6; i++)
+    {
+      for (int j = 0; j < 6; j++)
+      {
+        seed_cov[i][j] = 100.;
+      }
+    }
+
+
+
+  }
 
   return track;
 }
@@ -1280,72 +1314,6 @@ std::shared_ptr<SvtxTrack> TpcPrototypeGenFitTrkFitter::MakeSvtxTrack(const Svtx
   out_track->set_dca(dca3d);
   out_track->set_dca_error(dca3d_error);
 
-  /*!
-	 * dca3d_xy, dca3d_z
-	 */
-
-  /*
-	// Rotate from u,v,n to r: n X Z, Z': n X r, n using 5D state/cov
-	// commented on 2017-10-09
-
-	TMatrixF pos_in(3,1);
-	TMatrixF cov_in(3,3);
-	pos_in[0][0] = gf_state_vertex_ca->getState()[3];
-	pos_in[1][0] = gf_state_vertex_ca->getState()[4];
-	pos_in[2][0] = 0.;
-
-	cov_in[0][0] = gf_state_vertex_ca->getCov()[3][3];
-	cov_in[0][1] = gf_state_vertex_ca->getCov()[3][4];
-	cov_in[0][2] = 0.;
-	cov_in[1][0] = gf_state_vertex_ca->getCov()[4][3];
-	cov_in[1][1] = gf_state_vertex_ca->getCov()[4][4];
-	cov_in[1][2] = 0.;
-	cov_in[2][0] = 0.;
-	cov_in[2][1] = 0.;
-	cov_in[2][2] = 0.;
-
-	TMatrixF pos_out(3,1);
-	TMatrixF cov_out(3,3);
-
-	TVector3 vu = gf_state_vertex_ca->getPlane().get()->getU();
-	TVector3 vv = gf_state_vertex_ca->getPlane().get()->getV();
-	TVector3 vn = vu.Cross(vv);
-
-	pos_cov_uvn_to_rz(vu, vv, vn, pos_in, cov_in, pos_out, cov_out);
-
-	//! vertex cov in (u',v',n')
-	TMatrixF vertex_cov_out(3,3);
-
-	get_vertex_error_uvn(vu,vv,vn, vertex_cov, vertex_cov_out);
-
-	float dca3d_xy = pos_out[0][0];
-	float dca3d_z  = pos_out[1][0];
-
-	float dca3d_xy_error = sqrt(cov_out[0][0] + vertex_cov_out[0][0]);
-	float dca3d_z_error  = sqrt(cov_out[1][1] + vertex_cov_out[1][1]);
-
-		//Begin DEBUG
-//	LogDebug("rotation debug---------- ");
-//	gf_state_vertex_ca->Print();
-//	LogDebug("dca rotation---------- ");
-//	pos_out = pos_in;
-//	cov_out = cov_in;
-//	pos_in.Print();
-//	cov_in.Print();
-//	pos_out.Print();
-//	cov_out.Print();
-//	cout
-//		<<"dca3d_xy: "<<dca3d_xy <<" +- "<<dca3d_xy_error*dca3d_xy_error
-//		<<"; dca3d_z: "<<dca3d_z<<" +- "<< dca3d_z_error*dca3d_z_error
-//		<<"\n";
-//	gf_state_vertex_ca->get6DCov().Print();
-//	LogDebug("vertex rotation---------- ");
-//	vertex_position.Print();
-//	vertex_cov.Print();
-//	vertex_cov_out.Print();
-	//End DEBUG
-	*/
-
   //
   // in: X, Y, Z; out; r: n X Z, Z X r, Z
 
@@ -1395,28 +1363,6 @@ std::shared_ptr<SvtxTrack> TpcPrototypeGenFitTrkFitter::MakeSvtxTrack(const Svtx
     dca3d_z = pos_out[2][0];
     dca3d_xy_error = sqrt(cov_out[0][0]);
     dca3d_z_error = sqrt(cov_out[2][2]);
-
-#ifdef _DEBUG_
-    cout << __LINE__ << ": Vertex: ----------------" << endl;
-    vertex_position.Print();
-    vertex_cov.Print();
-
-    cout << __LINE__ << ": State: ----------------" << endl;
-    state6.Print();
-    cov6.Print();
-
-    cout << __LINE__ << ": Mean: ----------------" << endl;
-    pos_in.Print();
-    cout << "===>" << endl;
-    pos_out.Print();
-
-    cout << __LINE__ << ": Cov: ----------------" << endl;
-    cov_in.Print();
-    cout << "===>" << endl;
-    cov_out.Print();
-
-    cout << endl;
-#endif
   }
   catch (...)
   {
@@ -1450,70 +1396,6 @@ std::shared_ptr<SvtxTrack> TpcPrototypeGenFitTrkFitter::MakeSvtxTrack(const Svtx
       out_track->set_error(i, j, cov[i][j]);
     }
   }
-
-  //	for (SvtxTrack::ConstClusterIter iter = svtx_track->begin_clusters();
-  //			iter != svtx_track->end_clusters(); ++iter) {
-  //		unsigned int cluster_id = *iter;
-  //		SvtxCluster* cluster = _clustermap->get(cluster_id);
-  //		if (!cluster) {
-  //			LogError("No cluster Found!");
-  //			continue;
-  //		}
-  //		//cluster->identify; //DEBUG
-  //
-  //		//unsigned int l = cluster->get_layer();
-  //
-  //		TVector3 pos(cluster->get_x(), cluster->get_y(), cluster->get_z());
-  //
-  //		double radius = pos.Pt();
-  //
-  //		std::shared_ptr<genfit::MeasuredStateOnPlane> gf_state = NULL;
-  //		try {
-  //			gf_state = std::shared_ptr < genfit::MeasuredStateOnPlane
-  //					> (phgf_track->extrapolateToCylinder(radius,
-  //							TVector3(0, 0, 0), TVector3(0, 0, 1), 0));
-  //		} catch (...) {
-  //			if (Verbosity() >= 2)
-  //				LogWarning("Exrapolation failed!");
-  //		}
-  //		if (!gf_state) {
-  //			if (Verbosity() > 1)
-  //				LogWarning("Exrapolation failed!");
-  //			continue;
-  //		}
-  //
-  //		//SvtxTrackState* state = new SvtxTrackState_v1(radius);
-  //		std::shared_ptr<SvtxTrackState> state = std::shared_ptr<SvtxTrackState> (new SvtxTrackState_v1(radius));
-  //		state->set_x(gf_state->getPos().x());
-  //		state->set_y(gf_state->getPos().y());
-  //		state->set_z(gf_state->getPos().z());
-  //
-  //		state->set_px(gf_state->getMom().x());
-  //		state->set_py(gf_state->getMom().y());
-  //		state->set_pz(gf_state->getMom().z());
-  //
-  //		//gf_state->getCov().Print();
-  //
-  //		for (int i = 0; i < 6; i++) {
-  //			for (int j = i; j < 6; j++) {
-  //				state->set_error(i, j, gf_state->get6DCov()[i][j]);
-  //			}
-  //		}
-  //
-  //		out_track->insert_state(state.get());
-  //
-  //#ifdef _DEBUG_
-  //		cout
-  //		<<__LINE__
-  //		<<": " << radius <<" => "
-  //		<<sqrt(state->get_x()*state->get_x() + state->get_y()*state->get_y())
-  //		<<endl;
-  //#endif
-  //	}
-
-#ifdef _DEBUG_
-  cout << __LINE__ << endl;
-#endif
 
   const genfit::Track* gftrack = phgf_track->getGenFitTrack();
   const genfit::AbsTrackRep* rep = gftrack->getCardinalRep();
@@ -1577,15 +1459,6 @@ std::shared_ptr<SvtxTrack> TpcPrototypeGenFitTrkFitter::MakeSvtxTrack(const Svtx
     }
 
     out_track->insert_state(state.get());
-
-#ifdef _DEBUG_
-    cout
-        << __LINE__
-        << ": " << id
-        << ": " << pathlength << " => "
-        << sqrt(state->get_x() * state->get_x() + state->get_y() * state->get_y())
-        << endl;
-#endif
   }
 
   return out_track;
@@ -1671,98 +1544,6 @@ bool TpcPrototypeGenFitTrkFitter::FillSvtxVertexMap(
 
   return true;
 }
-
-//bool TpcPrototypeGenFitTrkFitter::pos_cov_uvn_to_rz(const TVector3 u, const TVector3 v,
-//		const TVector3 n, const TMatrixF pos_in, const TMatrixF cov_in,
-//		TMatrixF& pos_out, TMatrixF& cov_out) const {
-//
-//	if(pos_in.GetNcols() != 1 || pos_in.GetNrows() != 3) {
-//		if(Verbosity() > 0) LogWarning("pos_in.GetNcols() != 1 || pos_in.GetNrows() != 3");
-//		return false;
-//	}
-//
-//	if(cov_in.GetNcols() != 3 || cov_in.GetNrows() != 3) {
-//		if(Verbosity() > 0) LogWarning("cov_in.GetNcols() != 3 || cov_in.GetNrows() != 3");
-//		return false;
-//	}
-//
-//	TVector3 up = TVector3(0., 0., 1.).Cross(n);
-//	if(up.Mag() < 0.00001){
-//		if(Verbosity() > 0) LogWarning("n is parallel to z");
-//		return false;
-//	}
-//
-//	TMatrixF R(3, 3);
-//	TMatrixF R_inv(3,3);
-//	TMatrixF R_inv_T(3,3);
-//
-//	try {
-//		TMatrixF ROT1(3, 3);
-//		TMatrixF ROT2(3, 3);
-//		TMatrixF ROT3(3, 3);
-//
-//		// rotate n along z to xz plane
-//		float phi = -TMath::ATan2(n.Y(), n.X());
-//		ROT1[0][0] = cos(phi);
-//		ROT1[0][1] = -sin(phi);
-//		ROT1[0][2] = 0;
-//		ROT1[1][0] = sin(phi);
-//		ROT1[1][1] = cos(phi);
-//		ROT1[1][2] = 0;
-//		ROT1[2][0] = 0;
-//		ROT1[2][1] = 0;
-//		ROT1[2][2] = 1;
-//
-//		// rotate n along y to z
-//		TVector3 n1(n);
-//		n1.RotateZ(phi);
-//		float theta = -TMath::ATan2(n1.X(), n1.Z());
-//		ROT2[0][0] = cos(theta);
-//		ROT2[0][1] = 0;
-//		ROT2[0][2] = sin(theta);
-//		ROT2[1][0] = 0;
-//		ROT2[1][1] = 1;
-//		ROT2[1][2] = 0;
-//		ROT2[2][0] = -sin(theta);
-//		ROT2[2][1] = 0;
-//		ROT2[2][2] = cos(theta);
-//
-//		// rotate u along z to x
-//		TVector3 u2(u);
-//		u2.RotateZ(phi);
-//		u2.RotateY(theta);
-//		float phip = -TMath::ATan2(u2.Y(), u2.X());
-//		phip -= -TMath::ATan2(up.Y(), up.X());
-//		ROT3[0][0] = cos(phip);
-//		ROT3[0][1] = -sin(phip);
-//		ROT3[0][2] = 0;
-//		ROT3[1][0] = sin(phip);
-//		ROT3[1][1] = cos(phip);
-//		ROT3[1][2] = 0;
-//		ROT3[2][0] = 0;
-//		ROT3[2][1] = 0;
-//		ROT3[2][2] = 1;
-//
-//		// R: rotation from u,v,n to (z X n), v', z
-//		R = ROT3 * ROT2 * ROT1;
-//		R_inv = R.Invert();
-//		R_inv_T.Transpose(R_inv);
-//
-//	} catch (...) {
-//		if (Verbosity() > 0)
-//			LogWarning("Can't get rotation matrix");
-//
-//		return false;
-//	}
-//
-//	pos_out.ResizeTo(3, 1);
-//	cov_out.ResizeTo(3, 3);
-//
-//	pos_out = R_inv * pos_in;
-//	cov_out = R_inv * cov_in * R_inv_T;
-//
-//	return true;
-//}
 
 bool TpcPrototypeGenFitTrkFitter::pos_cov_uvn_to_rz(const TVector3& u, const TVector3& v,
                                                     const TVector3& n, const TMatrixF& pos_in, const TMatrixF& cov_in,

@@ -46,6 +46,7 @@ class PHCompositeNode;
 //class PHG4TruthInfoContainer;
 class TrkrClusterContainer;
 class TTree;
+class TpcPrototypeTrack;
 
 //! \brief		Refit SvtxTracks with PHGenFit.
 class TpcPrototypeGenFitTrkFitter : public SubsysReco
@@ -266,10 +267,13 @@ class TpcPrototypeGenFitTrkFitter : public SubsysReco
   std::shared_ptr<PHGenFit::Track> ReFitTrack(PHCompositeNode*, const SvtxTrack* intrack, const SvtxVertex* invertex = NULL);
 
   // build a track as a container displaying unused clusters
-  std::shared_ptr<PHGenFit::Track>  DisplayCluster(const TrkrCluster* cluster);
+  std::shared_ptr<PHGenFit::Track> DisplayCluster(const TrkrCluster* cluster);
 
   //! Make SvtxTrack from PHGenFit::Track and SvtxTrack
   std::shared_ptr<SvtxTrack> MakeSvtxTrack(const SvtxTrack* svtxtrack, const std::shared_ptr<PHGenFit::Track>& genfit_track, const SvtxVertex* vertex = NULL);
+
+  //! Make TpcPrototypeTrack from SvtxTrack, refit by "excluding" each cluster
+  std::shared_ptr<TpcPrototypeTrack> MakeTpcPrototypeTrack(const SvtxTrack* svtxtrack);
 
   //! Fill SvtxVertexMap from GFRaveVertexes and Tracks
   bool FillSvtxVertexMap(
@@ -342,7 +346,7 @@ class TpcPrototypeGenFitTrkFitter : public SubsysReco
   //PHRaveVertexFactory* _vertex_finder;
 
   //! Input Node pointers
-//  PHG4TruthInfoContainer* _truth_container;
+  //  PHG4TruthInfoContainer* _truth_container;
   TrkrClusterContainer* _clustermap;
   SvtxTrackMap* _trackmap;
   SvtxVertexMap* _vertexmap;

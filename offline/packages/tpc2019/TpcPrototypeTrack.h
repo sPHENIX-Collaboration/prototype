@@ -70,7 +70,8 @@ class TpcPrototypeTrack : public PHObject
   float clusterZ[nLayer];
   float clusterE[nLayer];
   float clusterSizePhi[nLayer];
-  float clusterResidualIsolated[nLayer];
+  float clusterResidualPhi[nLayer];
+  float clusterResidualZ[nLayer];
 
   ClassDef(TpcPrototypeTrack, 1);
 };

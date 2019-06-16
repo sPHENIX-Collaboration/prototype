@@ -20,21 +20,9 @@
 #include <g4eval/SvtxEvaluator.h>
 #include <g4eval/TrkrEvaluator.h>
 
+#include <g4detectors/PHG4BlockSubsystem.h>
 #include <g4detectors/PHG4CylinderSubsystem.h>
 #include <g4main/PHG4Reco.h>
-
-#include <g4tpc/PHG4TpcDigitizer.h>
-#include <g4tpc/PHG4TpcElectronDrift.h>
-#include <g4tpc/PHG4TpcPadPlane.h>
-#include <g4tpc/PHG4TpcPadPlaneReadout.h>
-#include <g4tpc/PHG4TpcSubsystem.h>
-#include <trackreco/PHGenFitTrkFitter.h>
-#include <trackreco/PHGenFitTrkProp.h>
-#include <trackreco/PHHoughSeeding.h>
-#include <trackreco/PHInitVertexing.h>
-#include <trackreco/PHTrackSeeding.h>
-#include <trackreco/PHTruthTrackSeeding.h>
-#include <trackreco/PHTruthVertexing.h>
 
 #include <g4eval/PHG4DSTReader.h>
 
@@ -73,6 +61,7 @@ void ConstructGeometry()
 {
   const double placementR = 0.5 * (40 + 60);
   const double rotaitonZ = TMath::Pi() + TMath::Pi() * 2 / 12. / 2.;
+  //  const double rotaitonZ = 0;
   const double driftLength = 40;
   const double cageRadius = 20;
 
@@ -173,6 +162,27 @@ void ConstructGeometry()
     cyl->set_string_param("material", "G4_Al");
     cyl->set_double_param("thickness", cageRadius);
     cyl->SuperDetector("TPC_Support");
+    cyl->SetActive();
+    cyl->OverlapCheck(1);
+    g4Reco->registerSubsystem(cyl);
+  }
+
+  for (int i = 0; i < 3; ++i)
+  {
+    const double GEMLocation = 0;
+    const double GEMSpacing = -20;
+
+    PHG4BlockSubsystem *cyl = new PHG4BlockSubsystem("GEM", i);
+    cyl->set_double_param("size_x", 0.5);
+    cyl->set_double_param("size_y", 40);
+    cyl->set_double_param("size_z", 40);
+    cyl->set_double_param("place_x", (GEMLocation + GEMSpacing * i) * TMath::Cos(rotaitonZ));
+    cyl->set_double_param("place_y", (GEMLocation + GEMSpacing * i) * TMath::Sin(rotaitonZ));
+    cyl->set_double_param("place_z", -driftLength / 2);
+    cyl->set_double_param("rot_z", -rotaitonZ * 180 / TMath::Pi());
+    cyl->set_int_param("lengthviarapidity", 0);
+    cyl->set_string_param("material", "ePHEINX_TPC_Gas"); // ePHENIX TPC is Ar + CO2 gas
+    cyl->SuperDetector("GEM");
     cyl->SetActive();
     cyl->OverlapCheck(1);
     g4Reco->registerSubsystem(cyl);

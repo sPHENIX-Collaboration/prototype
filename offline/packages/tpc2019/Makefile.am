@@ -22,15 +22,20 @@ AM_LDFLAGS = \
   `root-config --libs`
 
 pkginclude_HEADERS = \
+  TpcPrototypeTrack.h \
   TpcPrototypeClusterizer.h \
   TpcPrototypeGenFitTrkFitter.h
 
-ROOTDICTS = 
+ROOTDICTS = \
+	TpcPrototypeTrack_Dict.cc
+	
 if MAKEROOT6
   pcmdir = $(libdir)
-  nobase_dist_pcm_DATA =  
+  nobase_dist_pcm_DATA =  \
+  	TpcPrototypeTrack_Dict_rdict.pcm
 else
-  ROOT5_IO_DICTS = 
+  ROOT5_IO_DICTS = 	\
+    TpcPrototypeTrack_Dict.cc
   ROOT5_DICTS = \
     TpcPrototypeClusterizer_Dict.cc \
     TpcPrototypeGenFitTrkFitter_Dict.cc
@@ -38,7 +43,8 @@ endif
 
 libtpc2019_io_la_SOURCES = \
   $(ROOTDICTS) \
-  $(ROOT5_IO_DICTS) 
+  $(ROOT5_IO_DICTS) \
+  TpcPrototypeTrack.cc
 
 libtpc2019_la_SOURCES = \
   $(ROOT5_DICTS) \

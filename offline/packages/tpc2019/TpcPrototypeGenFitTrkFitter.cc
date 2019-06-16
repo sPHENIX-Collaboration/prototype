@@ -6,6 +6,7 @@
  */
 
 #include "TpcPrototypeGenFitTrkFitter.h"
+#include "TpcPrototypeTrack.h"
 
 #include <trackbase/TrkrCluster.h>  // for TrkrCluster
 #include <trackbase/TrkrClusterContainer.h>
@@ -92,6 +93,7 @@
 #include <TVectorDfwd.h>  // for TVectorD
 #include <TVectorT.h>     // for TVectorT
 
+#include <cassert>
 #include <cmath>  // for sqrt, NAN
 #include <iostream>
 #include <map>
@@ -226,6 +228,7 @@ TpcPrototypeGenFitTrkFitter::TpcPrototypeGenFitTrkFitter(const string& name)
   , _tca_particlemap(NULL)
   , _tca_vtxmap(NULL)
   , _tca_trackmap(NULL)
+  , _tca_tpctrackmap(nullptr)
   , _tca_vertexmap(NULL)
   , _tca_trackmap_refit(NULL)
   , _tca_primtrackmap(NULL)
@@ -384,14 +387,14 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
 
     //search for unused clusters
 
-//    TrkrClusterContainer *_cluster_map = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
-//    if (!_cluster_map)
-//    {
-//      cerr << PHWHERE << " ERROR: Can't find node TRKR_CLUSTER" << endl;
-//      return Fun4AllReturnCodes::ABORTEVENT;
-//    }
+    //    TrkrClusterContainer *_cluster_map = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
+    //    if (!_cluster_map)
+    //    {
+    //      cerr << PHWHERE << " ERROR: Can't find node TRKR_CLUSTER" << endl;
+    //      return Fun4AllReturnCodes::ABORTEVENT;
+    //    }
 
-//    set<TrkrDefs::cluskey> cluster_ids;
+    //    set<TrkrDefs::cluskey> cluster_ids;
 
     // add tracks
     vector<genfit::Track*> copy;
@@ -400,52 +403,52 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
       copy.push_back(new genfit::Track(*t));
     }
 
-//    TrkrClusterContainer::ConstRange clusrange = _cluster_map->getClusters();
-//    for (TrkrClusterContainer::ConstIterator clusiter = clusrange.first; clusiter != clusrange.second; ++clusiter)
-//    {
-//      TrkrCluster* cluster = clusiter->second;
-//      TrkrDefs::cluskey cluskey = clusiter->first;
-//      unsigned int trkrid = TrkrDefs::getTrkrId(cluskey);
-//
-//      if (trkrid == TrkrDefs::tpcId)
-//      {
-////        cluster_ids.insert(cluskey);
-//
-//        std::shared_ptr<SvtxTrack> cluster_holder(new SvtxTrack_v1());
-//        cluster_holder->set_px(0);
-//        cluster_holder->set_py(0);
-//        cluster_holder->set_pz(0);
-//        cluster_holder->set_x(cluster->getX());
-//        cluster_holder->set_y(cluster->getY());
-//        cluster_holder->set_z(cluster->getZ());
-//        cluster_holder->insert_cluster_key(cluskey);
-//        std::shared_ptr<PHGenFit::Track> rf_phgf_track (ReFitTrack(topNode, cluster_holder.get()));
-//
-//        copy.push_back(new genfit::Track(*rf_phgf_track->getGenFitTrack()));
-//      }
-//    }
+    //    TrkrClusterContainer::ConstRange clusrange = _cluster_map->getClusters();
+    //    for (TrkrClusterContainer::ConstIterator clusiter = clusrange.first; clusiter != clusrange.second; ++clusiter)
+    //    {
+    //      TrkrCluster* cluster = clusiter->second;
+    //      TrkrDefs::cluskey cluskey = clusiter->first;
+    //      unsigned int trkrid = TrkrDefs::getTrkrId(cluskey);
+    //
+    //      if (trkrid == TrkrDefs::tpcId)
+    //      {
+    ////        cluster_ids.insert(cluskey);
+    //
+    //        std::shared_ptr<SvtxTrack> cluster_holder(new SvtxTrack_v1());
+    //        cluster_holder->set_px(0);
+    //        cluster_holder->set_py(0);
+    //        cluster_holder->set_pz(0);
+    //        cluster_holder->set_x(cluster->getX());
+    //        cluster_holder->set_y(cluster->getY());
+    //        cluster_holder->set_z(cluster->getZ());
+    //        cluster_holder->insert_cluster_key(cluskey);
+    //        std::shared_ptr<PHGenFit::Track> rf_phgf_track (ReFitTrack(topNode, cluster_holder.get()));
+    //
+    //        copy.push_back(new genfit::Track(*rf_phgf_track->getGenFitTrack()));
+    //      }
+    //    }
 
     _fitter->getEventDisplay()->addEvent(copy);
   }
 
-//  //! find vertex using tracks
-//  std::vector<genfit::GFRaveVertex*> rave_vertices;
-//  rave_vertices.clear();
-//  if (rf_gf_tracks.size() >= 2)
-//  {
-//    //_vertex_finder->findVertices(&rave_vertices,rf_gf_tracks,rf_gf_states);
-//    try
-//    {
-//      _vertex_finder->findVertices(&rave_vertices, rf_gf_tracks);
-//    }
-//    catch (...)
-//    {
-//      if (Verbosity() > 1)
-//        std::cout << PHWHERE << "GFRaveVertexFactory::findVertices failed!";
-//    }
-//  }
-//
-//  FillSvtxVertexMap(rave_vertices, rf_gf_tracks);
+  //  //! find vertex using tracks
+  //  std::vector<genfit::GFRaveVertex*> rave_vertices;
+  //  rave_vertices.clear();
+  //  if (rf_gf_tracks.size() >= 2)
+  //  {
+  //    //_vertex_finder->findVertices(&rave_vertices,rf_gf_tracks,rf_gf_states);
+  //    try
+  //    {
+  //      _vertex_finder->findVertices(&rave_vertices, rf_gf_tracks);
+  //    }
+  //    catch (...)
+  //    {
+  //      if (Verbosity() > 1)
+  //        std::cout << PHWHERE << "GFRaveVertexFactory::findVertices failed!";
+  //    }
+  //  }
+  //
+  //  FillSvtxVertexMap(rave_vertices, rf_gf_tracks);
 
   for (SvtxTrackMap::Iter iter = _trackmap->begin(); iter != _trackmap->end();)
   {
@@ -633,11 +636,11 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
 #ifdef _DEBUG_
   cout << __LINE__ << endl;
 #endif
-//  for (genfit::GFRaveVertex* vertex : rave_vertices)
-//  {
-//    delete vertex;
-//  }
-//  rave_vertices.clear();
+  //  for (genfit::GFRaveVertex* vertex : rave_vertices)
+  //  {
+  //    delete vertex;
+  //  }
+  //  rave_vertices.clear();
 
   if (_do_eval)
   {
@@ -689,8 +692,17 @@ void TpcPrototypeGenFitTrkFitter::fill_eval_tree(PHCompositeNode* topNode)
   int i = 0;
   for (SvtxTrackMap::ConstIter itr = _trackmap->begin();
        itr != _trackmap->end(); ++itr)
+  {
     new ((*_tca_trackmap)[i++])(SvtxTrack_v1)(
         *dynamic_cast<SvtxTrack_v1*>(itr->second));
+
+    new ((*_tca_tpctrackmap)[i++])(TpcPrototypeTrack)();
+    TpcPrototypeTrack* track = dynamic_cast<TpcPrototypeTrack*>(_tca_tpctrackmap->At(i));
+    assert(track);
+    track->trackID = itr->second->get_id();
+    track->chisq = itr->second->get_chisq();
+    track->ndf = itr->second->get_ndf();
+  }
 
   i = 0;
   if (_vertexmap)
@@ -743,6 +755,8 @@ void TpcPrototypeGenFitTrkFitter::init_eval_tree()
 
   if (!_tca_trackmap)
     _tca_trackmap = new TClonesArray("SvtxTrack_v1");
+  if (!_tca_tpctrackmap)
+    _tca_tpctrackmap = new TClonesArray("TpcPrototypeTrack");
   if (!_tca_vertexmap)
     _tca_vertexmap = new TClonesArray("SvtxVertex_v1");
   if (!_tca_trackmap_refit)
@@ -756,15 +770,16 @@ void TpcPrototypeGenFitTrkFitter::init_eval_tree()
   //! create TTree
   _eval_tree = new TTree("T", "TpcPrototypeGenFitTrkFitter Evaluation");
 
-  _eval_tree->Branch("PrimaryParticle", _tca_particlemap);
-  _eval_tree->Branch("TruthVtx", _tca_vtxmap);
+  //  _eval_tree->Branch("PrimaryParticle", _tca_particlemap);
+  //  _eval_tree->Branch("TruthVtx", _tca_vtxmap);
 
   _eval_tree->Branch("SvtxTrack", _tca_trackmap);
-  _eval_tree->Branch("SvtxVertex", _tca_vertexmap);
-  _eval_tree->Branch("SvtxTrackRefit", _tca_trackmap_refit);
+  _eval_tree->Branch("TPCTrack", _tca_tpctrackmap);
+  //  _eval_tree->Branch("SvtxVertex", _tca_vertexmap);
+  //  _eval_tree->Branch("SvtxTrackRefit", _tca_trackmap_refit);
   if (_fit_primary_tracks)
     _eval_tree->Branch("PrimSvtxTrack", _tca_primtrackmap);
-  _eval_tree->Branch("SvtxVertexRefit", _tca_vertexmap_refit);
+  //  _eval_tree->Branch("SvtxVertexRefit", _tca_vertexmap_refit);
 
   _cluster_eval_tree = new TTree("cluster_eval", "cluster eval tree");
   _cluster_eval_tree->Branch("x", &_cluster_eval_tree_x, "x/F");
@@ -786,6 +801,7 @@ void TpcPrototypeGenFitTrkFitter::reset_eval_variables()
   _tca_vtxmap->Clear();
 
   _tca_trackmap->Clear();
+  _tca_tpctrackmap->Clear();
   _tca_vertexmap->Clear();
   _tca_trackmap_refit->Clear();
   if (_fit_primary_tracks)
@@ -1178,7 +1194,7 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
   //TODO unsorted measurements, should use sorted ones?
   track->addMeasurements(measurements);
 
-//  if (measurements.size()==1) return track;
+  //  if (measurements.size()==1) return track;
 
   /*!
 	 *  Fit the track

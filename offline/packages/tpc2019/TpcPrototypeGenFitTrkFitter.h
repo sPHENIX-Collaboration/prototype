@@ -359,6 +359,7 @@ class TpcPrototypeGenFitTrkFitter : public SubsysReco
   TClonesArray* _tca_particlemap;
   TClonesArray* _tca_vtxmap;
   TClonesArray* _tca_trackmap;
+  TClonesArray* _tca_tpctrackmap;
   TClonesArray* _tca_vertexmap;
   TClonesArray* _tca_trackmap_refit;
   TClonesArray* _tca_primtrackmap;

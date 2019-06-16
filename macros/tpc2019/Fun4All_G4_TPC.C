@@ -62,10 +62,10 @@ R__LOAD_LIBRARY(libtpc2019.so)
 R__LOAD_LIBRARY(libtrack_reco.so)
 #endif
 
-int n_tpc_layer_inner = 16;
+int n_tpc_layer_inner = 0;
 int tpc_layer_rphi_count_inner = 1152;
 int n_tpc_layer_mid = 16;
-int n_tpc_layer_outer = 16;
+int n_tpc_layer_outer = 0;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
 int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
@@ -208,11 +208,6 @@ int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
   PHG4TpcPadPlane *padplane = new PHG4TpcPadPlaneReadout();
 
   // The pad plane readout default is set in PHG4TpcPadPlaneReadout
-  // We may want to change the number of inner layers, and can do that here
-  padplane->set_int_param("tpc_minlayer_inner", 0);  // sPHENIX layer number of first Tpc readout layer
-  padplane->set_int_param("ntpc_layers_inner", n_tpc_layer_inner);
-  padplane->set_int_param("ntpc_phibins_inner", tpc_layer_rphi_count_inner);
-
   //only build mid-layer and to size
   padplane->set_int_param("ntpc_layers_inner", 0);
   padplane->set_int_param("ntpc_layers_outer", 0);
@@ -256,30 +251,16 @@ int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
   //------------
 
   // This should be true for everything except testing wirh truth track seeding!
-  const bool use_track_prop = false;
+  const bool use_track_prop = true;
   if (use_track_prop)
   {
-    //--------------------------------------------------
-    // Normal track seeding and propagation
-    //--------------------------------------------------
-
-    // for now, we cheat to get the initial vertex for the full track reconstruction case
-    PHInitVertexing *init_vtx = new PHTruthVertexing("PHTruthVertexing");
-    init_vtx->Verbosity(verbosity);
-    ;
-    se->registerSubsystem(init_vtx);
-
-    // find seed tracks using a subset of TPC layers
-    PHTrackSeeding *track_seed = new PHHoughSeeding("PHHoughSeeding", 0, 0, n_gas_layer);
-    track_seed->Verbosity(verbosity);
-    ;
-    se->registerSubsystem(track_seed);
-
     // Find all clusters associated with each seed track
-    PHGenFitTrkProp *track_prop = new PHGenFitTrkProp("PHGenFitTrkProp", 0, 0, n_gas_layer);
-    track_prop->Verbosity(verbosity);
-    ;
-    se->registerSubsystem(track_prop);
+    TpcPrototypeGenFitTrkFinder *finder = new TpcPrototypeGenFitTrkFinder();
+    finder->Verbosity(verbosity);
+    finder->set_do_evt_display(eventDisp);
+    finder->set_do_eval(true);
+    se->registerSubsystem(finder);
+
   }
   else
   {

@@ -24,6 +24,7 @@ AM_LDFLAGS = \
 pkginclude_HEADERS = \
   TpcPrototypeTrack.h \
   TpcPrototypeClusterizer.h \
+  TpcPrototypeGenFitTrkFinder.h \
   TpcPrototypeGenFitTrkFitter.h \
   TpcPrototypeDefs.h \
   TpcPrototypeUnpacker.h
@@ -45,7 +46,8 @@ else
   ROOT5_DICTS = \
     TpcPrototypeUnpacker_Dict.cc \
     TpcPrototypeClusterizer_Dict.cc \
-    TpcPrototypeGenFitTrkFitter_Dict.cc
+    TpcPrototypeGenFitTrkFitter_Dict.cc\
+    TpcPrototypeGenFitTrkFinder_Dict.cc
 endif
 
 libtpc2019_io_la_SOURCES = \
@@ -57,6 +59,7 @@ libtpc2019_io_la_SOURCES = \
 libtpc2019_la_SOURCES = \
   $(ROOT5_DICTS) \
   TpcPrototypeClusterizer.cc \
+  TpcPrototypeGenFitTrkFinder.cc  \
   TpcPrototypeGenFitTrkFitter.cc  \
   TpcPrototypeUnpacker.cc  \
   TpcPrototypeUnpacker_Dict.cc

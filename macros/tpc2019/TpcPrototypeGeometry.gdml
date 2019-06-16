@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="TPC_GasVol_00x9108690inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="-20" unit="cm"/>
+    <position name="TPC_FieldCage_10x9138680inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="-20" unit="cm"/>
+    <position name="TPC_EndCap_30x91388c0inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="-40.250100000000003" unit="cm"/>
+    <position name="TPC_EndCap_50x9138b10inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="0.25009999999999999" unit="cm"/>
+  </define>
+  <materials>
+    <element name="CARBON_elm" formula="C" Z="6">
+      <atom unit="g/mole" value="12.0107"/>
+    </element>
+    <element name="FLUORINE_elm" formula="F" Z="9">
+      <atom unit="g/mole" value="18.998403199999998"/>
+    </element>
+    <element name="NEON_elm" formula="NE" Z="10">
+      <atom unit="g/mole" value="20.1797"/>
+    </element>
+    <material name="sPHENIX_TPC_Gas">
+      <D unit="g/cm3" value="0.0011266545000000001"/>
+      <fraction n="0.045062754303216934" ref="CARBON_elm"/>
+      <fraction n="0.28511831164360046" ref="FLUORINE_elm"/>
+      <fraction n="0.6698189377784729" ref="NEON_elm"/>
+    </material>
+    <element name="COPPER_elm" formula="CU" Z="29">
+      <atom unit="g/mole" value="63.545999999999999"/>
+    </element>
+    <material name="G4_Cu">
+      <D unit="g/cm3" value="8.9600000000000009"/>
+      <fraction n="1" ref="COPPER_elm"/>
+    </material>
+    <material name="G4_Al" Z="13">
+      <D unit="g/cm3" value="2.6989999999999998"/>
+      <atom unit="g/mole" value="26.9815"/>
+    </material>
+    <element name="ARGON_elm" formula="AR" Z="18">
+      <atom unit="g/mole" value="39.948"/>
+    </element>
+    <element name="NITROGEN_elm" formula="N" Z="7">
+      <atom unit="g/mole" value="14.006740000000001"/>
+    </element>
+    <element name="OXYGEN_elm" formula="O" Z="8">
+      <atom unit="g/mole" value="15.9994"/>
+    </element>
+    <material name="G4_AIR">
+      <D unit="g/cm3" value="0.0012047900000000001"/>
+      <fraction n="0.012827012687921524" ref="ARGON_elm"/>
+      <fraction n="0.0001240001292899251" ref="CARBON_elm"/>
+      <fraction n="0.75526773929595947" ref="NITROGEN_elm"/>
+      <fraction n="0.23178122937679291" ref="OXYGEN_elm"/>
+    </material>
+  </materials>
+  <solids>
+    <tube name="World" rmin="0" rmax="500" z="1000" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_GasVol_00x1" rmin="0" rmax="20" z="40" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_FieldCage_10x1" rmin="20.000100000000003" rmax="20.00357" z="40" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_EndCap_30x1" rmin="0" rmax="20" z="0.5" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_EndCap_50x1" rmin="0" rmax="20" z="0.5" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+  </solids>
+  <structure>
+    <volume name="TPC_GasVol_0">
+      <materialref ref="sPHENIX_TPC_Gas"/>
+      <solidref ref="TPC_GasVol_00x1"/>
+    </volume>
+    <volume name="TPC_FieldCage_1">
+      <materialref ref="G4_Cu"/>
+      <solidref ref="TPC_FieldCage_10x1"/>
+    </volume>
+    <volume name="TPC_EndCap_3">
+      <materialref ref="G4_Al"/>
+      <solidref ref="TPC_EndCap_30x1"/>
+    </volume>
+    <volume name="TPC_EndCap_5">
+      <materialref ref="G4_Al"/>
+      <solidref ref="TPC_EndCap_50x1"/>
+    </volume>
+    <volume name="World">
+      <materialref ref="G4_AIR"/>
+      <solidref ref="World"/>
+      <physvol name="TPC_GasVol_00x9108690" copynumber="0">
+        <volumeref ref="TPC_GasVol_0"/>
+        <positionref ref="TPC_GasVol_00x9108690inWorldpos"/>
+      </physvol>
+      <physvol name="TPC_FieldCage_10x9138680" copynumber="0">
+        <volumeref ref="TPC_FieldCage_1"/>
+        <positionref ref="TPC_FieldCage_10x9138680inWorldpos"/>
+      </physvol>
+      <physvol name="TPC_EndCap_30x91388c0" copynumber="0">
+        <volumeref ref="TPC_EndCap_3"/>
+        <positionref ref="TPC_EndCap_30x91388c0inWorldpos"/>
+      </physvol>
+      <physvol name="TPC_EndCap_50x9138b10" copynumber="0">
+        <volumeref ref="TPC_EndCap_5"/>
+        <positionref ref="TPC_EndCap_50x9138b10inWorldpos"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="default" version="1.0">
+    <world ref="World"/>
+  </setup>
+</gdml>

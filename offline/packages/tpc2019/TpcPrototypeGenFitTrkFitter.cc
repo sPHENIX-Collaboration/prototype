@@ -368,6 +368,20 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
 	 */
   if (_do_evt_display)
   {
+    //    if(opts[i] == 'A') drawAutoScale_ = true;
+    //    if(opts[i] == 'B') drawBackward_ = true;
+    //    if(opts[i] == 'D') drawDetectors_ = true;
+    //    if(opts[i] == 'E') drawErrors_ = true;
+    //    if(opts[i] == 'F') drawForward_ = true;
+    //    if(opts[i] == 'H') drawHits_ = true;
+    //    if(opts[i] == 'M') drawTrackMarkers_ = true;
+    //    if(opts[i] == 'P') drawPlanes_ = true;
+    //    if(opts[i] == 'S') drawScaleMan_ = true;
+    //    if(opts[i] == 'T') drawTrack_ = true;
+    //    if(opts[i] == 'X') drawSilent_ = true;
+    //    if(opts[i] == 'G') drawGeometry_ = true;
+    _fitter->getEventDisplay()->setOptions("ADEHMPSTG");
+
     //search for unused clusters
 
 //    TrkrClusterContainer *_cluster_map = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
@@ -410,7 +424,6 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
 //        copy.push_back(new genfit::Track(*rf_phgf_track->getGenFitTrack()));
 //      }
 //    }
-
 
     _fitter->getEventDisplay()->addEvent(copy);
   }

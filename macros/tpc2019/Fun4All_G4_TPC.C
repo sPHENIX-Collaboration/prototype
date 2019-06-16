@@ -90,6 +90,8 @@ int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
   bool dstreader = true;
   bool dstoutput = false;
 
+  const double TPCDriftLength = 40;
+
   ///////////////////////////////////////////
   // Make the Server
   //////////////////////////////////////////
@@ -104,7 +106,7 @@ int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
   double theta = 90 - 5;
   double phi = 180 + 360 / 12 / 2;
   // shift in x with respect to midrapidity setup
-  double add_place_z = -20;
+  double add_place_z = -TPCDriftLength * .5;
   // Test beam generator
   PHG4SimpleEventGenerator *gen = new PHG4SimpleEventGenerator();
   gen->add_particles("proton", 1);  // mu-,e-,anti_proton,pi-
@@ -133,7 +135,7 @@ int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
   tpc->SetActive();
   tpc->SuperDetector("TPC");
   tpc->set_double_param("steplimits", 1);
-  tpc->set_double_param("tpc_length", 80);  // 2x 40 cm drift
+  tpc->set_double_param("tpc_length", TPCDriftLength *2);  // 2x 40 cm drift
   // By default uses "sPHENIX_TPC_Gas", defined in PHG4Reco. That is 90:10 Ne:C4
   tpc->SetAbsorberActive();
   g4Reco->registerSubsystem(tpc);
@@ -204,6 +206,12 @@ int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
   padplane->set_int_param("tpc_minlayer_inner", 0);  // sPHENIX layer number of first Tpc readout layer
   padplane->set_int_param("ntpc_layers_inner", n_tpc_layer_inner);
   padplane->set_int_param("ntpc_phibins_inner", tpc_layer_rphi_count_inner);
+
+  //only build mid-layer and to size
+  padplane->set_int_param("ntpc_layers_inner", 0);
+  padplane->set_int_param("ntpc_layers_outer", 0);
+  padplane->set_double_param("maxdriftlength", TPCDriftLength);
+  padplane->set_int_param("ntpc_phibins_mid", 16*8*12);
 
   PHG4TpcElectronDrift *edrift = new PHG4TpcElectronDrift();
   edrift->Detector("TPC");

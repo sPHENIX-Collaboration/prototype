@@ -225,6 +225,7 @@ TpcPrototypeGenFitTrkFitter::TpcPrototypeGenFitTrkFitter(const string& name)
   , _do_eval(false)
   , _eval_outname("TpcPrototypeGenFitTrkFitter_eval.root")
   , _eval_tree(NULL)
+  , _tca_ntrack(-1)
   , _tca_particlemap(NULL)
   , _tca_vtxmap(NULL)
   , _tca_trackmap(NULL)
@@ -371,84 +372,57 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
 	 */
   if (_do_evt_display)
   {
-    //    if(opts[i] == 'A') drawAutoScale_ = true;
-    //    if(opts[i] == 'B') drawBackward_ = true;
-    //    if(opts[i] == 'D') drawDetectors_ = true;
-    //    if(opts[i] == 'E') drawErrors_ = true;
-    //    if(opts[i] == 'F') drawForward_ = true;
-    //    if(opts[i] == 'H') drawHits_ = true;
-    //    if(opts[i] == 'M') drawTrackMarkers_ = true;
-    //    if(opts[i] == 'P') drawPlanes_ = true;
-    //    if(opts[i] == 'S') drawScaleMan_ = true;
-    //    if(opts[i] == 'T') drawTrack_ = true;
-    //    if(opts[i] == 'X') drawSilent_ = true;
-    //    if(opts[i] == 'G') drawGeometry_ = true;
-    _fitter->getEventDisplay()->setOptions("ADEHMPSTG");
-
     //search for unused clusters
 
-    //    TrkrClusterContainer *_cluster_map = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
-    //    if (!_cluster_map)
-    //    {
-    //      cerr << PHWHERE << " ERROR: Can't find node TRKR_CLUSTER" << endl;
-    //      return Fun4AllReturnCodes::ABORTEVENT;
-    //    }
+    TrkrClusterContainer* _cluster_map = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
+    if (!_cluster_map)
+    {
+      cerr << PHWHERE << " ERROR: Can't find node TRKR_CLUSTER" << endl;
+      return Fun4AllReturnCodes::ABORTEVENT;
+    }
 
-    //    set<TrkrDefs::cluskey> cluster_ids;
+    //unused clusters
+    set<TrkrDefs::cluskey> cluster_ids;
+    //all clusters
+    auto cluster_range = _cluster_map->getClusters(TrkrDefs::tpcId);
+    for (auto iter = cluster_range.first; iter != cluster_range.second; ++iter)
+    {
+      cluster_ids.insert(iter->first);
+    }
+    // minus used clusters
+    for (SvtxTrackMap::Iter iter = _trackmap->begin(); iter != _trackmap->end();
+         ++iter)
+    {
+      SvtxTrack* svtx_track = iter->second;
+      for (auto iter = svtx_track->begin_cluster_keys();
+           iter != svtx_track->end_cluster_keys(); ++iter)
+      {
+        cluster_ids.erase(*iter);
+      }
+    }
 
-    // add tracks
+    //    // add tracks
     vector<genfit::Track*> copy;
     for (genfit::Track* t : rf_gf_tracks)
     {
       copy.push_back(new genfit::Track(*t));
     }
+    //
 
-    //    TrkrClusterContainer::ConstRange clusrange = _cluster_map->getClusters();
-    //    for (TrkrClusterContainer::ConstIterator clusiter = clusrange.first; clusiter != clusrange.second; ++clusiter)
-    //    {
-    //      TrkrCluster* cluster = clusiter->second;
-    //      TrkrDefs::cluskey cluskey = clusiter->first;
-    //      unsigned int trkrid = TrkrDefs::getTrkrId(cluskey);
-    //
-    //      if (trkrid == TrkrDefs::tpcId)
-    //      {
-    ////        cluster_ids.insert(cluskey);
-    //
-    //        std::shared_ptr<SvtxTrack> cluster_holder(new SvtxTrack_v1());
-    //        cluster_holder->set_px(0);
-    //        cluster_holder->set_py(0);
-    //        cluster_holder->set_pz(0);
-    //        cluster_holder->set_x(cluster->getX());
-    //        cluster_holder->set_y(cluster->getY());
-    //        cluster_holder->set_z(cluster->getZ());
-    //        cluster_holder->insert_cluster_key(cluskey);
-    //        std::shared_ptr<PHGenFit::Track> rf_phgf_track (ReFitTrack(topNode, cluster_holder.get()));
-    //
-    //        copy.push_back(new genfit::Track(*rf_phgf_track->getGenFitTrack()));
-    //      }
-    //    }
+    //add clusters
+    for (const auto cluster_id : cluster_ids)
+    {
+      const TrkrCluster* cluster =
+          _cluster_map->findCluster(cluster_id);
+      assert(cluster);
+
+      std::shared_ptr<PHGenFit::Track> cluster_holder = DisplayCluster(cluster);
+      if (cluster_holder.get())
+        copy.push_back(new genfit::Track(*cluster_holder->getGenFitTrack()));
+    }
 
     _fitter->getEventDisplay()->addEvent(copy);
   }
-
-  //  //! find vertex using tracks
-  //  std::vector<genfit::GFRaveVertex*> rave_vertices;
-  //  rave_vertices.clear();
-  //  if (rf_gf_tracks.size() >= 2)
-  //  {
-  //    //_vertex_finder->findVertices(&rave_vertices,rf_gf_tracks,rf_gf_states);
-  //    try
-  //    {
-  //      _vertex_finder->findVertices(&rave_vertices, rf_gf_tracks);
-  //    }
-  //    catch (...)
-  //    {
-  //      if (Verbosity() > 1)
-  //        std::cout << PHWHERE << "GFRaveVertexFactory::findVertices failed!";
-  //    }
-  //  }
-  //
-  //  FillSvtxVertexMap(rave_vertices, rf_gf_tracks);
 
   for (SvtxTrackMap::Iter iter = _trackmap->begin(); iter != _trackmap->end();)
   {
@@ -477,43 +451,11 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
           vertex = _vertexmap_refit->get(0);
       }
 
-      //BEGIN DEBUG
-      //			vertex = NULL;
-      //
-      //			PHG4VtxPoint *truth_vtx = _truth_container->GetVtx(
-      //					_truth_container->GetPrimaryVertexIndex());
-      //			if(!truth_vtx) {
-      //				LogDebug("!truth_vtx");
-      //				return Fun4AllReturnCodes::ABORTEVENT;
-      //			}
-      //
-      //			LogDebug("");
-      //			truth_vtx->identify();
-      //
-      //			vertex = new SvtxVertex_v1();
-      //			vertex->set_x(truth_vtx->get_x());
-      //			vertex->set_y(truth_vtx->get_y());
-      //			vertex->set_z(truth_vtx->get_z());
-      //
-      //			for(int i=0;i<3;i++)
-      //				for(int j=0;j<3;j++)
-      //					vertex->set_error(i,j,0);
-      //END DEBUG
-
-      //			SvtxTrack* rf_track = MakeSvtxTrack(iter->second, rf_phgf_track,
-      //					vertex);
-
       std::shared_ptr<SvtxTrack> rf_track = MakeSvtxTrack(iter->second, rf_phgf_track,
                                                           vertex);
-#ifdef _DEBUG_
-      cout << __LINE__ << endl;
-#endif
       if (!rf_track)
       {
         //if (_output_mode == OverwriteOriginalNode)
-#ifdef _DEBUG_
-        LogDebug("!rf_track, continue.");
-#endif
         if (_over_write_svtxtrackmap)
         {
           auto key = iter->first;
@@ -539,10 +481,7 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
       {
         *(dynamic_cast<SvtxTrack_v1*>(iter->second)) =
             *(dynamic_cast<SvtxTrack_v1*>(rf_track.get()));
-//				delete rf_track;
-#ifdef _DEBUG_
-        cout << __LINE__ << endl;
-#endif
+        //				delete rf_track;
       }
     }
     else
@@ -558,89 +497,11 @@ int TpcPrototypeGenFitTrkFitter::process_event(PHCompositeNode* topNode)
 
     ++iter;
   }
-
-#ifdef _DEBUG_
-  cout << __LINE__ << endl;
-#endif
-
   // Need to keep tracks if _do_evt_display
   if (!_do_evt_display)
   {
     rf_phgf_tracks.clear();
   }
-
-#ifdef _DEBUG_
-  cout << __LINE__ << endl;
-#endif
-  /*!
-	 * Fit track as primary track, This part need to be called after FillSvtxVertexMap
-	 */
-//  if (_fit_primary_tracks && rave_vertices.size() > 0)
-//  {
-//    _primary_trackmap->empty();
-//
-//    //FIXME figure out which vertex to use.
-//    SvtxVertex* vertex = NULL;
-//    if (_over_write_svtxvertexmap)
-//    {
-//      if (_vertexmap->size() > 0)
-//        vertex = _vertexmap->get(0);
-//    }
-//    else
-//    {
-//      if (_vertexmap_refit->size() > 0)
-//        vertex = _vertexmap_refit->get(0);
-//    }
-//
-//    if (vertex)
-//    {
-//      for (SvtxTrackMap::ConstIter iter = _trackmap->begin();
-//           iter != _trackmap->end(); ++iter)
-//      {
-//        SvtxTrack* svtx_track = iter->second;
-//        if (!svtx_track)
-//          continue;
-//        if (!(svtx_track->get_pt() > _fit_min_pT))
-//          continue;
-//        /*!
-//				 * rf_phgf_track stands for Refit_PHGenFit_Track
-//				 */
-//        std::shared_ptr<PHGenFit::Track> rf_phgf_track = ReFitTrack(topNode, svtx_track,
-//                                                                    vertex);
-//        if (rf_phgf_track)
-//        {
-//          //					//FIXME figure out which vertex to use.
-//          //					SvtxVertex* vertex = NULL;
-//          //					if (_vertexmap_refit->size() > 0)
-//          //						vertex = _vertexmap_refit->get(0);
-//
-//          std::shared_ptr<SvtxTrack> rf_track = MakeSvtxTrack(svtx_track,
-//                                                              rf_phgf_track, vertex);
-//          //delete rf_phgf_track;
-//          if (!rf_track)
-//          {
-//#ifdef _DEBUG_
-//            LogDebug("!rf_track, continue.");
-//#endif
-//            continue;
-//          }
-//          _primary_trackmap->insert(rf_track.get());
-//        }
-//      }
-//    }
-//    else
-//    {
-//      LogError("No vertex in SvtxVertexMapRefit!");
-//    }
-//  }
-#ifdef _DEBUG_
-  cout << __LINE__ << endl;
-#endif
-  //  for (genfit::GFRaveVertex* vertex : rave_vertices)
-  //  {
-  //    delete vertex;
-  //  }
-  //  rave_vertices.clear();
 
   if (_do_eval)
   {
@@ -667,8 +528,23 @@ int TpcPrototypeGenFitTrkFitter::End(PHCompositeNode* topNode)
   }
 
   if (_do_evt_display)
-    _fitter->displayEvent();
+  {
+    //    if(opts[i] == 'A') drawAutoScale_ = true;
+    //    if(opts[i] == 'B') drawBackward_ = true;
+    //    if(opts[i] == 'D') drawDetectors_ = true;
+    //    if(opts[i] == 'E') drawErrors_ = true;
+    //    if(opts[i] == 'F') drawForward_ = true;
+    //    if(opts[i] == 'H') drawHits_ = true;
+    //    if(opts[i] == 'M') drawTrackMarkers_ = true;
+    //    if(opts[i] == 'P') drawPlanes_ = true;
+    //    if(opts[i] == 'S') drawScaleMan_ = true;
+    //    if(opts[i] == 'T') drawTrack_ = true;
+    //    if(opts[i] == 'X') drawSilent_ = true;
+    //    if(opts[i] == 'G') drawGeometry_ = true;
+    _fitter->getEventDisplay()->setOptions("ADEHPTG");
 
+    _fitter->displayEvent();
+  }
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
@@ -693,16 +569,19 @@ void TpcPrototypeGenFitTrkFitter::fill_eval_tree(PHCompositeNode* topNode)
   for (SvtxTrackMap::ConstIter itr = _trackmap->begin();
        itr != _trackmap->end(); ++itr)
   {
-    new ((*_tca_trackmap)[i++])(SvtxTrack_v1)(
+    new ((*_tca_trackmap)[i])(SvtxTrack_v1)(
         *dynamic_cast<SvtxTrack_v1*>(itr->second));
 
-    new ((*_tca_tpctrackmap)[i++])(TpcPrototypeTrack)();
+    new ((*_tca_tpctrackmap)[i])(TpcPrototypeTrack)();
     TpcPrototypeTrack* track = dynamic_cast<TpcPrototypeTrack*>(_tca_tpctrackmap->At(i));
     assert(track);
     track->trackID = itr->second->get_id();
     track->chisq = itr->second->get_chisq();
     track->ndf = itr->second->get_ndf();
+
+    i++;
   }
+  _tca_ntrack = i;
 
   i = 0;
   if (_vertexmap)
@@ -769,6 +648,7 @@ void TpcPrototypeGenFitTrkFitter::init_eval_tree()
 
   //! create TTree
   _eval_tree = new TTree("T", "TpcPrototypeGenFitTrkFitter Evaluation");
+  _eval_tree->Branch("nTrack", &_tca_ntrack, "nTrack/I");
 
   //  _eval_tree->Branch("PrimaryParticle", _tca_particlemap);
   //  _eval_tree->Branch("TruthVtx", _tca_vtxmap);
@@ -800,6 +680,7 @@ void TpcPrototypeGenFitTrkFitter::reset_eval_variables()
   _tca_particlemap->Clear();
   _tca_vtxmap->Clear();
 
+  _tca_ntrack = -1;
   _tca_trackmap->Clear();
   _tca_tpctrackmap->Clear();
   _tca_vertexmap->Clear();
@@ -971,6 +852,124 @@ int TpcPrototypeGenFitTrkFitter::GetNodes(PHCompositeNode* topNode)
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
+std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::DisplayCluster(const TrkrCluster* cluster)
+{
+  assert(cluster);
+
+  if (Verbosity() >= 1)
+  {
+    cout << __PRETTY_FUNCTION__ << ": process cluster: ";
+    cluster->identify();
+  }
+
+  // prepare seed
+  TVector3 seed_mom(100, 0, 0);
+  TVector3 seed_pos(0, 0, 0);
+  TMatrixDSym seed_cov(6);
+  for (int i = 0; i < 6; i++)
+  {
+    for (int j = 0; j < 6; j++)
+    {
+      seed_cov[i][j] = 100.;
+    }
+  }
+
+  // Create measurements
+  std::vector<PHGenFit::Measurement*> measurements;
+
+  TrkrDefs::cluskey cluster_key = cluster->getClusKey();
+
+  TVector3 pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
+
+  seed_mom.SetPhi(pos.Phi());
+  seed_mom.SetTheta(pos.Theta());
+
+  seed_pos = pos;
+
+  //TODO use u, v explicitly?
+  TVector3 n(cluster->getPosition(0), cluster->getPosition(1), 0);
+
+  for (int radial_shift = -1; radial_shift <= 1; ++radial_shift)
+  {
+    const double new_radial = pos.Perp() + radial_shift * 0.1;
+    TVector3 new_pos(pos);
+    new_pos.SetPerp(new_radial);
+
+    //------------------------------
+    // new
+
+    // Replace n for the silicon subsystems
+
+    // get the trkrid
+    int layer = TrkrDefs::getLayer(cluster_key);
+
+    // end new
+    //-----------------
+
+    PHGenFit::Measurement* meas = new PHGenFit::PlanarMeasurement(new_pos, n,
+                                                                  cluster->getRPhiError(), cluster->getZError());
+
+    if (Verbosity() > 50)
+    {
+      cout << "Add meas layer " << layer << " cluskey " << cluster_key
+           << endl
+           << " pos.X " << pos.X() << " pos.Y " << pos.Y() << " pos.Z " << pos.Z()
+           << "  n.X " << n.X() << " n.Y " << n.Y()
+           << " RPhiErr " << cluster->getRPhiError()
+           << " ZErr " << cluster->getZError()
+           << endl;
+    }
+    measurements.push_back(meas);
+  }
+
+  /*!
+   * mu+: -13
+   * mu-: 13
+   * pi+: 211
+   * pi-: -211
+   * e-:  11
+   * e+:  -11
+   */
+  //TODO Add multiple TrackRep choices.
+  //int pid = 211;
+  genfit::AbsTrackRep* rep = new genfit::RKTrackRep(-13);
+  std::shared_ptr<PHGenFit::Track> track(new PHGenFit::Track(rep, seed_pos, seed_mom,
+                                                             seed_cov));
+
+  //TODO unsorted measurements, should use sorted ones?
+  track->addMeasurements(measurements);
+
+  //  if (measurements.size()==1) return track;
+
+  /*!
+   *  Fit the track
+   *  ret code 0 means 0 error or good status
+   */
+  if (_fitter->processTrack(track.get(), false) != 0)
+  {
+    if (Verbosity() >= 1)
+    {
+      LogWarning("Track fitting failed");
+      cout << __PRETTY_FUNCTION__ << ": failed cluster build: track->getChisq() " << track->get_chi2() << " get_ndf " << track->get_ndf()
+           << " mom.X " << track->get_mom().X()
+           << " mom.Y " << track->get_mom().Y()
+           << " mom.Z " << track->get_mom().Z()
+           << endl;
+    }
+    //delete track;
+    return nullptr;
+  }
+
+  if (Verbosity() > 50)
+    cout << " track->getChisq() " << track->get_chi2() << " get_ndf " << track->get_ndf()
+         << " mom.X " << track->get_mom().X()
+         << " mom.Y " << track->get_mom().Y()
+         << " mom.Z " << track->get_mom().Z()
+         << endl;
+
+  return track;
+}
+
 //struct CompMeasurementByR {
 //  bool operator() (PHGenFit::Measurement *m1,PHGenFit::Measurement *m2) {
 //	  float x1 = m1->getMeasurement()
@@ -1009,58 +1008,6 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
   // Create measurements
   std::vector<PHGenFit::Measurement*> measurements;
 
-  /*!
-	 * if fit track as a primary track
-	 */
-
-  /*
-  if(invertex and Verbosity() >= 2)
-    {
-      LogDebug(invertex->size_tracks());
-      LogDebug(invertex->get_chisq());
-      LogDebug(invertex->get_ndof());
-      for (unsigned int i = 0; i < 3; i++)
-	for (unsigned int j = 0; j < 3; j++)
-	  {
-	    LogDebug(invertex->get_error(i,j));
-	  }
-    }
-  */
-
-  /*!
-	 *
-	 */
-#if _DEBUG_MODE_ == 1
-  if (invertex
-      //			and invertex->size_tracks() == 1
-  )
-  {
-    TRandom3 rand(0);
-    double dxy = 0.0007;  //7 um
-    double dz = 0.003;    //30 um
-
-    TVector3 pos(invertex->get_x(), invertex->get_y(), invertex->get_z());
-    TMatrixDSym cov(3);
-
-    // Use smeared position instead of reco'd one.
-    double x = rand.Gaus(0, dxy);
-    double y = rand.Gaus(0, dxy);
-    double z = rand.Gaus(0, dz);
-    pos.SetXYZ(x, y, z);
-
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
-        cov[i][j] = 0;
-
-    cov[0][0] = dxy * dxy;
-    cov[1][1] = dxy * dxy;
-    cov[2][2] = dz * dz;
-
-    PHGenFit::Measurement* meas = new PHGenFit::SpacepointMeasurement(
-        pos, cov);
-    measurements.push_back(meas);
-  }
-#else
   //! 1000 is a arbitrary number for now
   const double vertex_chi2_over_dnf_cut = 1000;
   const double vertex_cov_element_cut = 10000;  //arbitrary cut cm*cm
@@ -1094,7 +1041,6 @@ std::shared_ptr<PHGenFit::Track> TpcPrototypeGenFitTrkFitter::ReFitTrack(PHCompo
       }
     }
   }
-#endif
 
   // sort clusters with radius before fitting
   if (Verbosity() > 20) intrack->identify();

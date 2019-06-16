@@ -40,6 +40,7 @@ class Fitter;
 
 class SvtxTrackMap;
 class SvtxVertexMap;
+class TrkrCluster;
 class SvtxVertex;
 class PHCompositeNode;
 //class PHG4TruthInfoContainer;
@@ -264,6 +265,9 @@ class TpcPrototypeGenFitTrkFitter : public SubsysReco
 	 */
   std::shared_ptr<PHGenFit::Track> ReFitTrack(PHCompositeNode*, const SvtxTrack* intrack, const SvtxVertex* invertex = NULL);
 
+  // build a track as a container displaying unused clusters
+  std::shared_ptr<PHGenFit::Track>  DisplayCluster(const TrkrCluster* cluster);
+
   //! Make SvtxTrack from PHGenFit::Track and SvtxTrack
   std::shared_ptr<SvtxTrack> MakeSvtxTrack(const SvtxTrack* svtxtrack, const std::shared_ptr<PHGenFit::Track>& genfit_track, const SvtxVertex* vertex = NULL);
 
@@ -356,6 +360,7 @@ class TpcPrototypeGenFitTrkFitter : public SubsysReco
   std::string _eval_outname;
 
   TTree* _eval_tree;
+  int _tca_ntrack;
   TClonesArray* _tca_particlemap;
   TClonesArray* _tca_vtxmap;
   TClonesArray* _tca_trackmap;

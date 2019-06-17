@@ -11,7 +11,12 @@
 #include <trackbase/TrkrCluster.h>  // for TrkrCluster
 #include <trackbase/TrkrClusterContainer.h>
 #include <trackbase/TrkrDefs.h>
+#include <trackreco/AssocInfoContainer.h>
+
+#include <trackbase_historic/SvtxTrackMap.h>
+#include <trackbase_historic/SvtxTrackMap_v1.h>
 #include <trackbase_historic/SvtxTrack_v1.h>
+#include <trackbase_historic/SvtxVertexMap.h>
 
 #include <trackbase_historic/SvtxTrack.h>
 #include <trackbase_historic/SvtxTrackMap.h>
@@ -125,28 +130,29 @@ using namespace std;
  */
 TpcPrototypeGenFitTrkFinder::TpcPrototypeGenFitTrkFinder(const string& name, int layers)
   : SubsysReco(name)
-  , _fitter(NULL)
+  , _fitter(nullptr)
   , _track_fitting_alg_name("KalmanFitter")
   , nLayer(layers)
   , minLayer(8)
   , _primary_pid_guess(2212)
   , rphiWindow(2)
   , ZWindow(2)
-  , _clustermap(NULL)
-  , _trackmap(NULL)
-  , _vertexmap(NULL)
+  , _clustermap(nullptr)
+  , _trackmap(nullptr)
+  , _assoc_container(nullptr)
+  , _vertexmap(nullptr)
   , _do_eval(false)
   , _eval_outname("TpcPrototypeGenFitTrkFinder_eval.root")
-  , _eval_tree(NULL)
+  , _eval_tree(nullptr)
   , _tca_ntrack(-1)
-  , _tca_trackmap(NULL)
+  , _tca_trackmap(nullptr)
   , _do_evt_display(false)
 {
   Verbosity(0);
 
   _event = 0;
 
-  _cluster_eval_tree = NULL;
+  _cluster_eval_tree = nullptr;
   _cluster_eval_tree_x = WILD_FLOAT;
   _cluster_eval_tree_y = WILD_FLOAT;
   _cluster_eval_tree_z = WILD_FLOAT;
@@ -377,6 +383,42 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
     }
     cout << endl;
   }  //  if (Verbosity())
+
+  //output
+  assert(_trackmap);
+  assert(_assoc_container);
+  for (const auto& quality_tracklet : quality_tracklets_map)
+  {
+    const tracklet_t& tracklet = quality_tracklet.second;
+    assert(tracklet.front());
+    assert(tracklet.back());
+    TVector3 pos_front(tracklet.front()->getPosition(0), tracklet.front()->getPosition(1), tracklet.front()->getPosition(2));
+    TVector3 pos_back(tracklet.back()->getPosition(0), tracklet.back()->getPosition(1), tracklet.back()->getPosition(2));
+
+    TVector3 seed_mom(pos_back - pos_front);
+    seed_mom.SetMag(120);
+
+    TVector3 seed_pos(pos_front);
+
+    std::unique_ptr<SvtxTrack_v1> svtx_track(new SvtxTrack_v1());
+
+    svtx_track->set_id(_trackmap->size());
+
+    // dummy values, set px to make it through the minimum pT cut
+    svtx_track->set_px(seed_mom.x());
+    svtx_track->set_py(seed_mom.y());
+    svtx_track->set_pz(seed_mom.z());
+    svtx_track->set_x(seed_pos.x());
+    svtx_track->set_y(seed_pos.y());
+    svtx_track->set_z(seed_pos.z());
+    for (const TrkrCluster* cluster : tracklet)
+    {
+      svtx_track->insert_cluster_key(cluster->getClusKey());
+      _assoc_container->SetClusterTrackAssoc(cluster->getClusKey(), svtx_track->get_id());
+    }
+
+    _trackmap->insert(svtx_track.get());
+  }
 
   if (_do_eval)
   {
@@ -622,6 +664,12 @@ int TpcPrototypeGenFitTrkFinder::CreateNodes(PHCompositeNode* topNode)
   if (Verbosity() > 0)
     cout << "Svtx/SvtxVertexMap node added" << endl;
 
+  _assoc_container = new AssocInfoContainer;
+  PHIODataNode<PHObject>* assoc_node = new PHIODataNode<PHObject>(
+      _assoc_container, "AssocInfoContainer", "PHObject");
+  tb_node->addNode(assoc_node);
+  if (Verbosity() > 0)
+    cout << "Svtx/AssocInfoContainer node added" << endl;
   return Fun4AllReturnCodes::EVENT_OK;
 }
 

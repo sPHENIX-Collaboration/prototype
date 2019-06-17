@@ -36,7 +36,7 @@ class SvtxVertexMap;
 class TrkrCluster;
 class SvtxVertex;
 class PHCompositeNode;
-//class PHG4TruthInfoContainer;
+class AssocInfoContainer;
 class TrkrClusterContainer;
 class TTree;
 
@@ -147,6 +147,7 @@ class TpcPrototypeGenFitTrkFinder : public SubsysReco
   //  PHG4TruthInfoContainer* _truth_container;
   TrkrClusterContainer* _clustermap;
   SvtxTrackMap* _trackmap;
+  AssocInfoContainer *_assoc_container;
   SvtxVertexMap* _vertexmap;
 
   //! Evaluation

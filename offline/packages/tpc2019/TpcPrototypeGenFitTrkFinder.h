@@ -64,9 +64,8 @@ class TpcPrototypeGenFitTrkFinder : public SubsysReco
 
   //! For evalution
   //! Change eval output filename
-  void set_eval_filename(const char* file)
+  void set_eval_filename(const std::string & file)
   {
-    if (file)
       _eval_outname = file;
   }
   std::string get_eval_filename() const

@@ -10,12 +10,7 @@
 //
 //////////////////////////////////////////////////
 
-//
-// for degree to radian conversion
-//
-double __Pi = 3.14159265;
 
-//
 // Class definition
 //
 class TPCR2Map
@@ -2094,7 +2089,7 @@ class TPCR2Map
 
    // phi-position in real coordinate (radian)
    double GetphiposReal(int card, int chan, double offset)
-       { return (Getphipos(card,chan)+0.5)*__Pi/12.0/128.0+offset;}
+       { return (Getphipos(card,chan)+0.5)*M_PI/12.0/128.0+offset;}
 
    // x-position in real coordinate (mm)
    double GetXpos(int card, int chan, double roffset, double phioffset){

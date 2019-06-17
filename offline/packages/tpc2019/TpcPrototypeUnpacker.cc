@@ -224,7 +224,7 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
   if (event == nullptr)
   {
     if (Verbosity() >= VERBOSITY_SOME)
-      cout << "GenericUnpackPRDF::Process_Event - Event not found" << endl;
+      cout << "TpcPrototypeUnpacker::Process_Event - Event not found" << endl;
     return Fun4AllReturnCodes::DISCARDEVENT;
   }
 
@@ -234,7 +234,7 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
   // search for data event
   if (event->getEvtType() == BEGRUNEVENT)
   {
-    get_motor_loc(event);
+    //    get_motor_loc(event);
 
     return Fun4AllReturnCodes::EVENT_OK;
   }
@@ -244,121 +244,215 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
   m_eventHeader.run = event->getRunNumber();
   m_eventHeader.event = event->getEvtSequence();
 
-  m_eventHeader.xray_x = m_XRayLocationX;
-  m_eventHeader.xray_y = m_XRayLocationY;
+  //  m_eventHeader.xray_x = m_XRayLocationX;
+  //  m_eventHeader.xray_y = m_XRayLocationY;
 
   if (m_pdfMaker)
   {
     m_pdfMaker->MakeSectionPage(str(boost::format("ADC signal fits for Run %1% and event %2%") % m_eventHeader.run % m_eventHeader.event));
   }
 
-  Packet* p = event->getPacket(kPACKET_ID, ID4EVT);
+  static const char* MAX_LENGTH = "MAX_SAMPLES";
+  static const char* IS_PRESENT = "IS_PRESENT";
+  static const char* BX_COUNTER = "BX";
+
+  Packet* p = event->getPacket(kPACKET_ID);
   if (p == nullptr)
     return Fun4AllReturnCodes::DISCARDEVENT;
 
   if (Verbosity() >= VERBOSITY_SOME) p->identify();
 
-  if (Verbosity() >= VERBOSITY_MORE)
+  if (Verbosity() >= VERBOSITY_EVEN_MORE)
   {
-    cout << "TpcPrototypeUnpacker::process_event - p->iValue(0) = "
-         << p->iValue(0) << ", p->iValue(1) = " << p->iValue(1)
-         << ", p->iValue(2) = " << p->iValue(2)
-         << ", p->iValue(3) = " << p->iValue(3) << endl;
+    cout << "TpcPrototypeUnpacker::process_event - package dump" << endl;
     p->dump();
   }
 
-  m_eventHeader.bx_counter = 0;
-  bool first_channel = true;
-  for (unsigned int channel = 0; channel < kN_CHANNELS; channel++)
+  int max_length[kN_FEES] = {-1};
+  for (unsigned int i = 0; i < kN_FEES; i++)
   {
-    m_chanHeader = ChannelHeader();
-
-    m_chanHeader.size = p->iValue(channel * kPACKET_LENGTH + 1) & 0xffff;         // number of words until the next channel (header included). this is the real packet_length
-    m_chanHeader.packet_type = p->iValue(channel * kPACKET_LENGTH + 2) & 0xffff;  // that's the Elink packet type
-    m_chanHeader.bx_counter = ((p->iValue(channel * kPACKET_LENGTH + 4) & 0xffff) << 4) | (p->iValue(channel * kPACKET_LENGTH + 5) & 0xffff);
-    m_chanHeader.sampa_address = (p->iValue(channel * kPACKET_LENGTH + 3) >> 5) & 0xf;
-    m_chanHeader.sampa_channel = p->iValue(channel * kPACKET_LENGTH + 3) & 0x1f;
-    m_chanHeader.fee_channel = (m_chanHeader.sampa_address << 5) | m_chanHeader.sampa_channel;
-
-    const pair<int, int> pad = SAMPAChan2PadXY(m_chanHeader.fee_channel);
-
-    m_chanHeader.pad_x = pad.first;
-    m_chanHeader.pad_y = pad.second;
-
-    if (first_channel)
+    try
     {
-      first_channel = false;
-      m_eventHeader.bx_counter = m_chanHeader.bx_counter;
+      max_length[i] = p->iValue(i, MAX_LENGTH);
     }
-    else if (m_eventHeader.bx_counter != m_chanHeader.bx_counter)
+    catch (const std::out_of_range& e)
     {
-      m_eventHeader.bx_counter_consistent = false;
-
-      //      printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bx_counter mismatch (expected 0x%x, got 0x%x)\n", m_eventHeader.event, m_eventHeader.bx_counter, m_chanHeader.bx_counter);
-      //
-      //      event->identify();
-      //      p->identify();
-      //      return Fun4AllReturnCodes::DISCARDEVENT;
-    }
-
-    if (m_chanHeader.fee_channel > 255 || m_chanHeader.sampa_address > 7 || m_chanHeader.sampa_channel > 31)
-    {
-      printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bad channel (got %i, sampa_addr: %i, sampa_chan: %i)\n", m_eventHeader.event, m_chanHeader.fee_channel, m_chanHeader.sampa_address, m_chanHeader.sampa_channel);
-
-      event->identify();
-      p->identify();
-      return Fun4AllReturnCodes::DISCARDEVENT;
-    }
-
-    //    SampaChannel *chan = fee_data->append(new SampaChannel(fee_channel, bx_counter, packet_type));
-
-    assert(m_chanData.size() == kSAMPLE_LENGTH);
-    fill(m_chanData.begin(), m_chanData.end(), 0);
-    for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
-    {
-      //        chan->append(p->iValue(channel * PACKET_LENGTH + 9 + sample) & 0xffff);
-      uint32_t value = p->iValue(channel * kPACKET_LENGTH + 9 + sample) & 0xffff;
-      m_chanData[sample] = value;
+      max_length[i] = -1;
+      break;
     }
 
     if (Verbosity() >= VERBOSITY_MORE)
     {
-      cout << "TpcPrototypeUnpacker::process_event - "
-           << "m_chanHeader.m_size = " << int(m_chanHeader.size) << ", "
-           << "m_chanHeader.m_packet_type = " << int(m_chanHeader.packet_type) << ", "
-           << "m_chanHeader.m_bx_counter = " << int(m_chanHeader.bx_counter) << ", "
-           << "m_chanHeader.m_sampa_address = " << int(m_chanHeader.sampa_address) << ", "
-           << "m_chanHeader.m_sampa_channel = " << int(m_chanHeader.sampa_channel) << ", "
-           << "m_chanHeader.m_fee_channel = " << int(m_chanHeader.fee_channel) << ": "
-           << " ";
+      cout << "TpcPrototypeUnpacker::process_event - max_length[" << i << "]=" << max_length[i] << endl;
+    }
+  }
 
-      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
+  m_eventHeader.bx_counter = 0;
+  //  bool first_channel = true;
+
+  for (unsigned int fee = 0; fee < kN_FEES; ++fee)
+  {
+    try
+    {
+      if (!p->iValue(fee, IS_PRESENT))
       {
-        cout << "data[" << sample << "] = " << int(m_chanData[sample]) << " ";
+        if (Verbosity() >= VERBOSITY_MORE)
+        {
+          cout << "TpcPrototypeUnpacker::process_event - missing fee[" << fee << "]=" << endl;
+        }
+        continue;
       }
+    }
+    catch (const std::out_of_range& e)
+    {
+      cout << "TpcPrototypeUnpacker::process_event - out_of_range in p->iValue(" << fee << ", IS_PRESENT)" << endl;
 
-      cout << endl;
+      break;
     }
 
-    // fill event data
-    if (PadPlaneData::IsValidPad(m_chanHeader.pad_x, m_chanHeader.pad_y))
+    if (Verbosity() >= VERBOSITY_MORE)
     {
-      vector<int>& paddata = m_padPlaneData.getPad(m_chanHeader.pad_x, m_chanHeader.pad_y);
+      cout << "TpcPrototypeUnpacker::process_event - processing fee[" << fee << "]=" << endl;
+    }
 
+    for (unsigned int channel = 0; channel < kN_CHANNELS; channel++)
+    {
+      m_chanHeader = ChannelHeader();
+      m_chanHeader.fee_id = fee;
+      m_chanHeader.size = p->iValue(fee, channel, "NR_SAMPLES");  // number of words until the next channel (header included). this is the real packet_length
+
+      if (Verbosity() >= VERBOSITY_MORE)
+      {
+        cout << "TpcPrototypeUnpacker::process_event - processing fee["
+             << fee << "], chan[" << channel << "] NR_SAMPLES = "
+             << p->iValue(fee, channel, "NR_SAMPLES") << endl;
+      }
+
+      unsigned int real_t = 3;
+      uint32_t old_bx_count = 0;
+      uint16_t adc = 0;
+      uint32_t bx_count = 0;
+      m_chanData.resize(kSAMPLE_LENGTH, 0);
+
+      for (unsigned int t = 3; t < kSAMPLE_LENGTH; t++)
+      {
+        try
+        {
+          adc = p->iValue(fee, channel, t);
+          bx_count = p->iValue(fee, channel, t, BX_COUNTER);
+
+          if (real_t == 3)
+            m_chanHeader.bx_counter = p->iValue(fee, channel, t, BX_COUNTER);
+        }
+        catch (const std::out_of_range& e)
+        {
+          adc = 0;
+          bx_count = 0;
+          continue;
+        }
+
+        if (bx_count >= old_bx_count + 128)
+        {
+          old_bx_count = bx_count;
+          real_t = 3;
+          m_chanData.resize(kSAMPLE_LENGTH, 0);
+        }
+
+        assert(real_t >= 0);
+        assert(real_t < kSAMPLE_LENGTH);
+        m_chanData[real_t] = adc;
+        //          h_raw_wave->Fill(real_t, adc);
+        //          h_raw->Fill(real_t, total_chan, adc);
+        //          adc_data->push_back(adc);
+        real_t++;
+      }  //      for (unsigned int t = 3; t < kSAMPLE_LENGTH; t++)
+
+      //      m_chanHeader.packet_type = p->iValue(channel * kPACKET_LENGTH + 2) & 0xffff;  // that's the Elink packet type
+      //      m_chanHeader.bx_counter = ((p->iValue(channel * kPACKET_LENGTH + 4) & 0xffff) << 4) | (p->iValue(channel * kPACKET_LENGTH + 5) & 0xffff);
+      //      m_chanHeader.sampa_address = (p->iValue(channel * kPACKET_LENGTH + 3) >> 5) & 0xf;
+      //      m_chanHeader.sampa_channel = p->iValue(channel * kPACKET_LENGTH + 3) & 0x1f;
+      m_chanHeader.fee_channel = channel;
+
+      //            const pair<int, int> pad = SAMPAChan2PadXY(m_chanHeader.fee_channel);
+
+      m_chanHeader.pad_x = TpcR2Map.GetRpos(fee, channel);
+      m_chanHeader.pad_y = TpcR2Map.Getphipos(fee, channel);
+
+      //      if (first_channel)
+      //      {
+      //        first_channel = false;
+      //        m_eventHeader.bx_counter = m_chanHeader.bx_counter;
+      //      }
+      //      else if (m_eventHeader.bx_counter != m_chanHeader.bx_counter)
+      //      {
+      //        m_eventHeader.bx_counter_consistent = false;
+      //
+      //        //      printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bx_counter mismatch (expected 0x%x, got 0x%x)\n", m_eventHeader.event, m_eventHeader.bx_counter, m_chanHeader.bx_counter);
+      //        //
+      //        //      event->identify();
+      //        //      p->identify();
+      //        //      return Fun4AllReturnCodes::DISCARDEVENT;
+      //      }
+
+      //      if (m_chanHeader.fee_channel > 255 || m_chanHeader.sampa_address > 7 || m_chanHeader.sampa_channel > 31)
+      //      {
+      //        printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bad channel (got %i, sampa_addr: %i, sampa_chan: %i)\n", m_eventHeader.event, m_chanHeader.fee_channel, m_chanHeader.sampa_address, m_chanHeader.sampa_channel);
+      //
+      //        event->identify();
+      //        p->identify();
+      //        return Fun4AllReturnCodes::DISCARDEVENT;
+      //      }
+
+      //    SampaChannel *chan = fee_data->append(new SampaChannel(fee_channel, bx_counter, packet_type));
+
+      //      assert(m_chanData.size() == kSAMPLE_LENGTH);
+      //      fill(m_chanData.begin(), m_chanData.end(), 0);
+      //      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
+      //      {
+      //        //        chan->append(p->iValue(channel * PACKET_LENGTH + 9 + sample) & 0xffff);
+      //        uint32_t value = p->iValue(channel * kPACKET_LENGTH + 9 + sample) & 0xffff;
+      //        m_chanData[sample] = value;
+      //      }
+      //
+      if (Verbosity() >= VERBOSITY_MORE)
+      {
+        cout << "TpcPrototypeUnpacker::process_event - "
+             << "m_chanHeader.m_size = " << int(m_chanHeader.size) << ", "
+             << "m_chanHeader.m_packet_type = " << int(m_chanHeader.packet_type) << ", "
+             << "m_chanHeader.m_bx_counter = " << int(m_chanHeader.bx_counter) << ", "
+             << "m_chanHeader.m_sampa_address = " << int(m_chanHeader.sampa_address) << ", "
+             << "m_chanHeader.m_sampa_channel = " << int(m_chanHeader.sampa_channel) << ", "
+             << "m_chanHeader.m_fee_channel = " << int(m_chanHeader.fee_channel) << ": "
+             << " ";
+
+        for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
+        {
+          cout << "data[" << sample << "] = " << int(m_chanData[sample]) << " ";
+        }
+
+        cout << endl;
+      }
+
+      //      // fill event data
+      //      if (PadPlaneData::IsValidPad(m_chanHeader.pad_x, m_chanHeader.pad_y))
+      //      {
+      vector<int>& paddata = m_padPlaneData.getPad(m_chanHeader.pad_x, m_chanHeader.pad_y);
+      //
       for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
       {
         paddata[sample] = int(m_chanData[sample]);
       }
-
+      //
       auto pedestal_max = roughZeroSuppression(paddata);
       m_chanHeader.pedestal = pedestal_max.first;
       m_chanHeader.max = pedestal_max.second;
-    }
-    // output per-channel TTree
-    m_chanT->Fill();
-  }
+      //      }
+      // output per-channel TTree
+      m_chanT->Fill();
+    }  //    for (unsigned int channel = 0; channel < kN_CHANNELS; channel++)
+  }    //  for (unsigned int fee = 0; fee < kN_FEES; ++fee)
 
-  Clustering();
+  //  Clustering();
 
   h_norm->Fill("Event count", 1);
   m_eventT->Fill();

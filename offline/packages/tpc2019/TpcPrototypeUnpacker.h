@@ -190,15 +190,18 @@ class TpcPrototypeUnpacker : public SubsysReco
    public:
     int size;
     //! = p->iValue(channel * kPACKET_LENGTH + 2) & 0xffff;  // that's the Elink packet type
-    uint8_t packet_type;
+    int packet_type;
     //! = ((p->iValue(channel * kPACKET_LENGTH + 4) & 0xffff) << 4) | (p->iValue(channel * kPACKET_LENGTH + 5) & 0xffff);
-    uint32_t bx_counter;
+    int bx_counter;
     //! = (p->iValue(channel * kPACKET_LENGTH + 3) >> 5) & 0xf;
-    uint8_t sampa_address;
+    int sampa_address;
     //! = p->iValue(channel * kPACKET_LENGTH + 3) & 0x1f;
-    uint16_t sampa_channel;
+    int sampa_channel;
     //! = (sampa_address << 5) | sampa_channel;
-    uint16_t fee_channel;
+    int fee_channel;
+
+    //! which fee
+    int fee_id;
 
     //! pad coordinate
     int pad_x;
@@ -208,12 +211,13 @@ class TpcPrototypeUnpacker : public SubsysReco
     int max;
 
     ChannelHeader()
-      : size(0)
-      , packet_type(0)
-      , bx_counter(0)
-      , sampa_address(0)
-      , sampa_channel(0)
-      , fee_channel(0)
+      : size(-1)
+      , packet_type(-1)
+      , bx_counter(-1)
+      , sampa_address(-1)
+      , sampa_channel(-1)
+      , fee_channel(-1)
+      , fee_id(-1)
       , pad_x(-1)
       , pad_y(-1)
       , pedestal(-1)

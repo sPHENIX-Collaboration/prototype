@@ -123,11 +123,14 @@ using namespace std;
 /*
  * Constructor
  */
-TpcPrototypeGenFitTrkFinder::TpcPrototypeGenFitTrkFinder(const string& name)
+TpcPrototypeGenFitTrkFinder::TpcPrototypeGenFitTrkFinder(const string& name, int layers)
   : SubsysReco(name)
   , _fitter(NULL)
   , _track_fitting_alg_name("KalmanFitter")
+  , nLayer(layers)
   , _primary_pid_guess(2212)
+  , rphiWindow(2)
+  , ZWindow(2)
   , _clustermap(NULL)
   , _trackmap(NULL)
   , _vertexmap(NULL)
@@ -215,8 +218,88 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
     rf_phgf_tracks.clear();
   }
 
+  typedef vector<const TrkrCluster*> tracklet_t;
+  set<tracklet_t> tracklets;
 
+  //progressive search track finding
+  for (int layer = 0; layer < nLayer; ++layer)
+  {
+    set<tracklet_t> new_tracklets(tracklets);
+    auto cluster_range = _clustermap->getClusters(TrkrDefs::tpcId, layer);
 
+    for (auto iter = cluster_range.first; iter != cluster_range.second; ++iter)
+    {
+      const TrkrCluster* cluster = iter->second;
+      assert(cluster);
+
+      TVector3 pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
+      TVector3 n(cluster->getPosition(0), cluster->getPosition(1), 0);
+
+      TVector3 n_dir(cluster->getPosition(0), cluster->getPosition(1), 0);
+      n_dir.SetMag(1);
+      TVector3 z_dir(0, 0, 1);
+      TVector3 azimuth_dir(z_dir.Cross(n_dir));
+
+      bool matched = false;
+      for (const auto tracklet : tracklets)
+      {
+        assert(tracklet.size() >= 1);
+        const TrkrCluster* last_cluster = tracklet.back();
+        assert(last_cluster);
+
+        TVector3 last_pos(last_cluster->getPosition(0), last_cluster->getPosition(1), last_cluster->getPosition(2));
+
+        TVector3 pos_diff = pos - last_pos;
+        const double n_residual = pos_diff.Dot(n_dir);
+        const double z_residual = pos_diff.Dot(z_dir);
+        const double azimuth_residual = pos_diff.Dot(azimuth_dir);
+
+        assert(n_residual > 0);
+        const double z_diff = z_residual / n_residual;
+        const double azimuth_diff = azimuth_residual / n_residual;
+        if (abs(azimuth_diff) < rphiWindow and abs(z_diff) < ZWindow)
+        {  //have match
+
+          if (Verbosity())
+          {
+            cout << __PRETTY_FUNCTION__ << " adding cluster at layer " << layer << " to tracklet length " << tracklet.size() << endl;
+          }
+
+          auto iter_old_tracklet =
+              new_tracklets.find(tracklet);
+          if (iter_old_tracklet != new_tracklets.end())
+            new_tracklets.erase(iter_old_tracklet);  //remove the shorter tracklet
+
+          tracklet_t new_tracklet(tracklet);
+          new_tracklet.push_back(cluster);
+          new_tracklets.insert(new_tracklet);  // insert the longer tracklet
+          matched = true;
+        }
+
+      }  //     for (auto& tracklet : tracklets)
+
+      if (not matched)
+      {  //new track seed from unused cluster
+        new_tracklets.insert(tracklet_t(1, cluster));
+        if (Verbosity())
+        {
+          cout << __PRETTY_FUNCTION__ << " init tracket with cluster at layer " << layer << endl;
+        }
+      }
+    }  //      for (auto iter = cluster_range.first; iter != cluster_range.second; ++iter)
+
+    tracklets = new_tracklets;
+  }  //  for (int layer = 0; layer < nLayer; ++layer)
+
+  if (Verbosity())
+  {
+    cout << __PRETTY_FUNCTION__ << "print trackets: ";
+    for (const auto& tracklet : tracklets)
+    {
+      cout << "\t"
+           << "size = " << tracklet.size() << endl;
+    }
+  }
 
   if (_do_eval)
   {
@@ -387,9 +470,7 @@ int TpcPrototypeGenFitTrkFinder::GetNodes(PHCompositeNode* topNode)
   _clustermap = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
   if (!_clustermap && _event < 2)
   {
-    cout << PHWHERE << " TRKR_CLUSTER node not found on node tree"
-         << endl;
-    return Fun4AllReturnCodes::ABORTEVENT;
+    return Fun4AllReturnCodes::ABORTRUN;
   }
 
   // Input Svtx Tracks

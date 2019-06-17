@@ -42,6 +42,7 @@
 #include <phool/recoConsts.h>
 
 #include <tpc2019/TpcPrototypeClusterizer.h>
+#include <tpc2019/TpcPrototypeGenFitTrkFinder.h>
 #include <tpc2019/TpcPrototypeGenFitTrkFitter.h>
 
 R__LOAD_LIBRARY(libcalo_reco.so)
@@ -68,7 +69,7 @@ int n_tpc_layer_mid = 16;
 int n_tpc_layer_outer = 0;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
-int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
+int Fun4All_G4_TPC(int nEvents = 1, bool eventDisp = false, int verbosity = 1)
 {
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors");
@@ -101,7 +102,7 @@ int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
   recoConsts *rc = recoConsts::instance();
   // only set this if you want a fixed random seed to make
   // results reproducible for testing
-   rc->set_IntFlag("RANDOMSEED",12345678);
+  rc->set_IntFlag("RANDOMSEED", 12345678);
 
   // simulated setup sits at eta=1, theta=40.395 degrees
   double theta = 90 - 5;
@@ -209,6 +210,7 @@ int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
 
   // The pad plane readout default is set in PHG4TpcPadPlaneReadout
   //only build mid-layer and to size
+  padplane->set_int_param("tpc_minlayer_inner", 0);
   padplane->set_int_param("ntpc_layers_inner", 0);
   padplane->set_int_param("ntpc_layers_outer", 0);
   padplane->set_double_param("maxdriftlength", TPCDriftLength);
@@ -260,7 +262,6 @@ int Fun4All_G4_TPC(int nEvents = 100, bool eventDisp = false, int verbosity = 1)
     finder->set_do_evt_display(eventDisp);
     finder->set_do_eval(true);
     se->registerSubsystem(finder);
-
   }
   else
   {

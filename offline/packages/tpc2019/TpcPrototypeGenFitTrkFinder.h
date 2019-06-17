@@ -45,7 +45,7 @@ class TpcPrototypeGenFitTrkFinder : public SubsysReco
 {
  public:
   //! Default constructor
-  TpcPrototypeGenFitTrkFinder(const std::string& name = "TpcPrototypeGenFitTrkFinder");
+  TpcPrototypeGenFitTrkFinder(const std::string& name = "TpcPrototypeGenFitTrkFinder", int layers = 16);
 
   //! dtor
   ~TpcPrototypeGenFitTrkFinder();
@@ -133,7 +133,10 @@ class TpcPrototypeGenFitTrkFinder : public SubsysReco
   //! KalmanFitterRefTrack, KalmanFitter, DafSimple, DafRef
   std::string _track_fitting_alg_name;
 
+  int nLayer;
   int _primary_pid_guess;
+  double rphiWindow;
+  double ZWindow;
 
   //! Input Node pointers
   //  PHG4TruthInfoContainer* _truth_container;

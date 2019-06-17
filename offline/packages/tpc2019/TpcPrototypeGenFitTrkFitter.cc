@@ -1239,8 +1239,8 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
 
       TVector3 pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
 
-      seed_mom.SetPhi(pos.Phi());
-      seed_mom.SetTheta(pos.Theta());
+//      seed_mom.SetPhi(pos.Phi());
+//      seed_mom.SetTheta(pos.Theta());
 
       //TODO use u, v explicitly?
       TVector3 n(cluster->getPosition(0), cluster->getPosition(1), 0);

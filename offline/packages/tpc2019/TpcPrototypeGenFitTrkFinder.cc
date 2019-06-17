@@ -128,6 +128,7 @@ TpcPrototypeGenFitTrkFinder::TpcPrototypeGenFitTrkFinder(const string& name, int
   , _fitter(NULL)
   , _track_fitting_alg_name("KalmanFitter")
   , nLayer(layers)
+  , minLayer(8)
   , _primary_pid_guess(2212)
   , rphiWindow(2)
   , ZWindow(2)
@@ -218,7 +219,7 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
     rf_phgf_tracks.clear();
   }
 
-  typedef vector<const TrkrCluster*> tracklet_t;
+  assert(_clustermap);
   set<tracklet_t> tracklets;
 
   //progressive search track finding
@@ -260,7 +261,7 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
         if (abs(azimuth_diff) < rphiWindow and abs(z_diff) < ZWindow)
         {  //have match
 
-          if (Verbosity())
+          if (Verbosity() >= 2)
           {
             cout << __PRETTY_FUNCTION__ << " adding cluster at layer " << layer << " to tracklet length " << tracklet.size() << endl;
           }
@@ -274,14 +275,14 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
           new_tracklet.push_back(cluster);
           new_tracklets.insert(new_tracklet);  // insert the longer tracklet
           matched = true;
-        }
+        }  //have match
 
       }  //     for (auto& tracklet : tracklets)
 
       if (not matched)
       {  //new track seed from unused cluster
         new_tracklets.insert(tracklet_t(1, cluster));
-        if (Verbosity())
+        if (Verbosity() >= 2)
         {
           cout << __PRETTY_FUNCTION__ << " init tracket with cluster at layer " << layer << endl;
         }
@@ -293,19 +294,184 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
 
   if (Verbosity())
   {
-    cout << __PRETTY_FUNCTION__ << "print trackets: ";
+    cout << __PRETTY_FUNCTION__ << "print initial trackets: ";
     for (const auto& tracklet : tracklets)
     {
-      cout << "\t"
-           << "size = " << tracklet.size() << endl;
+      cout << ","
+           << "size = " << tracklet.size();
+    }
+    cout << endl;
+  }
+
+  // track quality map
+  multimap<double, tracklet_t> quality_tracklets_map;
+  for (const auto& tracklet : tracklets)
+  {
+    double chi2Ndf = getChi2Ndf(tracklet);
+    if (chi2Ndf > 0)
+      quality_tracklets_map.insert(std::pair<double, tracklet_t>(chi2Ndf, tracklet));
+  }
+  if (Verbosity())
+  {
+    cout << __PRETTY_FUNCTION__ << "print fitted trackets: ";
+    for (const auto& tracklet : quality_tracklets_map)
+    {
+      cout << ","
+           << "size = " << tracklet.second.size() << " chi2/ndf = " << tracklet.first;
+    }
+    cout << endl;
+  }  //  if (Verbosity())
+
+  // deghost
+  for (auto iter_current = quality_tracklets_map.begin(); iter_current != quality_tracklets_map.end(); ++iter_current)
+  {
+    const tracklet_t& track_current = iter_current->second;
+
+    auto iter_check = iter_current;
+    ++iter_check;
+    for (; iter_check != quality_tracklets_map.end();)
+    {
+      const tracklet_t& track_check = iter_check->second;
+
+      unsigned int identical_cluster = 0;
+
+      for (const auto cluster : track_current)
+      {
+        assert(cluster);
+
+        if (find(track_check.begin(), track_check.end(), cluster) != track_check.end())
+          ++identical_cluster;
+      }
+
+      if (identical_cluster >= track_current.size() / 3 or identical_cluster >= track_check.size() / 3)
+      {
+        if (Verbosity())
+        {
+          cout << __PRETTY_FUNCTION__ << " found " << identical_cluster << "-shared ghost track size" << track_check.size() << " chi2ndf" << iter_check->first  //
+               << " from base track size" << track_current.size() << " chi2ndf" << iter_current->first << endl;
+        }
+
+        auto iter_tmp = iter_check;
+        ++iter_check;
+
+        quality_tracklets_map.erase(iter_tmp);
+      }
+      else
+      {
+        if (Verbosity())
+        {
+          cout << __PRETTY_FUNCTION__ << "low " << identical_cluster << "-shared track size" << track_check.size() << " chi2ndf" << iter_check->first  //
+               << " from base track size" << track_current.size() << " chi2ndf" << iter_current->first << endl;
+        }
+        ++iter_check;
+      }
     }
   }
+  if (Verbosity())
+  {
+    cout << __PRETTY_FUNCTION__ << "print deghosted trackets: ";
+    for (const auto& tracklet : quality_tracklets_map)
+    {
+      cout << ","
+           << "size = " << tracklet.second.size() << " chi2/ndf = " << tracklet.first;
+    }
+    cout << endl;
+  }  //  if (Verbosity())
 
   if (_do_eval)
   {
     fill_eval_tree(topNode);
   }
   return Fun4AllReturnCodes::EVENT_OK;
+}
+
+double TpcPrototypeGenFitTrkFinder::getChi2Ndf(const tracklet_t& tracklet)
+{
+  assert(_clustermap);
+
+  if (tracklet.size() < minLayer)
+  {
+    if (Verbosity())
+    {
+      cout << __PRETTY_FUNCTION__ << " drop short tracklet size = " << tracklet.size() << " < " << minLayer << endl;
+    }
+    return -1;
+  }
+
+  // prepare seed
+  assert(tracklet.front());
+  assert(tracklet.back());
+  TVector3 pos_front(tracklet.front()->getPosition(0), tracklet.front()->getPosition(1), tracklet.front()->getPosition(2));
+  TVector3 pos_back(tracklet.back()->getPosition(0), tracklet.back()->getPosition(1), tracklet.back()->getPosition(2));
+
+  TVector3 seed_mom(pos_back - pos_front);
+  seed_mom.SetMag(120);
+
+  TVector3 seed_pos(pos_front);
+  TMatrixDSym seed_cov(6);
+  for (int i = 0; i < 6; i++)
+  {
+    for (int j = 0; j < 6; j++)
+    {
+      seed_cov[i][j] = 100.;
+    }
+  }
+
+  // Create measurements
+  std::vector<PHGenFit::Measurement*> measurements;
+  for (const auto cluster : tracklet)
+  {
+    assert(cluster);
+    if (Verbosity() >= 2)
+    {
+      TrkrDefs::cluskey cluster_key = cluster->getClusKey();
+      int layer = TrkrDefs::getLayer(cluster_key);
+
+      cout << __PRETTY_FUNCTION__ << "add cluster on layer " << layer << ": ";
+      cluster->identify();
+    }
+    TVector3 pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
+
+    //TODO use u, v explicitly?
+    TVector3 n(cluster->getPosition(0), cluster->getPosition(1), 0);
+
+    PHGenFit::Measurement* meas = new PHGenFit::PlanarMeasurement(pos, n,
+                                                                  cluster->getRPhiError(),
+                                                                  cluster->getZError());
+
+    measurements.push_back(meas);
+
+  }  //    for (const auto cluster : clusterLayer)
+
+  // do the fit
+  genfit::AbsTrackRep* rep = new genfit::RKTrackRep(_primary_pid_guess);
+  std::shared_ptr<PHGenFit::Track> phgf_track(new PHGenFit::Track(rep, seed_pos, seed_mom,
+                                                                  seed_cov));
+  phgf_track->addMeasurements(measurements);
+  if (_fitter->processTrack(phgf_track.get(), false) != 0)
+  {
+    if (Verbosity() >= 1)
+    {
+      LogWarning("Track fitting failed");
+      cout << __PRETTY_FUNCTION__ << " track->getChisq() " << phgf_track->get_chi2() << " get_ndf " << phgf_track->get_ndf()
+           << " mom.X " << phgf_track->get_mom().X()
+           << " mom.Y " << phgf_track->get_mom().Y()
+           << " mom.Z " << phgf_track->get_mom().Z()
+           << endl;
+    }
+    //delete track;
+    return -1;
+  }
+
+  if (Verbosity() >= 1)
+  {
+    cout << __PRETTY_FUNCTION__ << " track->getChisq() " << phgf_track->get_chi2() << " get_ndf " << phgf_track->get_ndf()
+         << " mom.X " << phgf_track->get_mom().X()
+         << " mom.Y " << phgf_track->get_mom().Y()
+         << " mom.Z " << phgf_track->get_mom().Z()
+         << endl;
+  }
+  return phgf_track->get_chi2() / phgf_track->get_ndf();
 }
 
 /*

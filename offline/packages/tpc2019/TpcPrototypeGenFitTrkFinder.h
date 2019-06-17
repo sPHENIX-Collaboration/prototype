@@ -128,12 +128,17 @@ class TpcPrototypeGenFitTrkFinder : public SubsysReco
   //!Create New nodes
   int CreateNodes(PHCompositeNode*);
 
+  typedef std::vector<const TrkrCluster*> tracklet_t;
+
+  double getChi2Ndf(const tracklet_t & tracklet);
+
   PHGenFit::Fitter* _fitter;
 
   //! KalmanFitterRefTrack, KalmanFitter, DafSimple, DafRef
   std::string _track_fitting_alg_name;
 
   int nLayer;
+  unsigned int minLayer;
   int _primary_pid_guess;
   double rphiWindow;
   double ZWindow;

@@ -66,6 +66,7 @@ libtpc2019_la_SOURCES = \
 
 libtpc2019_io_la_LIBADD = \
   -ltpc_io \
+  -ltrack_reco_io \
   -lphool
 
 libtpc2019_la_LIBADD = \

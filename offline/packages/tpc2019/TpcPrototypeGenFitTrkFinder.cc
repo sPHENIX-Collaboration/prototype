@@ -134,6 +134,7 @@ TpcPrototypeGenFitTrkFinder::TpcPrototypeGenFitTrkFinder(const string& name, int
   , _track_fitting_alg_name("KalmanFitter")
   , nLayer(layers)
   , minLayer(8)
+  , maxTracklet(50)
   , _primary_pid_guess(2212)
   , rphiWindow(2)
   , ZWindow(2)
@@ -281,9 +282,25 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
           new_tracklet.push_back(cluster);
           new_tracklets.insert(new_tracklet);  // insert the longer tracklet
           matched = true;
+
+          if (new_tracklets.size() >= maxTracklet)
+          {
+            if (Verbosity())
+              cout << __PRETTY_FUNCTION__ << " skipping rest tracklet at layer " << layer
+                   << " due to tracklet count " << new_tracklets.size() << " > " << maxTracklet << endl;
+            break;
+          }
         }  //have match
 
       }  //     for (auto& tracklet : tracklets)
+
+      if (new_tracklets.size() >= maxTracklet)
+      {
+        if (Verbosity())
+          cout << __PRETTY_FUNCTION__ << " skipping rest clusters at layer " << layer
+               << " due to tracklet count " << new_tracklets.size() << " > " << maxTracklet << endl;
+        break;
+      }
 
       if (not matched)
       {  //new track seed from unused cluster
@@ -292,7 +309,8 @@ int TpcPrototypeGenFitTrkFinder::process_event(PHCompositeNode* topNode)
         {
           cout << __PRETTY_FUNCTION__ << " init tracket with cluster at layer " << layer << endl;
         }
-      }
+      }  //      if (not matched)
+
     }  //      for (auto iter = cluster_range.first; iter != cluster_range.second; ++iter)
 
     tracklets = new_tracklets;

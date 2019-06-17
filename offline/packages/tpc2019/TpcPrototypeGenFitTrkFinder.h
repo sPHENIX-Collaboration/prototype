@@ -139,6 +139,7 @@ class TpcPrototypeGenFitTrkFinder : public SubsysReco
 
   int nLayer;
   unsigned int minLayer;
+  unsigned int maxTracklet;
   int _primary_pid_guess;
   double rphiWindow;
   double ZWindow;

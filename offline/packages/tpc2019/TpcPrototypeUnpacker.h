@@ -25,6 +25,7 @@ class TTree;
 class TClonesArray;
 class Event;
 class PHG4TpcPadPlane;
+class PHG4CylinderCellGeomContainer;
 
 namespace TpcPrototypeDefs
 {
@@ -234,7 +235,7 @@ class TpcPrototypeUnpacker : public SubsysReco
  private:
 
   PHG4TpcPadPlane *padplane;
-
+  PHG4CylinderCellGeomContainer* tpcCylinderCellGeom;
 
   #ifndef __CINT__
 

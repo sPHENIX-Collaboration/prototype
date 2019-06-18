@@ -70,6 +70,7 @@ using namespace TpcPrototypeDefs::FEEv2;
 TpcPrototypeUnpacker::TpcPrototypeUnpacker(const std::string& outputfilename)
   : SubsysReco("TpcPrototypeUnpacker")
   , padplane(nullptr)
+  , tpcCylinderCellGeom(nullptr)
   , m_outputFileName(outputfilename)
   , m_eventT(nullptr)
   , m_peventHeader(&m_eventHeader)
@@ -137,18 +138,18 @@ int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
     }
 
     string seggeonodename = "CYLINDERCELLGEOM_SVTX";  // + detector;
-    PHG4CylinderCellGeomContainer* seggeo = findNode::getClass<PHG4CylinderCellGeomContainer>(topNode, seggeonodename.c_str());
-    if (!seggeo)
+    tpcCylinderCellGeom = findNode::getClass<PHG4CylinderCellGeomContainer>(topNode, seggeonodename.c_str());
+    if (!tpcCylinderCellGeom)
     {
-      seggeo = new PHG4CylinderCellGeomContainer();
+      tpcCylinderCellGeom = new PHG4CylinderCellGeomContainer();
       PHNodeIterator iter(topNode);
       PHCompositeNode* runNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "RUN"));
-      PHIODataNode<PHObject>* newNode = new PHIODataNode<PHObject>(seggeo, seggeonodename.c_str(), "PHObject");
+      PHIODataNode<PHObject>* newNode = new PHIODataNode<PHObject>(tpcCylinderCellGeom, seggeonodename.c_str(), "PHObject");
       runNode->addNode(newNode);
     }
 
     padplane->InitRun(topNode);
-    padplane->CreateReadoutGeometry(topNode, seggeo);
+    padplane->CreateReadoutGeometry(topNode, tpcCylinderCellGeom);
   }
 
   if (Verbosity() >= VERBOSITY_SOME)
@@ -583,24 +584,29 @@ void TpcPrototypeUnpacker::Clustering()
 
     // fit - X
     {
-      double sum_peak = 0;
-      double sum_peak_padx = 0;
-      for (int pad_x = *cluster.padxs.begin(); pad_x <= *cluster.padxs.rbegin(); ++pad_x)
-      {
-        double peak = NAN;
-        double peak_sample = NAN;
-        double pedstal = NAN;
-        map<int, double> parameters_io(parameters_constraints);
+//      double sum_peak = 0;
+//      double sum_peak_padx = 0;
+//      for (int pad_x = *cluster.padxs.begin(); pad_x <= *cluster.padxs.rbegin(); ++pad_x)
+//      {
+//        double peak = NAN;
+//        double peak_sample = NAN;
+//        double pedstal = NAN;
+//        map<int, double> parameters_io(parameters_constraints);
+//
+//        SampleFit_PowerLawDoubleExp(cluster.padx_samples[pad_x], peak,
+//                                    peak_sample, pedstal, parameters_io, Verbosity());
+//
+//        cluster.padx_peaks[pad_x] = peak;
+//        sum_peak += peak;
+//        sum_peak_padx += peak * pad_x;
+//      }
+//      cluster.avg_padx = sum_peak_padx / sum_peak;
+//      cluster.size_pad_x = cluster.padxs.size();
 
-        SampleFit_PowerLawDoubleExp(cluster.padx_samples[pad_x], peak,
-                                    peak_sample, pedstal, parameters_io, Verbosity());
-
-        cluster.padx_peaks[pad_x] = peak;
-        sum_peak += peak;
-        sum_peak_padx += peak * pad_x;
-      }
-      cluster.avg_padx = sum_peak_padx / sum_peak;
+      assert(cluster.padxs.size() == 1);
+      cluster.avg_padx = *cluster.padxs.begin();
       cluster.size_pad_x = cluster.padxs.size();
+
     }
 
     // fit - Y

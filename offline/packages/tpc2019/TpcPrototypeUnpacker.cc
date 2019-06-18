@@ -26,6 +26,10 @@
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/PHTFileServer.h>
 
+#include <phfield/PHFieldConfigv1.h>
+#include <phfield/PHFieldConfigv2.h>
+#include <phfield/PHFieldUtility.h>
+
 #include <trackbase/TrkrClusterContainer.h>
 #include <trackbase/TrkrClusterHitAssoc.h>
 #include <trackbase/TrkrClusterv1.h>
@@ -145,6 +149,14 @@ int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
     {
       cout << "TpcPrototypeUnpacker::InitRun - making pad plane"
            << endl;
+    }
+
+    //setup the constant field
+    const int field_ret = InitField(topNode);
+    if (field_ret != Fun4AllReturnCodes::EVENT_OK)
+    {
+      cout << "TpcPrototypeUnpacker::InitRun- Error - Failed field init with status = " << field_ret << endl;
+      return field_ret;
     }
 
     string seggeonodename = "CYLINDERCELLGEOM_SVTX";  // + detector;
@@ -565,6 +577,10 @@ void TpcPrototypeUnpacker::Clustering()
     assert(cluster.padys.size() > 0);
     assert(cluster.samples.size() > 0);
 
+    //expand cluster by +/-1 in y
+    cluster.padys.insert( *(cluster.padys.begin()) - 1 );
+    cluster.padys.insert( *(cluster.padys.rbegin()) + 1 );
+
     cluster.min_sample = max(0, *cluster.samples.begin() - m_nPreSample);
     cluster.max_sample = min((int) (kSAMPLE_LENGTH) -1, *cluster.samples.rbegin() + m_nPostSample);
     const int n_sample = cluster.max_sample - cluster.min_sample + 1;
@@ -601,7 +617,7 @@ void TpcPrototypeUnpacker::Clustering()
 
     if (m_pdfMaker)
     {
-      m_pdfMaker->MakeSectionPage(str(boost::format("Event %1% Cluster %2%: sum all channel fit followed by fit of X/Y components") % m_eventHeader.event % iter.first));
+      m_pdfMaker->MakeSectionPage(str(boost::format("Event %1% Cluster %2%: sum all channel fit followed by fit of each pad component") % m_eventHeader.event % iter.first));
     }
 
     // fit - overal cluster
@@ -729,8 +745,8 @@ void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclu
   const double clusz = layergeom->get_zcenter(cluster.min_sample)  //
                        + (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample)) * cluster.peak_sample;
 
-  const double phi_size = cluster.size_pad_y * radius * layergeom->get_phistep();
-  const double z_size = (cluster.max_sample - cluster.min_sample) * layergeom->get_zstep();
+  const double phi_size = cluster.size_pad_y;                       // * radius * layergeom->get_phistep();
+  const double z_size = (cluster.max_sample - cluster.min_sample);  // * layergeom->get_zstep();
 
   static const double phi_err = 170e-4;
 
@@ -754,7 +770,7 @@ void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclu
   DIM[0][1] = 0.0;
   DIM[0][2] = 0.0;
   DIM[1][0] = 0.0;
-  DIM[1][1] = phi_size / radius * phi_size / radius;  //cluster_v1 expects polar coordinates covariance
+  DIM[1][1] = phi_size * phi_size;  //cluster_v1 expects polar coordinates covariance
   DIM[1][2] = 0.0;
   DIM[2][0] = 0.0;
   DIM[2][1] = 0.0;
@@ -1004,4 +1020,18 @@ void TpcPrototypeUnpacker::registerPadPlane(PHG4TpcPadPlane* inpadplane)
     cout << __PRETTY_FUNCTION__ << " padplane registered and parameters updated" << endl;
 
   return;
+}
+
+int TpcPrototypeUnpacker::InitField(PHCompositeNode* topNode)
+{
+  if (Verbosity() >= 1) cout << "TpcPrototypeUnpacker::InitField - create magnetic field setup" << endl;
+
+  unique_ptr<PHFieldConfig> default_field_cfg(nullptr);
+
+  default_field_cfg.reset(new PHFieldConfigv2(0, 0, 0));
+
+  PHField* phfield = PHFieldUtility::GetFieldMapNode(default_field_cfg.get(), topNode, Verbosity() + 1);
+  assert(phfield);
+
+  return Fun4AllReturnCodes::EVENT_OK;
 }

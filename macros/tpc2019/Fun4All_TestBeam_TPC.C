@@ -1,9 +1,9 @@
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 00, 0)
 
 #include <fun4all/Fun4AllDstOutputManager.h>
-#include <fun4all/Fun4AllPrdfInputManager.h>
 #include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
+#include <fun4all/Fun4AllPrdfInputManager.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/SubsysReco.h>
 
@@ -70,8 +70,11 @@ int n_tpc_layer_mid = 16;
 int n_tpc_layer_outer = 0;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
-int Fun4All_TestBeam_TPC(int nEvents = 45, int nSkip = 1,
-                         const string &input_file = "data/tpc_beam/tpc_beam_00000171-0000.evt",
+using namespace std;
+
+int Fun4All_TestBeam_TPC(int nEvents = 100, int nSkip = 1,
+                         //    const string &input_file = "data/tpc_beam/tpc_beam_00000171-0000.evt",//initial good 120 Gev proton run
+                         const string &input_file = "data/tpc_beam/tpc_beam_00000191-0000.evt",  //readjusted HV to lwoer gain
                          bool eventDisp = false, int verbosity = 0)
 {
   gSystem->Load("libfun4all");
@@ -119,8 +122,8 @@ int Fun4All_TestBeam_TPC(int nEvents = 45, int nSkip = 1,
   padplane->set_int_param("ntpc_phibins_mid", 16 * 8 * 12);
 
   TpcPrototypeUnpacker *tpcfee = new TpcPrototypeUnpacker((input_file) + string("_TpcPrototypeUnpacker.root"));
-    tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_SOME);
-//  tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_MORE);
+  tpcfee->Verbosity(verbosity);
+  //  tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_MORE);
   tpcfee->registerPadPlane(padplane);
   tpcfee->setNPreSample(5);
   tpcfee->setNPostSample(7);
@@ -135,29 +138,29 @@ int Fun4All_TestBeam_TPC(int nEvents = 45, int nSkip = 1,
   //  ;
   //  se->registerSubsystem(tpcclusterizer);
   //
-  //  //-------------
-  //  // Tracking
-  //  //------------
-  //
-  ////  // Find all clusters associated with each seed track
-  //  TpcPrototypeGenFitTrkFinder *finder = new TpcPrototypeGenFitTrkFinder();
-  //  finder->Verbosity(verbosity);
-  //  finder->set_do_evt_display(eventDisp);
-  //  finder->set_do_eval(true);
-  //  finder->set_eval_filename(input_file + "_TpcPrototypeGenFitTrkFinder.root");
-  //  se->registerSubsystem(finder);
+  //-------------
+  // Tracking
+  //------------
+
+  //  // Find all clusters associated with each seed track
+  TpcPrototypeGenFitTrkFinder *finder = new TpcPrototypeGenFitTrkFinder();
+  finder->Verbosity(verbosity);
+  finder->set_do_evt_display(eventDisp);
+  finder->set_do_eval(true);
+  finder->set_eval_filename(input_file + "_TpcPrototypeGenFitTrkFinder.root");
+  se->registerSubsystem(finder);
   ////
   ////  //
-  ////  //------------------------------------------------
-  ////  // Fitting of tracks using Kalman Filter
-  ////  //------------------------------------------------
-  ////
-  //  TpcPrototypeGenFitTrkFitter *kalman = new TpcPrototypeGenFitTrkFitter();
-  //  kalman->Verbosity(verbosity);
-  //  kalman->set_do_evt_display(eventDisp);
-  //  kalman->set_eval_filename(input_file + "_TpcPrototypeGenFitTrkFinder.root");
-  //  kalman->set_do_eval(true);
-  //  se->registerSubsystem(kalman);
+  //  //------------------------------------------------
+  //  // Fitting of tracks using Kalman Filter
+  //  //------------------------------------------------
+  //
+  TpcPrototypeGenFitTrkFitter *kalman = new TpcPrototypeGenFitTrkFitter();
+  kalman->Verbosity(verbosity);
+  kalman->set_do_evt_display(eventDisp);
+  kalman->set_eval_filename(input_file + "_TpcPrototypeGenFitTrkFitter.root");
+  kalman->set_do_eval(true);
+  se->registerSubsystem(kalman);
 
   if (dstoutput)
   {

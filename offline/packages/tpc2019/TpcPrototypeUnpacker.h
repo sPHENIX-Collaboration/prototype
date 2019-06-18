@@ -249,6 +249,7 @@ class TpcPrototypeUnpacker : public SubsysReco
   PHG4CylinderCellGeomContainer *tpcCylinderCellGeom;
   TrkrClusterContainer *trkrclusters;
   void exportDSTCluster(ClusterData &cluster, const int i);
+  int InitField(PHCompositeNode *topNode);
 
 #ifndef __CINT__
 

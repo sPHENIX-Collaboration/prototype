@@ -328,20 +328,20 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
              << p->iValue(fee, channel, "NR_SAMPLES") << endl;
       }
 
-      unsigned int real_t = 3;
+      unsigned int real_t = 0;
       uint32_t old_bx_count = 0;
       uint16_t adc = 0;
       uint32_t bx_count = 0;
       m_chanData.resize(kSAMPLE_LENGTH, 0);
 
-      for (unsigned int t = 3; t < kSAMPLE_LENGTH; t++)
+      for (unsigned int t = 0; t < kSAMPLE_LENGTH; t++)
       {
         try
         {
           adc = p->iValue(fee, channel, t);
           bx_count = p->iValue(fee, channel, t, BX_COUNTER);
 
-          if (real_t == 3)
+          if (real_t == 0)
             m_chanHeader.bx_counter = p->iValue(fee, channel, t, BX_COUNTER);
         }
         catch (const std::out_of_range& e)
@@ -354,7 +354,7 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
         if (bx_count >= old_bx_count + 128)
         {
           old_bx_count = bx_count;
-          real_t = 3;
+          real_t = 0;
           m_chanData.resize(kSAMPLE_LENGTH, 0);
         }
 

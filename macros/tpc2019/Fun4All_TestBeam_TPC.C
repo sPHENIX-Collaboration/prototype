@@ -70,8 +70,8 @@ int n_tpc_layer_mid = 16;
 int n_tpc_layer_outer = 0;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
-int Fun4All_TestBeam_TPC(int nEvents = 2, int nSkip = 260,
-                         const string &input_file = "data/tpc_cosmics_00000146-0000.evt",
+int Fun4All_TestBeam_TPC(int nEvents = 2, int nSkip = 72,
+                         const string &input_file = "data/tpc_cosmics_00000140-0000.evt",
                          bool eventDisp = false, int verbosity = 1)
 {
   gSystem->Load("libfun4all");
@@ -121,7 +121,7 @@ int Fun4All_TestBeam_TPC(int nEvents = 2, int nSkip = 260,
   TpcPrototypeUnpacker *tpcfee = new TpcPrototypeUnpacker((input_file) + string("_TpcPrototypeUnpacker.root"));
   //  tpcfee->Verbosity(TPCFEETestRecov1::VERBOSITY_SOME);
   tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_MORE);
-
+  tpcfee->registerPadPlane(padplane);
   tpcfee->setNPreSample(5);
   tpcfee->setNPostSample(7);
 

@@ -24,6 +24,7 @@ class Fun4AllHistoManager;
 class TTree;
 class TClonesArray;
 class Event;
+class PHG4TpcPadPlane;
 
 namespace TpcPrototypeDefs
 {
@@ -60,6 +61,8 @@ class TpcPrototypeUnpacker : public SubsysReco
   {
     m_nPreSample = nPreSample;
   }
+
+  void registerPadPlane(PHG4TpcPadPlane *padplane);
 
   //! simple event header class for ROOT file IO
   class EventHeader : public TObject
@@ -229,7 +232,11 @@ class TpcPrototypeUnpacker : public SubsysReco
   };
 
  private:
-#ifndef __CINT__
+
+  PHG4TpcPadPlane *padplane;
+
+
+  #ifndef __CINT__
 
   // IO stuff
 
@@ -267,9 +274,6 @@ class TpcPrototypeUnpacker : public SubsysReco
   int m_clusteringZeroSuppression;
   int m_nPreSample;
   int m_nPostSample;
-
-  void get_motor_loc(Event *evt);
-
   int m_XRayLocationX;
   int m_XRayLocationY;
 

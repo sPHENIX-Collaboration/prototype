@@ -9,6 +9,11 @@
 
 #include "TpcPrototypeDefs.h"
 
+#include <g4tpc/PHG4TpcPadPlane.h>  // for PHG4TpcPadPlane
+
+#include <tpc/TpcDefs.h>
+#include <tpc/TpcHit.h>
+
 #include <g4detectors/PHG4Cell.h>
 #include <g4detectors/PHG4CellContainer.h>
 #include <g4detectors/PHG4CylinderCellGeom.h>
@@ -64,6 +69,7 @@ using namespace TpcPrototypeDefs::FEEv2;
 
 TpcPrototypeUnpacker::TpcPrototypeUnpacker(const std::string& outputfilename)
   : SubsysReco("TpcPrototypeUnpacker")
+  , padplane(nullptr)
   , m_outputFileName(outputfilename)
   , m_eventT(nullptr)
   , m_peventHeader(&m_eventHeader)
@@ -88,10 +94,13 @@ TpcPrototypeUnpacker::~TpcPrototypeUnpacker()
     m_IOClusters->Clear();
     delete m_IOClusters;
   }
-
   if (m_pdfMaker)
   {
     delete m_pdfMaker;
+  }
+  if (padplane)
+  {
+    delete padplane;
   }
 }
 
@@ -111,14 +120,40 @@ int TpcPrototypeUnpacker::ResetEvent(PHCompositeNode* topNode)
 
 int TpcPrototypeUnpacker::Init(PHCompositeNode* topNode)
 {
+  if (padplane)
+    padplane->Init(topNode);
+
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
 int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
 {
+  if (padplane)
+  {
+    if (Verbosity() >= VERBOSITY_SOME)
+    {
+      cout << "TpcPrototypeUnpacker::InitRun - making pad plane"
+           << endl;
+    }
+
+    string seggeonodename = "CYLINDERCELLGEOM_SVTX";  // + detector;
+    PHG4CylinderCellGeomContainer* seggeo = findNode::getClass<PHG4CylinderCellGeomContainer>(topNode, seggeonodename.c_str());
+    if (!seggeo)
+    {
+      seggeo = new PHG4CylinderCellGeomContainer();
+      PHNodeIterator iter(topNode);
+      PHCompositeNode* runNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "RUN"));
+      PHIODataNode<PHObject>* newNode = new PHIODataNode<PHObject>(seggeo, seggeonodename.c_str(), "PHObject");
+      runNode->addNode(newNode);
+    }
+
+    padplane->InitRun(topNode);
+    padplane->CreateReadoutGeometry(topNode, seggeo);
+  }
+
   if (Verbosity() >= VERBOSITY_SOME)
   {
-    cout << "TpcPrototypeUnpacker::get_HistoManager - Making PHTFileServer " << m_outputFileName
+    cout << "TpcPrototypeUnpacker::InitRun - Making PHTFileServer " << m_outputFileName
          << endl;
 
     m_pdfMaker = new SampleFit_PowerLawDoubleExp_PDFMaker();
@@ -452,7 +487,7 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
     }  //    for (unsigned int channel = 0; channel < kN_CHANNELS; channel++)
   }    //  for (unsigned int fee = 0; fee < kN_FEES; ++fee)
 
-  //  Clustering();
+  Clustering();
 
   h_norm->Fill("Event count", 1);
   m_eventT->Fill();
@@ -706,10 +741,10 @@ void TpcPrototypeUnpacker::PadPlaneData::Clustering(int zero_suppression, bool v
     }
   }  //   for (unsigned int pady = 0; pady < kMaxPadY; ++pady)
 
-  // connect 3-D adjacent samples
+  // connect 2-D adjacent samples within each pad_x
   vector<SampleID> search_directions;
   search_directions.push_back(SampleID{0, 0, 1});
-  search_directions.push_back(SampleID{0, 1, 0});
+  //  search_directions.push_back(SampleID{0, 1, 0});
   search_directions.push_back(SampleID{1, 0, 0});
 
   for (const auto& it : vertex_list.right)
@@ -786,29 +821,14 @@ TpcPrototypeUnpacker::getHistoManager()
   return hm;
 }
 
-void TpcPrototypeUnpacker::get_motor_loc(Event* evt)
+void TpcPrototypeUnpacker::registerPadPlane(PHG4TpcPadPlane* inpadplane)
 {
-  assert(evt);
+  cout << "Registering padplane " << endl;
+  padplane = inpadplane;
+  padplane->Detector("TPC");
+  padplane->UpdateInternalParameters();
+  if (Verbosity())
+    cout << __PRETTY_FUNCTION__ << " padplane registered and parameters updated" << endl;
 
-  Packet* motor_loc_p = evt->getPacket(910, IDCSTR);
-
-  if (motor_loc_p)
-  {
-    string content;
-
-    for (int i = 0; i < motor_loc_p->getLength(); i++)
-    {
-      content.push_back((char) motor_loc_p->iValue(i));
-    }
-
-    stringstream is(content);
-    is >> m_XRayLocationX >> m_XRayLocationY;
-
-    if (is.fail())
-    {
-      cout << "TpcPrototypeUnpacker::get_motor_loc - failed to load motor location from record [" << content << "]" << endl;
-    }
-    else if (Verbosity())
-      cout << "TpcPrototypeUnpacker::get_motor_loc - received motor location " << m_XRayLocationX << ", " << m_XRayLocationY << " from record [" << content << "]" << endl;
-  }
+  return;
 }

@@ -26,6 +26,9 @@ class TClonesArray;
 class Event;
 class PHG4TpcPadPlane;
 class PHG4CylinderCellGeomContainer;
+class TrkrHitSetContainer;
+class TrkrClusterContainer;
+class TrkrClusterHitAssoc;
 
 namespace TpcPrototypeDefs
 {
@@ -65,6 +68,7 @@ class TpcPrototypeUnpacker : public SubsysReco
 
   void registerPadPlane(PHG4TpcPadPlane *padplane);
 
+  bool setEnableClustering(bool b){enableClustering = b;}
   //! simple event header class for ROOT file IO
   class EventHeader : public TObject
   {
@@ -154,6 +158,9 @@ class TpcPrototypeUnpacker : public SubsysReco
       , avg_pady(NAN)
       , size_pad_x(-1)
       , size_pad_y(-1)
+      , avg_pos_x(NAN)
+      , avg_pos_y(NAN)
+      , avg_pos_z(NAN)
     {
     }
 
@@ -185,7 +192,12 @@ class TpcPrototypeUnpacker : public SubsysReco
     int size_pad_x;
     int size_pad_y;
 
-    ClassDef(TpcPrototypeUnpacker::ClusterData, 1);
+    //! pad coordinate
+    double avg_pos_x;
+    double avg_pos_y;
+    double avg_pos_z;
+
+    ClassDef(TpcPrototypeUnpacker::ClusterData, 2);
   };
 
   //! simple channel header class for ROOT file IO
@@ -233,11 +245,12 @@ class TpcPrototypeUnpacker : public SubsysReco
   };
 
  private:
-
   PHG4TpcPadPlane *padplane;
-  PHG4CylinderCellGeomContainer* tpcCylinderCellGeom;
+  PHG4CylinderCellGeomContainer *tpcCylinderCellGeom;
+  TrkrClusterContainer *trkrclusters;
+  void exportDSTCluster(ClusterData &cluster, const int i);
 
-  #ifndef __CINT__
+#ifndef __CINT__
 
   // IO stuff
 
@@ -267,6 +280,7 @@ class TpcPrototypeUnpacker : public SubsysReco
   //! \return pair of pedestal and max
   static std::pair<int, int> roughZeroSuppression(std::vector<int> &data);
 
+  bool enableClustering;
   //! Clustering then prepare IOs
   void Clustering(void);
 

@@ -26,6 +26,14 @@
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/PHTFileServer.h>
 
+#include <trackbase/TrkrClusterContainer.h>
+#include <trackbase/TrkrClusterHitAssoc.h>
+#include <trackbase/TrkrClusterv1.h>
+#include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
+#include <trackbase/TrkrHit.h>
+#include <trackbase/TrkrHitSet.h>
+#include <trackbase/TrkrHitSetContainer.h>
+
 #include <phhepmc/PHHepMCGenEvent.h>
 #include <phhepmc/PHHepMCGenEventMap.h>
 #include <phool/PHCompositeNode.h>
@@ -71,6 +79,7 @@ TpcPrototypeUnpacker::TpcPrototypeUnpacker(const std::string& outputfilename)
   : SubsysReco("TpcPrototypeUnpacker")
   , padplane(nullptr)
   , tpcCylinderCellGeom(nullptr)
+  , trkrclusters(nullptr)
   , m_outputFileName(outputfilename)
   , m_eventT(nullptr)
   , m_peventHeader(&m_eventHeader)
@@ -79,6 +88,7 @@ TpcPrototypeUnpacker::TpcPrototypeUnpacker(const std::string& outputfilename)
   , m_chanT(nullptr)
   , m_pchanHeader(&m_chanHeader)
   , m_chanData(kSAMPLE_LENGTH, 0)
+  , enableClustering(true)
   , m_clusteringZeroSuppression(50)
   , m_nPreSample(5)
   , m_nPostSample(5)
@@ -150,6 +160,35 @@ int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
 
     padplane->InitRun(topNode);
     padplane->CreateReadoutGeometry(topNode, tpcCylinderCellGeom);
+  }
+
+  // Create the Cluster node if required
+  trkrclusters = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
+  if (!trkrclusters)
+  {
+    PHNodeIterator iter(topNode);
+
+    // Looking for the DST node
+    PHCompositeNode* dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST"));
+    if (!dstNode)
+    {
+      cout << PHWHERE << "DST Node missing, doing nothing." << endl;
+      return Fun4AllReturnCodes::ABORTRUN;
+    }
+
+    PHNodeIterator dstiter(dstNode);
+    PHCompositeNode* DetNode =
+        dynamic_cast<PHCompositeNode*>(dstiter.findFirst("PHCompositeNode", "TRKR"));
+    if (!DetNode)
+    {
+      DetNode = new PHCompositeNode("TRKR");
+      dstNode->addNode(DetNode);
+    }
+
+    trkrclusters = new TrkrClusterContainer();
+    PHIODataNode<PHObject>* TrkrClusterContainerNode =
+        new PHIODataNode<PHObject>(trkrclusters, "TRKR_CLUSTER", "PHObject");
+    DetNode->addNode(TrkrClusterContainerNode);
   }
 
   if (Verbosity() >= VERBOSITY_SOME)
@@ -488,7 +527,8 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
     }  //    for (unsigned int channel = 0; channel < kN_CHANNELS; channel++)
   }    //  for (unsigned int fee = 0; fee < kN_FEES; ++fee)
 
-  Clustering();
+  if (enableClustering)
+    Clustering();
 
   h_norm->Fill("Event count", 1);
   m_eventT->Fill();
@@ -498,6 +538,9 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
 
 void TpcPrototypeUnpacker::Clustering()
 {
+  if (Verbosity())
+    cout << __PRETTY_FUNCTION__ << " entry" << endl;
+
   // find cluster
   m_padPlaneData.Clustering(m_clusteringZeroSuppression, Verbosity() >= VERBOSITY_SOME);
   const multimap<int, PadPlaneData::SampleID>& groups = m_padPlaneData.getGroups();
@@ -584,29 +627,28 @@ void TpcPrototypeUnpacker::Clustering()
 
     // fit - X
     {
-//      double sum_peak = 0;
-//      double sum_peak_padx = 0;
-//      for (int pad_x = *cluster.padxs.begin(); pad_x <= *cluster.padxs.rbegin(); ++pad_x)
-//      {
-//        double peak = NAN;
-//        double peak_sample = NAN;
-//        double pedstal = NAN;
-//        map<int, double> parameters_io(parameters_constraints);
-//
-//        SampleFit_PowerLawDoubleExp(cluster.padx_samples[pad_x], peak,
-//                                    peak_sample, pedstal, parameters_io, Verbosity());
-//
-//        cluster.padx_peaks[pad_x] = peak;
-//        sum_peak += peak;
-//        sum_peak_padx += peak * pad_x;
-//      }
-//      cluster.avg_padx = sum_peak_padx / sum_peak;
-//      cluster.size_pad_x = cluster.padxs.size();
+      //      double sum_peak = 0;
+      //      double sum_peak_padx = 0;
+      //      for (int pad_x = *cluster.padxs.begin(); pad_x <= *cluster.padxs.rbegin(); ++pad_x)
+      //      {
+      //        double peak = NAN;
+      //        double peak_sample = NAN;
+      //        double pedstal = NAN;
+      //        map<int, double> parameters_io(parameters_constraints);
+      //
+      //        SampleFit_PowerLawDoubleExp(cluster.padx_samples[pad_x], peak,
+      //                                    peak_sample, pedstal, parameters_io, Verbosity());
+      //
+      //        cluster.padx_peaks[pad_x] = peak;
+      //        sum_peak += peak;
+      //        sum_peak_padx += peak * pad_x;
+      //      }
+      //      cluster.avg_padx = sum_peak_padx / sum_peak;
+      //      cluster.size_pad_x = cluster.padxs.size();
 
       assert(cluster.padxs.size() == 1);
       cluster.avg_padx = *cluster.padxs.begin();
       cluster.size_pad_x = cluster.padxs.size();
-
     }
 
     // fit - Y
@@ -647,9 +689,22 @@ void TpcPrototypeUnpacker::Clustering()
   {
     ClusterData& cluster = m_clusters[iter.second];
 
+    //output to DST clusters
+    exportDSTCluster(cluster, m_nClusters);
+
     // super awkward ways of ROOT filling TClonesArray
     new ((*m_IOClusters)[m_nClusters++]) ClusterData(cluster);
   }
+}
+
+void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int i)
+{
+  assert(tpcCylinderCellGeom);
+  assert(trkrclusters);
+
+  //  // create the cluster entry directly in the node tree
+  //  TrkrDefs::cluskey ckey = TpcDefs::genClusKey(hitset->getHitSetKey(), iclus);
+  //  TrkrClusterv1 *clus = static_cast<TrkrClusterv1 *>((m_clusterlist->findOrAddCluster(ckey))->second);
 }
 
 TpcPrototypeUnpacker::PadPlaneData::

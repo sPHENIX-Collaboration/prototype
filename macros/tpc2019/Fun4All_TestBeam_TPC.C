@@ -70,9 +70,9 @@ int n_tpc_layer_mid = 16;
 int n_tpc_layer_outer = 0;
 int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
-int Fun4All_TestBeam_TPC(int nEvents = 2, int nSkip = 72,
-                         const string &input_file = "data/tpc_cosmics_00000140-0000.evt",
-                         bool eventDisp = false, int verbosity = 1)
+int Fun4All_TestBeam_TPC(int nEvents = 45, int nSkip = 1,
+                         const string &input_file = "data/tpc_beam/tpc_beam_00000171-0000.evt",
+                         bool eventDisp = false, int verbosity = 0)
 {
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors");
@@ -98,7 +98,7 @@ int Fun4All_TestBeam_TPC(int nEvents = 2, int nSkip = 72,
   // Make the Server
   //////////////////////////////////////////
   Fun4AllServer *se = Fun4AllServer::instance();
-  se->Verbosity(2);
+  se->Verbosity(1);
   recoConsts *rc = recoConsts::instance();
   // only set this if you want a fixed random seed to make
   // results reproducible for testing
@@ -119,8 +119,8 @@ int Fun4All_TestBeam_TPC(int nEvents = 2, int nSkip = 72,
   padplane->set_int_param("ntpc_phibins_mid", 16 * 8 * 12);
 
   TpcPrototypeUnpacker *tpcfee = new TpcPrototypeUnpacker((input_file) + string("_TpcPrototypeUnpacker.root"));
-  //  tpcfee->Verbosity(TPCFEETestRecov1::VERBOSITY_SOME);
-  tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_MORE);
+    tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_SOME);
+//  tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_MORE);
   tpcfee->registerPadPlane(padplane);
   tpcfee->setNPreSample(5);
   tpcfee->setNPostSample(7);

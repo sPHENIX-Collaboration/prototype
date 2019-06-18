@@ -697,14 +697,126 @@ void TpcPrototypeUnpacker::Clustering()
   }
 }
 
-void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int i)
+void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus)
 {
   assert(tpcCylinderCellGeom);
   assert(trkrclusters);
 
-  //  // create the cluster entry directly in the node tree
-  //  TrkrDefs::cluskey ckey = TpcDefs::genClusKey(hitset->getHitSetKey(), iclus);
-  //  TrkrClusterv1 *clus = static_cast<TrkrClusterv1 *>((m_clusterlist->findOrAddCluster(ckey))->second);
+  assert(cluster.avg_padx >= 0);
+  assert(cluster.avg_padx < (int) kMaxPadX);
+  const uint8_t layer = static_cast<uint8_t>(cluster.avg_padx);
+  const PHG4CylinderCellGeom* layergeom = tpcCylinderCellGeom->GetLayerCellGeom(layer);
+  const int NPhiBins = layergeom->get_phibins();
+  const int NZBins = layergeom->get_zbins();
+
+  // create the cluster entry directly in the node tree
+  const TrkrDefs::hitsetkey hit_set_key(TpcDefs::genHitSetKey(layer, 0, 0));
+  const TrkrDefs::cluskey ckey = TpcDefs::genClusKey(hit_set_key, iclus);
+  TrkrClusterv1* clus = static_cast<TrkrClusterv1*>((trkrclusters->findOrAddCluster(ckey))->second);
+  assert(clus);
+
+  //  calculate geometry
+  const double radius = layergeom->get_radius();  // returns center of layer
+  assert(cluster.avg_pady >= 0);
+  assert(cluster.avg_pady < NPhiBins);
+  const int lowery = floor(cluster.avg_pady);
+  const double clusphi = layergeom->get_phicenter(lowery)                                             //
+                         + (layergeom->get_phicenter(lowery + 1) - layergeom->get_phicenter(lowery))  //
+                               * (cluster.avg_pady - lowery);
+
+  assert(cluster.min_sample >= 0);
+  assert(cluster.min_sample + cluster.peak_sample < NZBins);
+  const double clusz = layergeom->get_zcenter(cluster.min_sample)  //
+                       + (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample)) * cluster.peak_sample;
+
+  const double phi_size = cluster.size_pad_y * radius * layergeom->get_phistep();
+  const double z_size = (cluster.max_sample - cluster.min_sample) * layergeom->get_zstep();
+
+  static const double phi_err = 170e-4;
+
+  static const double z_err = 1000e-4;
+
+  // Fill in the cluster details
+  //================
+  clus->setAdc(cluster.peak);
+  clus->setPosition(0, radius * cos(clusphi));
+  clus->setPosition(1, radius * sin(clusphi));
+  clus->setPosition(2, clusz);
+  clus->setGlobal();
+
+  //update cluster positions
+  cluster.avg_pos_x = clus->getPosition(0);
+  cluster.avg_pos_y = clus->getPosition(1);
+  cluster.avg_pos_z = clus->getPosition(2);
+
+  TMatrixF DIM(3, 3);
+  DIM[0][0] = 0.0;
+  DIM[0][1] = 0.0;
+  DIM[0][2] = 0.0;
+  DIM[1][0] = 0.0;
+  DIM[1][1] = phi_size / radius * phi_size / radius;  //cluster_v1 expects polar coordinates covariance
+  DIM[1][2] = 0.0;
+  DIM[2][0] = 0.0;
+  DIM[2][1] = 0.0;
+  DIM[2][2] = z_size * z_size;
+
+  TMatrixF ERR(3, 3);
+  ERR[0][0] = 0.0;
+  ERR[0][1] = 0.0;
+  ERR[0][2] = 0.0;
+  ERR[1][0] = 0.0;
+  ERR[1][1] = phi_err * phi_err;  //cluster_v1 expects rad, arc, z as elementsof covariance
+  ERR[1][2] = 0.0;
+  ERR[2][0] = 0.0;
+  ERR[2][1] = 0.0;
+  ERR[2][2] = z_err * z_err;
+
+  TMatrixF ROT(3, 3);
+  ROT[0][0] = cos(clusphi);
+  ROT[0][1] = -sin(clusphi);
+  ROT[0][2] = 0.0;
+  ROT[1][0] = sin(clusphi);
+  ROT[1][1] = cos(clusphi);
+  ROT[1][2] = 0.0;
+  ROT[2][0] = 0.0;
+  ROT[2][1] = 0.0;
+  ROT[2][2] = 1.0;
+
+  TMatrixF ROT_T(3, 3);
+  ROT_T.Transpose(ROT);
+
+  TMatrixF COVAR_DIM(3, 3);
+  COVAR_DIM = ROT * DIM * ROT_T;
+
+  clus->setSize(0, 0, COVAR_DIM[0][0]);
+  clus->setSize(0, 1, COVAR_DIM[0][1]);
+  clus->setSize(0, 2, COVAR_DIM[0][2]);
+  clus->setSize(1, 0, COVAR_DIM[1][0]);
+  clus->setSize(1, 1, COVAR_DIM[1][1]);
+  clus->setSize(1, 2, COVAR_DIM[1][2]);
+  clus->setSize(2, 0, COVAR_DIM[2][0]);
+  clus->setSize(2, 1, COVAR_DIM[2][1]);
+  clus->setSize(2, 2, COVAR_DIM[2][2]);
+  //cout << " covar_dim[2][2] = " <<  COVAR_DIM[2][2] << endl;
+
+  TMatrixF COVAR_ERR(3, 3);
+  COVAR_ERR = ROT * ERR * ROT_T;
+
+  clus->setError(0, 0, COVAR_ERR[0][0]);
+  clus->setError(0, 1, COVAR_ERR[0][1]);
+  clus->setError(0, 2, COVAR_ERR[0][2]);
+  clus->setError(1, 0, COVAR_ERR[1][0]);
+  clus->setError(1, 1, COVAR_ERR[1][1]);
+  clus->setError(1, 2, COVAR_ERR[1][2]);
+  clus->setError(2, 0, COVAR_ERR[2][0]);
+  clus->setError(2, 1, COVAR_ERR[2][1]);
+  clus->setError(2, 2, COVAR_ERR[2][2]);
+
+  if (Verbosity() >= 2)
+  {
+    cout << __PRETTY_FUNCTION__ << "Dump clusters after TpcPrototypeClusterizer" << endl;
+    clus->identify();
+  }
 }
 
 TpcPrototypeUnpacker::PadPlaneData::

@@ -68,7 +68,7 @@ class TpcPrototypeUnpacker : public SubsysReco
 
   void registerPadPlane(PHG4TpcPadPlane *padplane);
 
-  bool setEnableClustering(bool b){enableClustering = b;}
+  void setEnableClustering(bool b) { enableClustering = b; }
   //! simple event header class for ROOT file IO
   class EventHeader : public TObject
   {
@@ -154,7 +154,7 @@ class TpcPrototypeUnpacker : public SubsysReco
       , peak(NAN)
       , peak_sample(NAN)
       , pedstal(NAN)
-      , avg_padx(NAN)
+      , avg_padx(-1)
       , avg_pady(NAN)
       , size_pad_x(-1)
       , size_pad_y(-1)
@@ -185,7 +185,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     std::map<int, double> pady_peaks;
 
     //! pad coordinate
-    double avg_padx;
+    int avg_padx;
     double avg_pady;
 
     //! pad size
@@ -197,7 +197,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     double avg_pos_y;
     double avg_pos_z;
 
-    ClassDef(TpcPrototypeUnpacker::ClusterData, 2);
+    ClassDef(TpcPrototypeUnpacker::ClusterData, 3);
   };
 
   //! simple channel header class for ROOT file IO

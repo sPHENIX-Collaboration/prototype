@@ -1340,6 +1340,7 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
       (track->clusterE)[layerStudy] = cluster->getAdc();
       (track->clusterSizePhi)[layerStudy] = cluster->getPhiSize();
       (track->clusterResidualPhi)[layerStudy] = azimuth_residual;
+      (track->clusterProjectionPhi)[layerStudy] = extra_pos.Phi();
       (track->clusterResidualZ)[layerStudy] = z_residual;
     }  //propagate to state
 

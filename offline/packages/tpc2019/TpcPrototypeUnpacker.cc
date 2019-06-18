@@ -745,8 +745,8 @@ void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclu
   const double clusz = layergeom->get_zcenter(cluster.min_sample)  //
                        + (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample)) * cluster.peak_sample;
 
-  const double phi_size = cluster.size_pad_y;                       // * radius * layergeom->get_phistep();
-  const double z_size = (cluster.max_sample - cluster.min_sample);  // * layergeom->get_zstep();
+  const double phi_size = cluster.size_pad_y /2;                       // * radius * layergeom->get_phistep();
+  const double z_size = (cluster.max_sample - cluster.min_sample)/2;  // * layergeom->get_zstep();
 
   static const double phi_err = 170e-4;
 

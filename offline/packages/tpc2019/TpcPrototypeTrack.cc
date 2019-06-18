@@ -28,6 +28,7 @@ TpcPrototypeTrack::TpcPrototypeTrack()
     clusterZ[i] = numeric_limits<float>::signaling_NaN();
     clusterE[i] = numeric_limits<float>::signaling_NaN();
     clusterSizePhi[i] = numeric_limits<float>::signaling_NaN();
+    clusterProjectionPhi[i] = numeric_limits<float>::signaling_NaN();
     clusterResidualPhi[i] = clusterResidualZ[i] = numeric_limits<float>::signaling_NaN();
   }
 }

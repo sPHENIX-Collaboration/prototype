@@ -72,10 +72,10 @@ int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
 using namespace std;
 
-int Fun4All_TestBeam_TPC(int nEvents = 100, int nSkip = 1,
+int Fun4All_TestBeam_TPC(int nEvents = 30, int nSkip = 0,
                          //    const string &input_file = "data/tpc_beam/tpc_beam_00000171-0000.evt",//initial good 120 Gev proton run
-                         const string &input_file = "data/tpc_beam/tpc_beam_00000191-0000.evt",  //readjusted HV to lwoer gain
-                         bool eventDisp = false, int verbosity = 0)
+                         const string &input_file = "data/tpc_beam/tpc_beam_00000191-0000_display.evt",  //readjusted HV to lwoer gain
+                         bool eventDisp = true, int verbosity = 0)
 {
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors");

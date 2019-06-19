@@ -248,7 +248,7 @@ class TpcPrototypeUnpacker : public SubsysReco
   PHG4TpcPadPlane *padplane;
   PHG4CylinderCellGeomContainer *tpcCylinderCellGeom;
   TrkrClusterContainer *trkrclusters;
-  void exportDSTCluster(ClusterData &cluster, const int i);
+  int exportDSTCluster(ClusterData &cluster, const int i);
   int InitField(PHCompositeNode *topNode);
 
 #ifndef __CINT__
@@ -283,7 +283,7 @@ class TpcPrototypeUnpacker : public SubsysReco
 
   bool enableClustering;
   //! Clustering then prepare IOs
-  void Clustering(void);
+  int Clustering(void);
 
 #endif  // #ifndef __CINT__
 

@@ -540,15 +540,18 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
   }    //  for (unsigned int fee = 0; fee < kN_FEES; ++fee)
 
   if (enableClustering)
-    Clustering();
+  {
+    int ret = Clustering();
 
+    if (ret != Fun4AllReturnCodes::EVENT_OK) return ret;
+  }
   h_norm->Fill("Event count", 1);
   m_eventT->Fill();
 
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
-void TpcPrototypeUnpacker::Clustering()
+int TpcPrototypeUnpacker::Clustering()
 {
   if (Verbosity())
     cout << __PRETTY_FUNCTION__ << " entry" << endl;
@@ -578,8 +581,10 @@ void TpcPrototypeUnpacker::Clustering()
     assert(cluster.samples.size() > 0);
 
     //expand cluster by +/-1 in y
-    cluster.padys.insert( *(cluster.padys.begin()) - 1 );
-    cluster.padys.insert( *(cluster.padys.rbegin()) + 1 );
+    if (*(cluster.padys.begin()) - 1 >= 0)
+      cluster.padys.insert(*(cluster.padys.begin()) - 1);
+    if (*(cluster.padys.rbegin()) + 1 < (int) kMaxPadY)
+      cluster.padys.insert(*(cluster.padys.rbegin()) + 1);
 
     cluster.min_sample = max(0, *cluster.samples.begin() - m_nPreSample);
     cluster.max_sample = min((int) (kSAMPLE_LENGTH) -1, *cluster.samples.rbegin() + m_nPostSample);
@@ -706,14 +711,16 @@ void TpcPrototypeUnpacker::Clustering()
     ClusterData& cluster = m_clusters[iter.second];
 
     //output to DST clusters
-    exportDSTCluster(cluster, m_nClusters);
+    int ret = exportDSTCluster(cluster, m_nClusters);
+    if (ret != Fun4AllReturnCodes::EVENT_OK) return ret;
 
     // super awkward ways of ROOT filling TClonesArray
     new ((*m_IOClusters)[m_nClusters++]) ClusterData(cluster);
   }
+  return Fun4AllReturnCodes::EVENT_OK;
 }
 
-void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus)
+int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus)
 {
   assert(tpcCylinderCellGeom);
   assert(trkrclusters);
@@ -733,9 +740,31 @@ void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclu
 
   //  calculate geometry
   const double radius = layergeom->get_radius();  // returns center of layer
-  assert(cluster.avg_pady >= 0);
-  assert(cluster.avg_pady < NPhiBins);
+  if (cluster.avg_pady < 0)
+  {
+    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pady = " << cluster.avg_pady << " < 0"
+         << ", cluster.avg_padx = " << cluster.avg_padx << endl;
+
+    return Fun4AllReturnCodes::ABORTEVENT;
+  }
+  if (cluster.avg_pady >= NPhiBins)
+  {
+    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pady = " << cluster.avg_pady << " > " << NPhiBins
+         << ", cluster.avg_padx = " << cluster.avg_padx << endl;
+
+    return Fun4AllReturnCodes::ABORTEVENT;
+  }
   const int lowery = floor(cluster.avg_pady);
+
+  if (lowery < 0)
+  {
+    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pady = " << cluster.avg_pady << " -> "
+         << " lower = " << lowery << " < 0"
+         << ", cluster.avg_padx = " << cluster.avg_padx << endl;
+
+    return Fun4AllReturnCodes::ABORTEVENT;
+  }
+
   const double clusphi = layergeom->get_phicenter(lowery)                                             //
                          + (layergeom->get_phicenter(lowery + 1) - layergeom->get_phicenter(lowery))  //
                                * (cluster.avg_pady - lowery);
@@ -745,8 +774,8 @@ void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclu
   const double clusz = layergeom->get_zcenter(cluster.min_sample)  //
                        + (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample)) * cluster.peak_sample;
 
-  const double phi_size = cluster.size_pad_y /2;                       // * radius * layergeom->get_phistep();
-  const double z_size = (cluster.max_sample - cluster.min_sample)/2;  // * layergeom->get_zstep();
+  const double phi_size = cluster.size_pad_y / 2;                       // * radius * layergeom->get_phistep();
+  const double z_size = (cluster.max_sample - cluster.min_sample) / 2;  // * layergeom->get_zstep();
 
   static const double phi_err = 170e-4;
 
@@ -833,6 +862,8 @@ void TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclu
     cout << __PRETTY_FUNCTION__ << "Dump clusters after TpcPrototypeClusterizer" << endl;
     clus->identify();
   }
+
+  return Fun4AllReturnCodes::EVENT_OK;
 }
 
 TpcPrototypeUnpacker::PadPlaneData::

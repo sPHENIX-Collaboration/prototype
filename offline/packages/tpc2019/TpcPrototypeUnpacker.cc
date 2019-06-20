@@ -75,6 +75,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <tuple>
+#include <memory>
 
 using namespace std;
 using namespace TpcPrototypeDefs::FEEv2;
@@ -128,9 +129,46 @@ int TpcPrototypeUnpacker::ResetEvent(PHCompositeNode* topNode)
 
   m_nClusters = -1;
   assert(m_IOClusters);
-  m_IOClusters->Clear();
+  m_IOClusters->Clear("C");
 
   return Fun4AllReturnCodes::EVENT_OK;
+}
+
+void TpcPrototypeUnpacker::ClusterData::Clear(Option_t*)
+{
+  padxs.clear();
+  padys.clear();
+  samples.clear();
+
+  //  for (auto& s : padx_samples) s.second.clear();
+  //  padx_samples.clear();
+  //
+  //  for (auto& s : pady_samples) s.second.clear();
+  //  pady_samples.clear();
+
+  while (padx_samples.begin() != padx_samples.end())
+  {
+    padx_samples.begin()->second.clear();
+    padx_samples.erase(padx_samples.begin());
+  }
+
+  while (pady_samples.begin() != pady_samples.end())
+  {
+    pady_samples.begin()->second.clear();
+    pady_samples.erase(pady_samples.begin());
+  }
+
+  while (padx_peaks.begin() != padx_peaks.end())
+  {
+    padx_peaks.erase(padx_peaks.begin());
+  }
+
+  while (pady_peaks.begin() != pady_peaks.end())
+  {
+    pady_peaks.erase(pady_peaks.begin());
+  }
+
+  sum_samples.clear();
 }
 
 int TpcPrototypeUnpacker::Init(PHCompositeNode* topNode)
@@ -343,7 +381,7 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
   static const char* IS_PRESENT = "IS_PRESENT";
   static const char* BX_COUNTER = "BX";
 
-  Packet* p = event->getPacket(kPACKET_ID);
+  unique_ptr<Packet> p(event->getPacket(kPACKET_ID));
   if (p == nullptr)
     return Fun4AllReturnCodes::DISCARDEVENT;
 
@@ -774,8 +812,8 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   const double clusz = layergeom->get_zcenter(cluster.min_sample)  //
                        + (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample)) * cluster.peak_sample;
 
-  const double phi_size = cluster.size_pad_y ;                       // * radius * layergeom->get_phistep();
-  const double z_size = (cluster.max_sample - cluster.min_sample) ;  // * layergeom->get_zstep();
+  const double phi_size = cluster.size_pad_y;                       // * radius * layergeom->get_phistep();
+  const double z_size = (cluster.max_sample - cluster.min_sample);  // * layergeom->get_zstep();
 
   static const double phi_err = 170e-4;
 

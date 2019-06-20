@@ -164,15 +164,15 @@ class TpcPrototypeUnpacker : public SubsysReco
     {
     }
 
+    void Clear(Option_t * /*option*/ = "");
+
     std::set<int> padxs;
     std::set<int> padys;
     std::set<int> samples;
 
-#ifndef __CINT__
     std::map<int, std::vector<double>> padx_samples;
     std::map<int, std::vector<double>> pady_samples;
     std::vector<double> sum_samples;
-#endif  // #ifndef __CINT__
 
     int min_sample;
     int max_sample;

@@ -149,7 +149,7 @@ int Fun4All_TestBeam_TPC(int nEvents = 10, int nSkip = 0,
   TpcPrototypeGenFitTrkFinder *finder = new TpcPrototypeGenFitTrkFinder();
   finder->Verbosity(verbosity);
   finder->set_do_evt_display(eventDisp);
-  finder->set_do_eval(true);
+  finder->set_do_eval(false);
   finder->set_eval_filename(input_file + "_TpcPrototypeGenFitTrkFinder.root");
   se->registerSubsystem(finder);
   ////

@@ -563,8 +563,8 @@ void TpcPrototypeGenFitTrkFitter::fill_eval_tree(PHCompositeNode* topNode)
   for (SvtxTrackMap::ConstIter itr = _trackmap->begin();
        itr != _trackmap->end(); ++itr)
   {
-    new ((*_tca_trackmap)[i])(SvtxTrack_v1)(
-        *dynamic_cast<SvtxTrack_v1*>(itr->second));
+//    new ((*_tca_trackmap)[i])(SvtxTrack_v1)(
+//        *dynamic_cast<SvtxTrack_v1*>(itr->second));
 
     new ((*_tca_tpctrackmap)[i])(TpcPrototypeTrack)(*(MakeTpcPrototypeTrack(itr->second)));
 
@@ -1162,6 +1162,12 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
   track->trackID = svtxtrack->get_id();
   track->chisq = svtxtrack->get_chisq();
   track->ndf = svtxtrack->get_ndf();
+  track->ndf = svtxtrack->get_px();
+  track->ndf = svtxtrack->get_py();
+  track->ndf = svtxtrack->get_pz();
+  track->ndf = svtxtrack->get_x();
+  track->ndf = svtxtrack->get_y();
+  track->ndf = svtxtrack->get_z();
 
   track->nCluster = 0;
 

@@ -35,6 +35,13 @@ class TpcPrototypeTrack : public PHObject
   float chisq;
   unsigned int ndf;
 
+  float px;
+  float py;
+  float pz;
+  float x;
+  float y;
+  float z;
+
   unsigned int nCluster;
 
   //  class Cluster
@@ -75,7 +82,7 @@ class TpcPrototypeTrack : public PHObject
   float clusterProjectionPhi[nLayer];
   float clusterResidualZ[nLayer];
 
-  ClassDef(TpcPrototypeTrack,3);
+  ClassDef(TpcPrototypeTrack, 4);
 };
 
 #endif /* TPCPROTOTYPETRACK_H_ */

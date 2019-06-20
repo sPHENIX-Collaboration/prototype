@@ -168,7 +168,12 @@ void TpcPrototypeUnpacker::ClusterData::Clear(Option_t*)
     pady_peaks.erase(pady_peaks.begin());
   }
 
+//  while (sum_samples.begin() != sum_samples.end())
+//  {
+//    sum_samples.erase(sum_samples.begin());
+//  }
   sum_samples.clear();
+  sum_samples.shrink_to_fit();
 }
 
 int TpcPrototypeUnpacker::Init(PHCompositeNode* topNode)

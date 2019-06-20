@@ -313,6 +313,6 @@ void DrawTpcPrototypeGenFitTrkFitter(
 
   TrackQA();
   TrackDistortion();
-  Resolution();
-  //  Resolution("Iteration$ >= 6 && Iteration$ <= 9 && TPCTrack.nCluster>=14 && TPCTrack.clusterSizePhi > 3.5");
+  //  Resolution();
+  Resolution("Iteration$ >= 7 && Iteration$ <= 8 && TPCTrack.nCluster>=14 && TPCTrack.clusterSizePhi > 3.5");
 }

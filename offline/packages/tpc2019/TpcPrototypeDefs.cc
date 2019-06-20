@@ -147,7 +147,7 @@ bool SampleFit_PowerLawDoubleExp(        //
   default_values[6] = default_values_t(risetime, risetime, risetime);
 
   // fit function
-  TF1 fits("f_SignalShape_PowerLawDoubleExp", SignalShape_PowerLawDoubleExp, 0., n_samples, n_parameter);
+  static TF1 fits("f_SignalShape_PowerLawDoubleExp", SignalShape_PowerLawDoubleExp, 0., n_samples, n_parameter);
   fits.SetParNames("Amplitude", "Sample Start", "Power", "Peak Time 1", "Pedestal", "Amplitude ratio", "Peak Time 2");
 
   for (int i = 0; i < n_parameter; ++i)

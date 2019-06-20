@@ -10,6 +10,7 @@
 #include <TH2.h>
 #include <TH3.h>
 #include <TPolyLine.h>
+#include <TTree.h>
 
 #include <TFile.h>
 
@@ -19,6 +20,7 @@
 #include <TLine.h>
 #include <TStyle.h>
 
+#include <TDirectory.h>
 #include <TMath.h>
 #include <TPad.h>
 #include <TString.h>
@@ -45,7 +47,8 @@ using namespace std;
 
 TFile *_file0 = NULL;
 TString description;
-TTree T(nullptr);
+TTree *eventT(nullptr);
+TTree *chanT(nullptr);
 
 //! utility function to
 void useLogBins(TAxis *axis)
@@ -132,31 +135,117 @@ FitProfile(const TH2 *h2)
   return new TGraphErrors(n, x, y, ex, ey);
 }
 
-void DrawTpcPrototypeUnpacker(
-    const TString infile = "/sphenix/user/jinhuang/HF-jet/RAA_DB_theory.root", const TString desc = "Run 281")
+void Clusters3D()
 {
+  TCanvas *c1 = new TCanvas("Clusters3D", "Clusters3D", 1200, 900);
+  c1->Divide(1, 1);
+  int idx = 1;
+  TPad *p = nullptr;
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+  //  p->SetLogx();
+  //  p->DrawFrame(0, 0, 10, 2, ";Transverse Momentum, p_{T} [GeV/c];Nuclear Modification Factor, R_{AA}");
+
+  TH3F *h3ClusterOverlay = new TH3F("h3ClusterOverlay", "h3ClusterOverlay", 128, -.5, 127.5, 16, -.5, 15.5, 128, -.5, 127.5);
+
+  eventT->Draw("Clusters.avg_pady:Clusters.avg_padx:Clusters.min_sample+Clusters.peak_sample>>h3ClusterOverlay",
+               "Clusters.peak", "BOX2");
+  h3ClusterOverlay->SetTitle("Run274 Event 1-100 overlay of Clusters;Time [0-127*50ns];Rows [0-15];Pads [0-127]");
+  h3ClusterOverlay->SetLineWidth(0);
+
+  TLegend *leg = new TLegend(.05, .9, .95, .99, description + ": accumulated clusters");
+  //  leg->AddEntry("", "Au+Au #sqrt{s_{NN}}=200GeV, 24B 0-10%C", "");
+  //  leg->AddEntry("", "p+p #sqrt{s}=200GeV, 200B M.B.", "");
+  leg->Draw();
+
+  SaveCanvas(c1,
+             TString(_file0->GetName()) + TString("_") + TString("Clusters3D") + TString("_") + TString(c1->GetName()), false);
+}
+
+void ClusterQA()
+{
+  TCanvas *c1 = new TCanvas("ClusterQA", "ClusterQA", 1800, 860);
+  c1->Divide(3, 1);
+  int idx = 1;
+  TPad *p = nullptr;
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+  //  p->SetLogx();
+  //  p->DrawFrame(0, 0, 10, 2, ";Transverse Momentum, p_{T} [GeV/c];Nuclear Modification Factor, R_{AA}");
+
+  TH1 *CLusterEnergyAvg = new TH1F("CLusterEnergyAvg", ";<cluster energy> [ADU];Count", 100, -0, 2000);
+  eventT->Draw("Sum$(Clusters[].peak)/nClusters>>CLusterEnergyAvg");
+  CLusterEnergyAvg->Fit("gaus");
+  TF1 *fgauss = (TF1 *) CLusterEnergyAvg->GetListOfFunctions()->At(0);
+  assert(fgauss);
+  fgauss->SetLineColor(kBlue + 1);
+
+  TLegend *leg = new TLegend(.2, .8, .99, .99, description);
+  //    leg->AddEntry("", "Au+Au #sqrt{s_{NN}}=200GeV, 24B 0-10%C", "");
+  leg->AddEntry(fgauss, Form("Energy = %.1f +/- %.1f", fgauss->GetParameter(1), fgauss->GetParError(1)), "l");
+  leg->Draw();
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+  //  p->SetLogx();
+  //  p->DrawFrame(0, 0, 10, 2, ";Transverse Momentum, p_{T} [GeV/c];Nuclear Modification Factor, R_{AA}");
+
+  TH1 *CLusterEnergyAll = new TH1F("CLusterEnergyAll", ";cluster energy [ADU];Count", 100, -0, 2000);
+  eventT->Draw("(Clusters[].peak)>>CLusterEnergyAll");
+  //  CLusterEnergyAvg->Fit("gaus");
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+  //  p->SetLogx();
+  //  p->DrawFrame(0, 0, 10, 2, ";Transverse Momentum, p_{T} [GeV/c];Nuclear Modification Factor, R_{AA}");
+
+  TH1 *nClusters = new TH1F("nClusters", ";Cluster count;Count", 151, -.5, 150.5);
+  eventT->Draw("nClusters>>nClusters");
+  //  CLusterEnergyAvg->Fit("gaus");
+
+  SaveCanvas(c1,
+             TString(_file0->GetName()) + TString("_") + TString("Clusters3D") + TString("_") + TString(c1->GetName()), false);
+}
+
+void DrawTpcPrototypeUnpacker(
+    const TString infile = "data/tpc_beam/tpc_beam_00000292-0000.evt_TpcPrototypeUnpacker.root", const TString desc = "Run 292"  //
+)
+{
+  gSystem->Load("libtpc2019.so");
+  //
   SetsPhenixStyle();
   TVirtualFitter::SetDefaultFitter("Minuit2");
   gStyle->SetLegendTextSize(0);
-
+  //
   if (!_file0)
   {
     TString chian_str = infile;
     chian_str.ReplaceAll("ALL", "*");
 
-    TChain *t = new TChain("T");
+    TChain *t = new TChain("eventT");
     const int n = t->Add(chian_str);
 
-    cout << "Loaded " << n << " root files with " << chian_str << endl;
+    cout << "Loaded " << n << " root files with eventT in " << chian_str << endl;
     assert(n > 0);
 
-    T = t;
+    eventT = t;
+
+    t = new TChain("chanT");
+    const int n1 = t->Add(chian_str);
+
+    cout << "Loaded " << n1 << " root files with chanT in " << chian_str << endl;
+    assert(n1 > 0);
+
+    chanT = t;
 
     _file0 = new TFile;
     _file0->SetName(infile);
   }
+  //
+  description = desc;
 
-  desc(description);
-  //  _file0 = new TFile(infile);
-  assert(_file0);
+  Clusters3D();
+  ClusterQA();
 }

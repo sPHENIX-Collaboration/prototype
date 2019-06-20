@@ -77,7 +77,7 @@ int Fun4All_TestBeam_TPC(int nEvents = 100, int nSkip = 0,
                          //    const string &input_file = "data/tpc_beam/tpc_beam_00000191-0000.evt",  //readjusted HV to lwoer gain
                          //    const string &input_file = "data/tpc_beam/tpc_beam_00000217-0000.evt",  //moved beam to reduce drift
 //    const string &input_file = "data/tpc_beam/tpc_beam_00000241-0000.evt",  //moved beam to increase drift
-    const string &input_file = "data/tpc_beam/tpc_beam_00000281-0000.evt",  //moved beam to increase drift
+    const string &input_file = "data/tpc_beam/tpc_beam_00000286-0000.evt",  //moved beam to increase drift
                          bool eventDisp = false, int verbosity = 0)
 {
   gSystem->Load("libfun4all");
@@ -126,7 +126,7 @@ int Fun4All_TestBeam_TPC(int nEvents = 100, int nSkip = 0,
 
   TpcPrototypeUnpacker *tpcfee = new TpcPrototypeUnpacker((input_file) + string("_TpcPrototypeUnpacker.root"));
   tpcfee->Verbosity(verbosity);
-  //  tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_MORE);
+//    tpcfee->Verbosity(TpcPrototypeUnpacker::VERBOSITY_MORE);
   tpcfee->registerPadPlane(padplane);
   tpcfee->setNPreSample(5);
   tpcfee->setNPostSample(7);
@@ -175,7 +175,7 @@ int Fun4All_TestBeam_TPC(int nEvents = 100, int nSkip = 0,
   in->fileopen(input_file);
   se->registerInputManager(in);
 
-  gSystem->ListLibraries();
+//  gSystem->ListLibraries();
   se->skip(nSkip);
   se->run(nEvents);
 

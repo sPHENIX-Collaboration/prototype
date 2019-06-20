@@ -72,12 +72,12 @@ int n_gas_layer = n_tpc_layer_inner + n_tpc_layer_mid + n_tpc_layer_outer;
 
 using namespace std;
 
-int Fun4All_TestBeam_TPC(int nEvents = 100, int nSkip = 0,
+int Fun4All_TestBeam_TPC(int nEvents = 10, int nSkip = 0,
                          //    const string &input_file = "data/tpc_beam/tpc_beam_00000171-0000.evt",//initial good 120 Gev proton run
                          //    const string &input_file = "data/tpc_beam/tpc_beam_00000191-0000.evt",  //readjusted HV to lwoer gain
                          //    const string &input_file = "data/tpc_beam/tpc_beam_00000217-0000.evt",  //moved beam to reduce drift
 //    const string &input_file = "data/tpc_beam/tpc_beam_00000241-0000.evt",  //moved beam to increase drift
-    const string &input_file = "data/tpc_beam/tpc_beam_00000286-0000.evt",  //moved beam to increase drift
+    const string &input_file = "data/tpc_beam/tpc_beam_00000274-0000.evt",  //moved beam to increase drift
                          bool eventDisp = false, int verbosity = 0)
 {
   gSystem->Load("libfun4all");

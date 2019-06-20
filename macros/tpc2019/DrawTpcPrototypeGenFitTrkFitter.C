@@ -134,17 +134,17 @@ TFile *_file0 = NULL;
 TString description;
 TTree *T(nullptr);
 
-void Resolution()
+void Resolution(const TCut &cut = "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && TPCTrack.clusterSizePhi > 3.5")
 {
-  TH2 *hresidual_phi = new TH2F("hresidual_phi", "hresidual_phi", 50, -2.905, -2.884, 100, -.2, .2);
+  TH2 *hresidual_phi = new TH2F("hresidual_phi", "hresidual_phi", 50, -2.9, -2.885, 60, -.2, .2);
   T->Draw("TPCTrack.clusterResidualPhi:TPCTrack.clusterProjectionPhi>>hresidual_phi",
-          "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && abs(TPCTrack.clusterSizePhi - 4)<1", "goff");
+          cut, "goff");
   hresidual_phi->SetTitle(";Global Phi [rad];Phi Residual [cm]");
 
-  TH2 *hresidual_phi_highres = new TH2F("hresidual_phi", "hresidual_phi", 500, -2.905, -2.884, 1000, -.2, .2);
-  T->Draw("TPCTrack.clusterResidualPhi:TPCTrack.clusterProjectionPhi>>hresidual_phi",
-          "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && abs(TPCTrack.clusterSizePhi - 4)<1", "goff");
-  hresidual_phi->SetTitle(";Global Phi [rad];Phi Residual [cm]");
+  TH2 *hresidual_phi_highres = new TH2F("hresidual_phi_highres", "hresidual_phi", 500, -2.9, -2.885, 1000, -.2, .2);
+  T->Draw("TPCTrack.clusterResidualPhi:TPCTrack.clusterProjectionPhi>>hresidual_phi_highres",
+          cut, "goff");
+  hresidual_phi_highres->SetTitle(";Global Phi [rad];Phi Residual [cm]");
 
   TCanvas *c1 = new TCanvas("Resolution", "Resolution", 1800, 860);
   c1->Divide(3, 1);
@@ -160,8 +160,10 @@ void Resolution()
   gcenter->Draw("p");
   //  hresidual_phi
 
+  //  TF1 *fPeriod = new TF1("fPeriod",
+  //                         "[0] * sin(2*pi*x/(2*pi/12/8/16)) + [1] * sin(2*pi*x/(2*pi/12/8/16)) + [2] + [3]*x + [4]*x*x + [5] * sin(4*pi*x/(2*pi/12/8/16)) + [6] * sin(4*pi*x/(2*pi/12/8/16))+ [7] * sin(3*pi*x/(2*pi/12/8/16)) + [8] * sin(3*pi*x/(2*pi/12/8/16))+ [9] * sin(pi*x/(5*pi/12/8/16)) + [10] * sin(pi*x/(5*pi/12/8/16)) + [11] * x*x*x", -3, 0);
   TF1 *fPeriod = new TF1("fPeriod",
-                         "[0] * sin(2*pi*x/(2*pi/12/8/16)) + [1] * sin(2*pi*x/(2*pi/12/8/16)) + [2] + [3]*x + [4]*x*x + [5] * sin(4*pi*x/(2*pi/12/8/16)) + [6] * sin(4*pi*x/(2*pi/12/8/16))+ [7] * sin(3*pi*x/(2*pi/12/8/16)) + [8] * sin(3*pi*x/(2*pi/12/8/16))+ [9] * sin(pi*x/(5*pi/12/8/16)) + [10] * sin(pi*x/(5*pi/12/8/16)) + [11] * x*x*x", -3, 0);
+                         "([0]+[1]*x) * sin(2*pi*x/(2*pi/12/8/16)) + ([1]+[2]*x) * cos(2*pi*x/(2*pi/12/8/16)) + [3] + [4]*x + [5]*x*x + ([6]+[7]*x) * sin(4*pi*x/(2*pi/12/8/16)) + ([8]+[9]*x) * cos(4*pi*x/(2*pi/12/8/16))+ ([10] + [11]*x) * sin(3*pi*x/(2*pi/12/8/16)) + ([12]+[13]*x) * cos(3*pi*x/(2*pi/12/8/16))+ ([14]+[15]*x) * sin(pi*x/(5*pi/12/8/16)) + ([16]+[17]*x) * cos(pi*x/(5*pi/12/8/16)) + ([18]+[19]*x) * x*x*x", -3, 0);
   gcenter->Fit(fPeriod, "M");
 
   p = (TPad *) c1->cd(idx++);
@@ -169,32 +171,112 @@ void Resolution()
 
   TH2 *hresidual_phi_cor = (TH2 *) hresidual_phi->Clone("hresidual_phi_cor");
   hresidual_phi_cor->Reset();
-  hresidual_phi_cor->SetTitle(";Global Phi [rad];Corrected Phi Residual [cm]");
+  hresidual_phi_cor->SetTitle(";Global Phi [rad];Modulation-Corrected Phi Residual [cm]");
 
+  double sum = 0;
   for (int binx = 1; binx <= hresidual_phi_highres->GetNbinsX(); ++binx)
     for (int biny = 1; biny <= hresidual_phi_highres->GetNbinsY(); ++biny)
     {
       const double x = hresidual_phi_highres->GetXaxis()->GetBinCenter(binx);
       const double y = hresidual_phi_highres->GetYaxis()->GetBinCenter(biny);
+      const double value = hresidual_phi_highres->GetBinContent(binx, biny);
 
+      sum += value;
       //      const double y_cor = y;
       const double y_cor = y - fPeriod->Eval(x);
 
-      hresidual_phi_cor->Fill(x, y_cor,
-                              hresidual_phi_highres->GetBinContent(binx, biny));
+      hresidual_phi_cor->Fill(x, y_cor, value);
     }
+  cout << __PRETTY_FUNCTION__ << " sum = " << sum << endl;
 
   hresidual_phi_cor->Draw("colz");
 
   p = (TPad *) c1->cd(idx++);
   c1->Update();
-  TH1 *hresidual_cor = hresidual_phi_cor->ProjectionY("hresidual_cor");
+  TH1 *hresidual_cor = hresidual_phi_cor->ProjectionY("hresidual_cor", 1, hresidual_phi_cor->GetNbinsX());
 
   hresidual_cor->Draw();
 
-  TH1 *hresidual = hresidual_phi->ProjectionY("hresidual");
+  TH1 *hresidual = hresidual_phi->ProjectionY("hresidual", 1, hresidual_phi->GetNbinsX());
+  //  hresidual->SetMarkerColor(kRed - 3);
+  hresidual->SetLineColor(kRed - 3);
+  hresidual->Draw("same");
 
-  hresidual_cor->Draw("same");
+  SaveCanvas(c1,
+             TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
+}
+
+void TrackQA()
+{
+  TCanvas *c1 = new TCanvas("TrackQA", "TrackQA", 1800, 860);
+  c1->Divide(3, 2);
+  int idx = 1;
+  TPad *p = nullptr;
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH1 *hnTrack = new TH1F("hnTrack", ";# track per event", 17, -.5, 16.5);
+  T->Draw("nTrack>>hnTrack");
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH1 *hCluster = new TH1F("hCluster", ";# cluster per track", 16, .5, 16.5);
+  T->Draw("TPCTrack.nCluster>>hCluster");
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH1 *hclusterSizePhi = new TH1F("hclusterSizePhi", ";Cluster phi size", 16, .5, 16.5);
+  T->Draw("TPCTrack.clusterSizePhi>>hclusterSizePhi");
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH1 *hclusterProjectionPhi = new TH1F("hclusterProjectionPhi", ";Cluster phi [rad]", 100, -3.5, -2.5);
+  T->Draw("TPCTrack.clusterProjectionPhi>>hclusterProjectionPhi");
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH1 *hAngle = new TH1F("hAngle", ";Horizontal angle [degree]", 100, -30, 30);
+  T->Draw("SvtxTrack.get_pz()/SvtxTrack.get_px()/pi*180>>hAngle");
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH1 *hresidualRough = new TH1F("hresidualRough", ";Rought phi residual [cm]", 1000, -1, 1);
+  T->Draw("TPCTrack.clusterResidualPhi>>hresidualRough", "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=10");
+
+  SaveCanvas(c1,
+             TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
+}
+
+void TrackDistortion(const TCut &cut = "TPCTrack.nCluster>=10")
+{
+  TCanvas *c1 = new TCanvas("TrackDistortion", "TrackDistortion", 1800, 860);
+  c1->Divide(2, 1);
+  int idx = 1;
+  TPad *p = nullptr;
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH2 *hPhiDistortion = new TH2F("hPhiDistortion", ";Pad Layers;Phi Residual [cm]", 16, -.5, 15.5, 200, -3, 3);
+  T->Draw("TPCTrack.clusterResidualPhi:Iteration$>>hPhiDistortion", cut, "goff");
+  TGraph *gPhiDistortion = FitProfile(hPhiDistortion);
+  hPhiDistortion->Draw("colz");
+  gPhiDistortion->Draw("p");
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+
+  TH2 *hZDistortion = new TH2F("hZDistortion", ";Pad Layers;Z Residual [cm]", 16, -.5, 15.5, 200, -3, 3);
+  T->Draw("TPCTrack.clusterResidualZ:Iteration$>>hZDistortion", cut, "goff");
+  TGraph *gZDistortion = FitProfile(hZDistortion);
+  hZDistortion->Draw("colz");
+  gZDistortion->Draw("p");
 
   SaveCanvas(c1,
              TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
@@ -229,5 +311,8 @@ void DrawTpcPrototypeGenFitTrkFitter(
   //
   description = desc;
 
+  TrackQA();
+  TrackDistortion();
   Resolution();
+  //  Resolution("Iteration$ >= 6 && Iteration$ <= 9 && TPCTrack.nCluster>=14 && TPCTrack.clusterSizePhi > 3.5");
 }

@@ -241,13 +241,15 @@ void TrackQA()
   c1->Update();
 
   TH1 *hAngle = new TH1F("hAngle", ";Horizontal angle [degree]", 100, -30, 30);
-  T->Draw("SvtxTrack.get_pz()/SvtxTrack.get_px()/pi*180>>hAngle");
+  T->Draw("atan2(TPCTrack.pz, TPCTrack.px())/pi*180>>hAngle");
 
   p = (TPad *) c1->cd(idx++);
   c1->Update();
 
-  TH1 *hresidualRough = new TH1F("hresidualRough", ";Rought phi residual [cm]", 1000, -1, 1);
-  T->Draw("TPCTrack.clusterResidualPhi>>hresidualRough", "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=10");
+  TH1 *hAngleV = new TH1F("hAngleV", ";Vertical angle [degree]", 100, -30, 30);
+  T->Draw("atan2(TPCTrack.py, TPCTrack.px())/pi*180>>hAngleV");
+  //  TH1 *hresidualRough = new TH1F("hresidualRough", ";Rought phi residual [cm]", 1000, -1, 1);
+  //  T->Draw("TPCTrack.clusterResidualPhi>>hresidualRough", "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=10");
 
   SaveCanvas(c1,
              TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
@@ -314,5 +316,5 @@ void DrawTpcPrototypeGenFitTrkFitter(
   TrackQA();
   TrackDistortion();
   //  Resolution();
-  Resolution("Iteration$ >= 7 && Iteration$ <= 8 && TPCTrack.nCluster>=14 && TPCTrack.clusterSizePhi > 3.5");
+  //  Resolution("Iteration$ >= 7 && Iteration$ <= 8 && TPCTrack.nCluster>=14 && TPCTrack.clusterSizePhi > 3.5");
 }

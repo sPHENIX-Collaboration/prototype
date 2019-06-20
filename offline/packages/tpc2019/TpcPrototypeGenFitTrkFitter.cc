@@ -1162,12 +1162,12 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
   track->trackID = svtxtrack->get_id();
   track->chisq = svtxtrack->get_chisq();
   track->ndf = svtxtrack->get_ndf();
-  track->ndf = svtxtrack->get_px();
-  track->ndf = svtxtrack->get_py();
-  track->ndf = svtxtrack->get_pz();
-  track->ndf = svtxtrack->get_x();
-  track->ndf = svtxtrack->get_y();
-  track->ndf = svtxtrack->get_z();
+  track->px = svtxtrack->get_px();
+  track->py = svtxtrack->get_py();
+  track->pz = svtxtrack->get_pz();
+  track->x = svtxtrack->get_x();
+  track->y = svtxtrack->get_y();
+  track->z = svtxtrack->get_z();
 
   track->nCluster = 0;
 

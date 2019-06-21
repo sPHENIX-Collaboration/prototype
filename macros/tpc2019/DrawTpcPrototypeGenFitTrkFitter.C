@@ -134,14 +134,17 @@ TFile *_file0 = NULL;
 TString description;
 TTree *T(nullptr);
 
-void Resolution(const TCut &cut = "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && TPCTrack.clusterSizePhi > 3.5")
+void Resolution(const TCut &cut = "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && TPCTrack.clusterSizePhi > 3.5",
+    const double phi_start = -2.905, const double phi_end = -2.885
+
+)
 {
-  TH2 *hresidual_phi = new TH2F("hresidual_phi", "hresidual_phi", 50, -2.9, -2.885, 60, -.2, .2);
+  TH2 *hresidual_phi = new TH2F("hresidual_phi", "hresidual_phi", 60,phi_start, phi_end, 60, -.2, .2);
   T->Draw("TPCTrack.clusterResidualPhi:TPCTrack.clusterProjectionPhi>>hresidual_phi",
           cut, "goff");
   hresidual_phi->SetTitle(";Global Phi [rad];Phi Residual [cm]");
 
-  TH2 *hresidual_phi_highres = new TH2F("hresidual_phi_highres", "hresidual_phi", 500, -2.9, -2.885, 1000, -.2, .2);
+  TH2 *hresidual_phi_highres = new TH2F("hresidual_phi_highres", "hresidual_phi", 500, phi_start, phi_end, 1000, -.2, .2);
   T->Draw("TPCTrack.clusterResidualPhi:TPCTrack.clusterProjectionPhi>>hresidual_phi_highres",
           cut, "goff");
   hresidual_phi_highres->SetTitle(";Global Phi [rad];Phi Residual [cm]");

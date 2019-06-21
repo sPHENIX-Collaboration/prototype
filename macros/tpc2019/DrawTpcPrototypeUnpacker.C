@@ -137,8 +137,8 @@ FitProfile(const TH2 *h2)
 
 void Clusters3D()
 {
-  TCanvas *c1 = new TCanvas("Clusters3D", "Clusters3D", 1200, 900);
-  c1->Divide(1, 1);
+  TCanvas *c1 = new TCanvas("Clusters3D", "Clusters3D", 1800, 900);
+  c1->Divide(2, 1);
   int idx = 1;
   TPad *p = nullptr;
 
@@ -151,12 +151,23 @@ void Clusters3D()
 
   eventT->Draw("Clusters.avg_pady:Clusters.avg_padx:Clusters.min_sample+Clusters.peak_sample>>h3ClusterOverlay",
                "Clusters.peak", "BOX2");
-  h3ClusterOverlay->SetTitle("Run274 Event 1-100 overlay of Clusters;Time [0-127*50ns];Rows [0-15];Pads [0-127]");
+  h3ClusterOverlay->SetTitle(";Time [0-127*50ns];Rows [0-15];Pads [0-127]");
   h3ClusterOverlay->SetLineWidth(0);
 
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+  //  p->SetLogx();
+  //  p->DrawFrame(0, 0, 10, 2, ";Transverse Momentum, p_{T} [GeV/c];Nuclear Modification Factor, R_{AA}");
+
+  TH2 *h2ClusterOverlay = new TH2F("h2ClusterOverlay", "h2ClusterOverlay", 128, -.5, 127.5, 128, -.5, 127.5);
+
+  eventT->Draw("Clusters.avg_pady:Clusters.min_sample+Clusters.peak_sample>>h2ClusterOverlay",
+               "Clusters.peak", "colz");
+  h2ClusterOverlay->SetTitle(";Time [0-127*50ns];Pads [0-127]");
+  //  h2ClusterOverlay->SetLineWidth(0);
+
+  p->SetTopMargin(.9);
   TLegend *leg = new TLegend(.05, .9, .95, .99, description + ": accumulated clusters");
-  //  leg->AddEntry("", "Au+Au #sqrt{s_{NN}}=200GeV, 24B 0-10%C", "");
-  //  leg->AddEntry("", "p+p #sqrt{s}=200GeV, 200B M.B.", "");
   leg->Draw();
 
   SaveCanvas(c1,

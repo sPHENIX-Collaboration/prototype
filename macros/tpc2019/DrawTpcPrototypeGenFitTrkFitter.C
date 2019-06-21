@@ -202,6 +202,49 @@ void Resolution(const TCut &cut = "Iteration$ >= 5 && Iteration$ <= 10 && TPCTra
   hresidual->SetLineColor(kRed - 3);
   hresidual->Draw("same");
 
+  TF1 *hresidual_fgaus = new TF1("hresidual_fgaus", "gaus", -.2, .2);
+  //
+  TF1 *hresidual_dgaus = new TF1(Form("hresidual_dgaus"), "gaus + [3]*exp(-0.5*((x-[1])/[4])**2) + [5]",
+                                 -.2, .2);
+  //
+  hresidual_fgaus->SetParameter(1, hresidual->GetMean());
+  hresidual_fgaus->SetParameter(2, hresidual->GetRMS());
+  //
+  hresidual_cor->Fit(hresidual_fgaus, "MQ");
+  //
+  //  TF1 f2(Form("dgaus"), "gaus  + [3]",
+  //         -fgaus.GetParameter(2) * 1.5, fgaus.GetParameter(2) * 1.5);
+  //
+  hresidual_dgaus->SetParameters(hresidual_fgaus->GetParameter(0),
+                                 hresidual_fgaus->GetParameter(1),
+                                 hresidual_fgaus->GetParameter(2) / 2,
+                                 hresidual_fgaus->GetParameter(0) / 20,
+                                 hresidual_fgaus->GetParameter(2) * 10, 0);
+  //
+  hresidual_cor->Fit(hresidual_dgaus, "M");
+  hresidual_dgaus->SetLineColor(kBlue + 2);
+  const double resolution = TMath::Min(hresidual_dgaus->GetParameter(2), hresidual_dgaus->GetParameter(4));
+
+  cout << __PRETTY_FUNCTION__ << " hresidual_fgaus->GetParameter(2) = " << hresidual_dgaus->GetParameter(2)
+       << "  hresidual_fgaus->GetParameter(4) = " << hresidual_dgaus->GetParameter(4) << " resolution = " << resolution << endl;
+  //
+  //  //      new TCanvas;
+  //  //      h1->Draw();
+  //  //      fgaus.Draw("same");
+  //  //      break;
+  //
+  //  x[n] = p2->GetBinCenter(i);
+  //  ex[n] = (p2->GetBinCenter(2) - p2->GetBinCenter(1)) / 2;
+  //  y[n] = fgaus.GetParameter(1);
+  //  ey[n] = fgaus.GetParError(1);
+
+  gPad->SetTopMargin(.3);
+  TLegend *leg = new TLegend(.03, .7, .98, .99, description + ": 1-removed residual");
+  leg->AddEntry(hresidual, "Raw residual", "l");
+  leg->AddEntry(hresidual_cor, "Position dependence corected residual", "p");
+  leg->AddEntry(hresidual_dgaus, Form("resolution = %.0f #mum", resolution * 1e4), "l");
+  leg->Draw();
+
   SaveCanvas(c1,
              TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
 }
@@ -241,13 +284,13 @@ void TrackQA()
   c1->Update();
 
   TH1 *hAngle = new TH1F("hAngle", ";Horizontal angle [degree]", 100, -30, 30);
-  T->Draw("atan2(TPCTrack.pz, TPCTrack.px())/pi*180>>hAngle");
+  T->Draw("atan(TPCTrack.pz/ TPCTrack.px)/pi*180>>hAngle");
 
   p = (TPad *) c1->cd(idx++);
   c1->Update();
 
   TH1 *hAngleV = new TH1F("hAngleV", ";Vertical angle [degree]", 100, -30, 30);
-  T->Draw("atan2(TPCTrack.py, TPCTrack.px())/pi*180>>hAngleV");
+  T->Draw("(atan(TPCTrack.py/ TPCTrack.px) - 2*pi/12/2 )/pi*180>>hAngleV");
   //  TH1 *hresidualRough = new TH1F("hresidualRough", ";Rought phi residual [cm]", 1000, -1, 1);
   //  T->Draw("TPCTrack.clusterResidualPhi>>hresidualRough", "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=10");
 
@@ -316,5 +359,5 @@ void DrawTpcPrototypeGenFitTrkFitter(
   TrackQA();
   TrackDistortion();
   //  Resolution();
-  //  Resolution("Iteration$ >= 7 && Iteration$ <= 8 && TPCTrack.nCluster>=14 && TPCTrack.clusterSizePhi > 3.5");
+  Resolution("Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && TPCTrack.clusterSizePhi > 7");
 }

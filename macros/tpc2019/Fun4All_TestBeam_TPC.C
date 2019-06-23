@@ -46,18 +46,8 @@
 #include <tpc2019/TpcPrototypeGenFitTrkFitter.h>
 #include <tpc2019/TpcPrototypeUnpacker.h>
 
-R__LOAD_LIBRARY(libcalo_reco.so)
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4tpc.so)
-R__LOAD_LIBRARY(libg4detectors.so)
-R__LOAD_LIBRARY(libg4eval.so)
-R__LOAD_LIBRARY(libg4histos.so)
-R__LOAD_LIBRARY(libg4testbench.so)
-R__LOAD_LIBRARY(libg4tpc.so)
-R__LOAD_LIBRARY(libg4intt.so)
-R__LOAD_LIBRARY(libg4mvtx.so)
-R__LOAD_LIBRARY(libg4hough.so)
-R__LOAD_LIBRARY(libg4eval.so)
 R__LOAD_LIBRARY(libintt.so)
 R__LOAD_LIBRARY(libmvtx.so)
 R__LOAD_LIBRARY(libtpc2019.so)
@@ -81,20 +71,12 @@ int Fun4All_TestBeam_TPC(int nEvents = 10, int nSkip = 0,
                          bool eventDisp = false, int verbosity = 0)
 {
   gSystem->Load("libfun4all");
-  gSystem->Load("libg4detectors");
-  gSystem->Load("libg4testbench");
-  gSystem->Load("libg4histos");
-  gSystem->Load("libg4eval.so");
   gSystem->Load("libqa_modules");
   gSystem->Load("libg4tpc");
   gSystem->Load("libtrack_io.so");
   gSystem->Load("libfun4all.so");
-  gSystem->Load("libg4detectors.so");
   gSystem->Load("libtpc2019.so");
-  gSystem->Load("libg4eval.so");
   gSystem->Load("libfun4all.so");
-  gSystem->Load("libg4detectors.so");
-  gSystem->Load("libg4hough.so");
   gSystem->Load("libtrack_reco.so");
   bool dstoutput = false;
 

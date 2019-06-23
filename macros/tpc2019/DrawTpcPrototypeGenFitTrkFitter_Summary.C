@@ -187,12 +187,14 @@ pair<TGraph *, TGraph *> getResolutions(vector<pair<double, string>> datafiles, 
 }
 
 void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
-    string basepath = "/phenix/u/jinhuang/links/sPHENIX_work/TPC/fnal_June2019/SimPadPlaneIter4/")
+    string basepath = "/phenix/u/jinhuang/links/sPHENIX_work/TPC/fnal_June2019/SimPadPlaneIter5/")
 {
   //  gSystem->Load("libtpc2019.so");
   //
   basePath = basepath;
   const double max_res = 300;
+  const double field_off_trans_diffusion = 150;  // um/sqrt(cm), From: Prakhar Garg <prakhar.garg@stonybrook.edu>  Date: Tue, Jun 18, 2019 at 1:04 PM
+  const double field_on_trans_diffusion = 40;    // um/sqrt(cm), From: Prakhar Garg <prakhar.garg@stonybrook.edu>  Date: Tue, Jun 18, 2019 at 1:04 PM
 
   SetsPhenixStyle();
   TVirtualFitter::SetDefaultFitter("Minuit2");
@@ -207,18 +209,17 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
   c1->Update();
 
   TH1 *frame = p->DrawFrame(0, 0, 20, max_res * max_res);
-  frame->SetTitle(";Horizontal Position [in];Resolution^{2} [#mum^{2}]");
+  frame->SetTitle(";Horizontal Position [in];Resolution^{2}, Cluster w/ 2+ pad [#mum^{2}]");
   frame->GetYaxis()->SetTitleOffset(1.75);
   TLine *l = new TLine(x0, 0, x0, max_res * max_res);
   l->Draw();
 
   TLegend *leg1 = new TLegend(.35, .7, .9, .9, "2019 TPC Beam Test Preview");
-  TLegend *leg2 = new TLegend(.3, .2, .9, .5, "2019 TPC Beam Test Preview");
 
   p = (TPad *) c1->cd(idx++);
   c1->Update();
-
-  p->DrawFrame(0, 0, 50, max_res)->SetTitle(";Distance to readout, L [cm];Resolution [#mum]");
+  p->DrawFrame(0, 50, 125, max_res)->SetTitle(";Drift Length, L [cm];Resolution, Cluster w/ 2+ pad [#mum]");
+  TLegend *leg2 = new TLegend(.42, .45, .92, .93, "2019 TPC Beam Test Preview");
 
   {
     Color_t color = kRed + 2;
@@ -234,7 +235,7 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
 
     c1->cd(1);
     scan2.second->Draw("p");
-    TF1 *fline_scan2 = new TF1("fline_scan2", "pol1", x0, 16);
+    TF1 *fline_scan2 = new TF1("fline_scan2", "pol1", x0, 20);
     scan2.second->Fit(fline_scan2, "MR0");
     fline_scan2->SetLineColor(color);
     fline_scan2->Draw("same");
@@ -243,13 +244,23 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
 
     c1->cd(2);
     scan2.first->Draw("p");
-    TF1 *fdiff_scan2 = new TF1("fline_scan2", "sqrt([0]*[0] + [1]*[1]*x)", 0, 30);
+    TF1 *fdiff_scan2 = new TF1("fline_scan2", "sqrt([0]*[0] + ([1]*[1]/[2])*x)", 0, 40);
+    fdiff_scan2->SetParameters(70, field_off_trans_diffusion, 20);
+    fdiff_scan2->FixParameter(1, field_off_trans_diffusion);
     scan2.first->Fit(fdiff_scan2, "MR0");
     fdiff_scan2->SetLineColor(color);
     fdiff_scan2->Draw("same");
 
-    leg2->AddEntry(scan2.first, name, "p");
-    leg2->AddEntry(fdiff_scan2, Form("#sqrt{(%.1f #mum)^{2} + (%.1f #mum/#sqrt{cm})^{2} L}", abs(fdiff_scan2->GetParameter(0)), fdiff_scan2->GetParameter(1)), "l");
+    TF1 *fdiff_scan2_FieldON = (TF1 *) fdiff_scan2->Clone("fdiff_scan2_FieldON");
+    fdiff_scan2_FieldON->SetRange(0, 105);
+    fdiff_scan2_FieldON->SetParameter(1, field_on_trans_diffusion);
+    fdiff_scan2_FieldON->SetLineStyle(kDashed);
+    fdiff_scan2_FieldON->Draw("same");
+    //    fdiff_scan2_FieldON->Print();
+
+    leg2->AddEntry(scan2.first, name, "pe");
+    leg2->AddEntry(fdiff_scan2, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} / #sqrt{L/%.1f})^{2}}", abs(fdiff_scan2->GetParameter(0)), abs(fdiff_scan2->GetParameter(1)), abs(fdiff_scan2->GetParameter(2))), "l");
+    leg2->AddEntry(fdiff_scan2_FieldON, Form("Field = 1.4T, #sigma_{T, Diffusion} = %.0f #mum/#sqrt{cm}", field_on_trans_diffusion), "l");
 
     c1->Update();
   }
@@ -268,7 +279,7 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
 
     c1->cd(1);
     scan3.second->Draw("p");
-    TF1 *fline_scan3 = new TF1("fline_scan3", "pol1", x0, 16);
+    TF1 *fline_scan3 = new TF1("fline_scan3", "pol1", x0, 20);
     scan3.second->Fit(fline_scan3, "MR0");
     fline_scan3->SetLineColor(color);
     fline_scan3->Draw("same");
@@ -276,13 +287,24 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
 
     c1->cd(2);
     scan3.first->Draw("p");
-    TF1 *fdiff_scan3 = new TF1("fline_scan3", "sqrt([0]*[0] + [1]*[1]*x)", 0, 30);
+    TF1 *fdiff_scan3 = new TF1("fline_scan3", "sqrt([0]*[0] + ([1]*[1]/[2])*x)", 0, 40);
+    fdiff_scan3->SetParameters(70, field_off_trans_diffusion, 20);
+    fdiff_scan3->FixParameter(1, field_off_trans_diffusion);
     scan3.first->Fit(fdiff_scan3, "MR0");
     fdiff_scan3->SetLineColor(color);
     fdiff_scan3->Draw("same");
 
-    leg2->AddEntry(scan3.first, name, "p");
-    leg2->AddEntry(fdiff_scan3, Form("#sqrt{(%.1f #mum)^{2} + (%.1f #mum/#sqrt{cm})^{2} L}", abs(fdiff_scan3->GetParameter(0)), fdiff_scan3->GetParameter(1)), "l");
+    TF1 *fdiff_scan3_FieldON = (TF1 *) fdiff_scan3->Clone("fdiff_scan3_FieldON");
+    fdiff_scan3_FieldON->SetRange(0, 105);
+    fdiff_scan3_FieldON->SetParameter(1, field_on_trans_diffusion);
+    fdiff_scan3_FieldON->SetLineStyle(kDashed);
+    fdiff_scan3_FieldON->Draw("same");
+    //    fdiff_scan3_FieldON->Print();
+
+    leg2->AddEntry(scan3.first, name, "pe");
+    leg2->AddEntry(fdiff_scan3, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} / #sqrt{L/%.1f})^{2}}", abs(fdiff_scan3->GetParameter(0)), abs(fdiff_scan3->GetParameter(1)), abs(fdiff_scan3->GetParameter(2))), "l");
+    leg2->AddEntry(fdiff_scan3_FieldON, Form("Field = 1.4T, #sigma_{T, Diffusion} = %.0f #mum/#sqrt{cm}", field_on_trans_diffusion), "l");
+
     c1->Update();
   }
 

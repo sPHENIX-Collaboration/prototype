@@ -135,11 +135,11 @@ TString description;
 TTree *T(nullptr);
 
 void Resolution(const TCut &cut = "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && TPCTrack.clusterSizePhi > 3.5",
-    const double phi_start = -2.905, const double phi_end = -2.885
+                const double phi_start = -2.905, const double phi_end = -2.885
 
 )
 {
-  TH2 *hresidual_phi = new TH2F("hresidual_phi", "hresidual_phi", 60,phi_start, phi_end, 60, -.2, .2);
+  TH2 *hresidual_phi = new TH2F("hresidual_phi", "hresidual_phi", 60, phi_start, phi_end, 60, -.2, .2);
   T->Draw("TPCTrack.clusterResidualPhi:TPCTrack.clusterProjectionPhi>>hresidual_phi",
           cut, "goff");
   hresidual_phi->SetTitle(";Global Phi [rad];Phi Residual [cm]");
@@ -249,7 +249,7 @@ void Resolution(const TCut &cut = "Iteration$ >= 5 && Iteration$ <= 10 && TPCTra
   leg->Draw();
 
   SaveCanvas(c1,
-             TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
+             TString(_file0->GetName()) + TString(c1->GetName()), kFALSE);
 }
 
 void TrackQA()
@@ -298,7 +298,47 @@ void TrackQA()
   //  T->Draw("TPCTrack.clusterResidualPhi>>hresidualRough", "Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=10");
 
   SaveCanvas(c1,
-             TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
+             TString(_file0->GetName()) + TString(c1->GetName()), kFALSE);
+}
+
+void Track3D()
+{
+  TCanvas *c1 = new TCanvas("Track3D", "Track3D", 1800, 900);
+  c1->Divide(2, 1);
+  int idx = 1;
+  TPad *p = nullptr;
+
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+  //  p->SetLogx();
+  //  p->DrawFrame(0, 0, 10, 2, ";Transverse Momentum, p_{T} [GeV/c];Nuclear Modification Factor, R_{AA}");
+  //
+  TH3F *h3ClusterOverlay = new TH3F("h3ClusterOverlay", "h3ClusterOverlay", 128, -40, 10, 64, 35, 65, 128, -15, 15);
+  //
+  T->SetAlias("PhiCenter", "pi/12 + pi");  // center line azimuthal angle for TPC sector 0
+  T->Draw("TPCTrack.clusterX*cos(PhiCenter + pi/2) + TPCTrack.clusterY*sin(PhiCenter + pi/2):TPCTrack.clusterX*cos(PhiCenter) + TPCTrack.clusterY*sin(PhiCenter):TPCTrack.clusterZ>>h3ClusterOverlay", "", "BOX2");
+  //               "TPCTrack.clusterE", "BOX2");
+  h3ClusterOverlay->SetTitle(";Drift Direction [cm];Pad Row Direction [cm];Azimuth Direction [cm]");
+  h3ClusterOverlay->SetLineWidth(0);
+  //
+  p = (TPad *) c1->cd(idx++);
+  c1->Update();
+  //  p->SetLogx();
+  //  p->DrawFrame(0, 0, 10, 2, ";Transverse Momentum, p_{T} [GeV/c];Nuclear Modification Factor, R_{AA}");
+
+  TH1 *h2ClusterOverlay = h3ClusterOverlay->Project3D("zx");
+  h2ClusterOverlay->Draw("colz");
+  //    eventT->Draw("Clusters.avg_pady:Clusters.min_sample+Clusters.peak_sample>>h2ClusterOverlay",
+  //                 "Clusters.peak", "colz");
+  //    h2ClusterOverlay->SetTitle(";Time [0-127*50ns];Pads [0-127]");
+  //  h2ClusterOverlay->SetLineWidth(0);
+
+  p->SetTopMargin(.9);
+  TLegend *leg = new TLegend(.15, .9, .95, .99, description + ": accumulated clusters on tracks");
+  leg->Draw();
+
+  SaveCanvas(c1,
+             TString(_file0->GetName()) + TString(c1->GetName()), false);
 }
 
 void TrackDistortion(const TCut &cut = "TPCTrack.nCluster>=10")
@@ -327,7 +367,7 @@ void TrackDistortion(const TCut &cut = "TPCTrack.nCluster>=10")
   gZDistortion->Draw("p");
 
   SaveCanvas(c1,
-             TString(_file0->GetName()) + TString("_DrawJet_") + TString(c1->GetName()), kFALSE);
+             TString(_file0->GetName()) + TString(c1->GetName()), kFALSE);
 }
 
 void DrawTpcPrototypeGenFitTrkFitter(
@@ -361,6 +401,7 @@ void DrawTpcPrototypeGenFitTrkFitter(
 
   TrackQA();
   TrackDistortion();
+  Track3D();
   //  Resolution();
-  Resolution("Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && TPCTrack.clusterSizePhi > 7");
+    Resolution("Iteration$ >= 5 && Iteration$ <= 10 && TPCTrack.nCluster>=12 && TPCTrack.clusterSizePhi > 7");
 }

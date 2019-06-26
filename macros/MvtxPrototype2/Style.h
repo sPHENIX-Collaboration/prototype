@@ -3,10 +3,23 @@
 #include <TStyle.h>
 #include <string>
 
+// ROOT6 disabled assert. Well....
+#ifdef assert
+#undef assert
+#endif
+#define assert(exp)                                                                           \
+{                                                                                             \
+  if (!(exp))                                                                                 \
+  {                                                                                           \
+    cout << "Assert (" << #exp << ") failed at " << __FILE__ << " line " << __LINE__ << endl; \
+    exit(1);                                                                                  \
+  }                                                                                           \
+}
+
 TH1 *htmp;
 
 void SetPadStyle(bool log = false){
-	gPad->SetLeftMargin(0.20);
+	gPad->SetLeftMargin(0.10);
 	if ( log ){
 		gPad->SetRightMargin(0.12);
 	}else{
@@ -25,7 +38,7 @@ void SetHistoStyle(std::string xtitle="", std::string ytitle="", std::string zti
 	htmp->SetTitleFont(62);
 	htmp->GetYaxis()->SetLabelFont(62);
 	htmp->GetYaxis()->SetTitleFont(62);
-	htmp->GetYaxis()->SetTitleOffset(1.3);
+	htmp->GetYaxis()->SetTitleOffset(0.2);
 	//htmp->GetYaxis()->SetLabelFont(102);
 	//htmp->GetYaxis()->SetTitleFont(102);
 	htmp->GetYaxis()->SetLabelSize(size_label);

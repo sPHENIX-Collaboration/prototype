@@ -1,4 +1,4 @@
-PACKAGE = mvtx
+PACKAGE = mvtxOM
 
 ROOTFLAGS = $(shell root-config --cflags)
 ROOTLIBS = $(shell root-config --glibs)
@@ -15,8 +15,8 @@ HDRFILES = $(PACKAGE).h
 LINKFILE = $(PACKAGE)LinkDef.h
 
 
-ADDITIONAL_SOURCES = 
-ADDITIONAL_LIBS = 
+ADDITIONAL_SOURCES =
+ADDITIONAL_LIBS =
 
 
 SO = lib$(PACKAGE).so
@@ -31,6 +31,6 @@ $(PACKAGE)_dict.C : $(HDRFILES) $(LINKFILE)
 
 .PHONY: clean
 
-clean: 
+clean:
 	rm -f $(SO) $(PACKAGE)_dict.C $(PACKAGE)_dict.h
 

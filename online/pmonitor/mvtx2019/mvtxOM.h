@@ -1,5 +1,5 @@
-#ifndef __MVTX_H__
-#define __MVTX_H__
+#ifndef __MVTX_OM_H__
+#define __MVTX_OM_H__
 
 #include <pmonitor/pmonitor.h>   // Added by X. He following Martin's trick
 #include <Event/Event.h>
@@ -17,4 +17,4 @@ void set_verbose(int v);
 void set_refresh(int r);
 void get_alignment();
 
-#endif /* __MVTX_H__ */
+#endif /* __MVTX_OM_H__ */

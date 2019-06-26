@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <pmonitor/pmonitor.h>
-#include "mvtx.h"
+#include "mvtxOM.h"
 #include <mvtx/MvtxDefs.h>
 
 #include <TH1.h>

@@ -208,7 +208,7 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
   p = (TPad *) c1->cd(idx++);
   c1->Update();
 
-  TH1 *frame = p->DrawFrame(0, 0, 20, max_res * max_res);
+  TH1 *frame = p->DrawFrame(2, 0, 20, max_res * max_res);
   frame->SetTitle(";Horizontal Position [in];Resolution^{2}, Cluster w/ 2+ pad [#mum^{2}]");
   frame->GetYaxis()->SetTitleOffset(1.75);
   TLine *l = new TLine(x0, 0, x0, max_res * max_res);
@@ -259,7 +259,7 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
     //    fdiff_scan2_FieldON->Print();
 
     leg2->AddEntry(scan2.first, name, "pe");
-    leg2->AddEntry(fdiff_scan2, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} * #sqrt{L/%.1f})^{2}}", abs(fdiff_scan2->GetParameter(0)), abs(fdiff_scan2->GetParameter(1)), abs(fdiff_scan2->GetParameter(2))), "l");
+    leg2->AddEntry(fdiff_scan2, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} #times#sqrt{L/%.1f})^{2}}", abs(fdiff_scan2->GetParameter(0)), abs(fdiff_scan2->GetParameter(1)), abs(fdiff_scan2->GetParameter(2))), "l");
     leg2->AddEntry(fdiff_scan2_FieldON, Form("Field = 1.4T, #sigma_{T, Diffusion} = %.0f #mum/#sqrt{cm}", field_on_trans_diffusion), "l");
 
     c1->Update();
@@ -302,7 +302,7 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
     //    fdiff_scan3_FieldON->Print();
 
     leg2->AddEntry(scan3.first, name, "pe");
-    leg2->AddEntry(fdiff_scan3, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} * #sqrt{L/%.1f})^{2}}", abs(fdiff_scan3->GetParameter(0)), abs(fdiff_scan3->GetParameter(1)), abs(fdiff_scan3->GetParameter(2))), "l");
+    leg2->AddEntry(fdiff_scan3, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} #times#sqrt{L/%.1f})^{2}}", abs(fdiff_scan3->GetParameter(0)), abs(fdiff_scan3->GetParameter(1)), abs(fdiff_scan3->GetParameter(2))), "l");
     leg2->AddEntry(fdiff_scan3_FieldON, Form("Field = 1.4T, #sigma_{T, Diffusion} = %.0f #mum/#sqrt{cm}", field_on_trans_diffusion), "l");
 
     c1->Update();

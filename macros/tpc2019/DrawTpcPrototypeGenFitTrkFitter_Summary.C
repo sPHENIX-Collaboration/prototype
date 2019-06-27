@@ -259,7 +259,7 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
     //    fdiff_scan2_FieldON->Print();
 
     leg2->AddEntry(scan2.first, name, "pe");
-    leg2->AddEntry(fdiff_scan2, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} / #sqrt{L/%.1f})^{2}}", abs(fdiff_scan2->GetParameter(0)), abs(fdiff_scan2->GetParameter(1)), abs(fdiff_scan2->GetParameter(2))), "l");
+    leg2->AddEntry(fdiff_scan2, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} * #sqrt{L/%.1f})^{2}}", abs(fdiff_scan2->GetParameter(0)), abs(fdiff_scan2->GetParameter(1)), abs(fdiff_scan2->GetParameter(2))), "l");
     leg2->AddEntry(fdiff_scan2_FieldON, Form("Field = 1.4T, #sigma_{T, Diffusion} = %.0f #mum/#sqrt{cm}", field_on_trans_diffusion), "l");
 
     c1->Update();
@@ -302,7 +302,7 @@ void DrawTpcPrototypeGenFitTrkFitter_Summary(  //
     //    fdiff_scan3_FieldON->Print();
 
     leg2->AddEntry(scan3.first, name, "pe");
-    leg2->AddEntry(fdiff_scan3, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} / #sqrt{L/%.1f})^{2}}", abs(fdiff_scan3->GetParameter(0)), abs(fdiff_scan3->GetParameter(1)), abs(fdiff_scan3->GetParameter(2))), "l");
+    leg2->AddEntry(fdiff_scan3, Form("#sqrt{(%.1f #mum)^{2} + (%.0f #mum/#sqrt{cm} * #sqrt{L/%.1f})^{2}}", abs(fdiff_scan3->GetParameter(0)), abs(fdiff_scan3->GetParameter(1)), abs(fdiff_scan3->GetParameter(2))), "l");
     leg2->AddEntry(fdiff_scan3_FieldON, Form("Field = 1.4T, #sigma_{T, Diffusion} = %.0f #mum/#sqrt{cm}", field_on_trans_diffusion), "l");
 
     c1->Update();

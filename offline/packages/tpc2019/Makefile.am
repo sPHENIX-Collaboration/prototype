@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \
   -I`root-config --incdir` \
-	-I$(OFFLINE_MAIN)/include/eigen3
+  -I$(OFFLINE_MAIN)/include/eigen3
 
 AM_LDFLAGS = \
   -L$(libdir) \
@@ -30,24 +30,18 @@ pkginclude_HEADERS = \
   TpcPrototypeUnpacker.h
 
 ROOTDICTS = \
-	TpcPrototypeTrack_Dict.cc \
-	TpcPrototypeDefs_Dict.cc
-	
+  TpcPrototypeTrack_Dict.cc \
+  TpcPrototypeDefs_Dict.cc
+  
 if MAKEROOT6
   pcmdir = $(libdir)
   nobase_dist_pcm_DATA =  \
-  	TpcPrototypeTrack_Dict_rdict.pcm \
-  	TpcPrototypeDefs_Dict_rdict.pcm \
-  	TpcPrototypeUnpacker_Dict_rdict.pcm
+    TpcPrototypeTrack_Dict_rdict.pcm \
+    TpcPrototypeDefs_Dict_rdict.pcm \
+    TpcPrototypeUnpacker_Dict_rdict.pcm
 else
-  ROOT5_IO_DICTS = 	\
-    TpcPrototypeTrack_Dict.cc \
-    TpcPrototypeDefs_Dict.cc
-  ROOT5_DICTS = \
-    TpcPrototypeUnpacker_Dict.cc \
-    TpcPrototypeClusterizer_Dict.cc \
-    TpcPrototypeGenFitTrkFitter_Dict.cc\
-    TpcPrototypeGenFitTrkFinder_Dict.cc
+  ROOT5_IO_DICTS = 
+  ROOT5_DICTS = 
 endif
 
 libtpc2019_io_la_SOURCES = \

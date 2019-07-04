@@ -253,7 +253,7 @@ bool SampleFit_PowerLawDoubleExp(        //
     g_max.SetMarkerSize(2);
     g_max.SetMarkerColor(kRed);
 
-    static_cast<TGraph *>(g_max.DrawClone("p"));
+    g_max.DrawClone("p");
 
     canvas->Update();
 

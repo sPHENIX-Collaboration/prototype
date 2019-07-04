@@ -1257,7 +1257,7 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
 
       measurements.push_back(meas);
 
-      if ((layer == layerStudy)) indexStudy = currentIndex;
+      if (layer == layerStudy) indexStudy = currentIndex;
       ++currentIndex;
     }  //    for (const auto cluster : clusterLayer)
     assert(indexStudy >= 0);

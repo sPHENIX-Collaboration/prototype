@@ -1,22 +1,23 @@
 // Updated by Xiaochun He on May 31, 2019 following Martin Purschke's
 // suggestion correction
 //
-#include <iostream>
-#include <fstream>
-#include <pmonitor/pmonitor.h>
 #include "mvtxOM.h"
-#include <mvtx/MvtxDefs.h>
 
+#include <mvtx/MvtxDefs.h>
+#include <pmonitor/pmonitor.h>
+
+#include <TCanvas.h>
+#include <TF1.h>
+#include <TGaxis.h>
+#include <TGraphAsymmErrors.h>
 #include <TH1.h>
 #include <TH2.h>
-#include <TGraphAsymmErrors.h>
-#include <TCanvas.h>
-#include <TStyle.h>
 #include <TLatex.h>
-#include <TGaxis.h>
-#include <TF1.h>
 #include <TLine.h>
+#include <TStyle.h>
 
+#include <fstream>
+#include <iostream>
 #include <map>
 
 #define IDMVTXV1_MAXRUID       4
@@ -32,45 +33,47 @@ string stave_name[4] = {"E103", "C105", "C104", "A105"};
 
 vector<TLine*> chip_edges, dead_chip_forward, dead_chip_backward;
 
-    string outHitLocations = "/home/maps/meeg/felix/daq/felix_rcdaq/online_monitoring/hitLocations/locations.txt";
-    ofstream write_outHitLocations(outHitLocations.c_str());
+string outHitLocations = "/home/maps/meeg/felix/daq/felix_rcdaq/online_monitoring/hitLocations/locations.txt";
+ofstream write_outHitLocations(outHitLocations.c_str());
 
-    map<pair<int,int>,pair<int,int>> chipmap = {{{1,1}, {0,0}},
-    {{1,2}, {0,1}},
-    {{1,3}, {0,2}},
-    {{1,4}, {0,3}},
-    {{1,5}, {0,4}},
-    {{1,6}, {0,5}},
-    {{1,7}, {0,6}},
-    {{1,8}, {0,7}},
-    {{1,9}, {3,8}},
-    {{1,10}, {3,7}},
-    {{1,11}, {3,6}},
-    {{1,12}, {3,5}},
-    {{1,13}, {3,4}},
-    {{1,14}, {3,3}},
-    {{1,15}, {3,2}},
-    {{1,16}, {3,1}},
-    {{1,17}, {3,0}},
-    {{1,18}, {2,8}},
-    {{1,19}, {2,7}},
-    {{1,20}, {2,6}},
-    {{1,21}, {2,5}},
-    {{1,22}, {2,4}},
-    {{1,23}, {2,3}},
-    {{1,24}, {2,2}},
-    {{1,25}, {2,1}},
-    {{1,26}, {2,0}},
-    {{1,27}, {0,8}},
-    {{2,1}, {1,2}},
-    {{2,2}, {1,1}},
-    {{2,3}, {1,0}},
-    {{2,4}, {1,3}},
-    {{2,5}, {1,4}},
-    {{2,6}, {1,5}},
-    {{2,7}, {1,6}},
-    {{2,8}, {1,7}},
-    {{2,9}, {1,8}}}; //<ruid, ruchn> to <stave, chipID>
+map<pair<int,int>,pair<int,int>> chipmap = {
+  {{1,1}, {0,0}},
+  {{1,2}, {0,1}},
+  {{1,3}, {0,2}},
+  {{1,4}, {0,3}},
+  {{1,5}, {0,4}},
+  {{1,6}, {0,5}},
+  {{1,7}, {0,6}},
+  {{1,8}, {0,7}},
+  {{1,9}, {3,8}},
+  {{1,10}, {3,7}},
+  {{1,11}, {3,6}},
+  {{1,12}, {3,5}},
+  {{1,13}, {3,4}},
+  {{1,14}, {3,3}},
+  {{1,15}, {3,2}},
+  {{1,16}, {3,1}},
+  {{1,17}, {3,0}},
+  {{1,18}, {2,8}},
+  {{1,19}, {2,7}},
+  {{1,20}, {2,6}},
+  {{1,21}, {2,5}},
+  {{1,22}, {2,4}},
+  {{1,23}, {2,3}},
+  {{1,24}, {2,2}},
+  {{1,25}, {2,1}},
+  {{1,26}, {2,0}},
+  {{1,27}, {0,8}},
+  {{2,1}, {1,2}},
+  {{2,2}, {1,1}},
+  {{2,3}, {1,0}},
+  {{2,4}, {1,3}},
+  {{2,5}, {1,4}},
+  {{2,6}, {1,5}},
+  {{2,7}, {1,6}},
+  {{2,8}, {1,7}},
+  {{2,9}, {1,8}}
+}; //<ruid, ruchn> to <stave, chipID>
 
 int mvtx_evnts;
 int mvtx_verbose = 0;
@@ -679,7 +682,7 @@ int analysis()
         herrrate_chip->SetBinError(ib, sqrt(bc) / nevents);
     } // ib
 
-    if (show_beam_fit) {
+    if (show_beam_fit) { // create canvas for beamcenter plots
       cBeamCenter = new TCanvas("cBeamCenter", "cBeamCenter", 1350, 900);
       cBeamCenter->Divide(3,4);
     }
@@ -709,7 +712,8 @@ int analysis()
         double m, s;
         TH1D* h;
 
-        if (cBeamCenter) {
+        if ( cBeamCenter )
+        {
           cBeamCenter->cd(3*ichip+1);
           gPad->SetLogz();
           TH2D* h2d_beam = (TH2D*)h2d_chip_norm[ichip]->Clone("h2d_beam");
@@ -722,26 +726,36 @@ int analysis()
           lt.SetTextSize(1.5*lt.GetTextSize());
           lt.SetTextColor(1);
           lt.DrawText(0.5,0.96, stave_name[ichip].c_str());
-          if (ichip == 0) {
-            dead_chip_forward[0]->Draw(); dead_chip_backward[0]->Draw();
-          }
-          else if (ichip == 2) {
-            dead_chip_forward[0]->Draw(); dead_chip_backward[0]->Draw();
-            dead_chip_forward[3]->Draw(); dead_chip_backward[3]->Draw();
-            dead_chip_forward[6]->Draw(); dead_chip_backward[6]->Draw();
-            dead_chip_forward[7]->Draw(); dead_chip_backward[7]->Draw();
-            dead_chip_forward[8]->Draw(); dead_chip_backward[8]->Draw();
-          }
-          else if (ichip == 3) {
-            dead_chip_forward[6]->Draw(); dead_chip_backward[6]->Draw();
+
+          switch ( ichip )
+          {
+            case 0 :
+              dead_chip_forward[0]->Draw();
+              dead_chip_backward[0]->Draw();
+              break;
+
+            case 2 :
+              dead_chip_forward[0]->Draw(); dead_chip_backward[0]->Draw();
+              dead_chip_forward[3]->Draw(); dead_chip_backward[3]->Draw();
+              dead_chip_forward[6]->Draw(); dead_chip_backward[6]->Draw();
+              dead_chip_forward[7]->Draw(); dead_chip_backward[7]->Draw();
+              dead_chip_forward[8]->Draw(); dead_chip_backward[8]->Draw();
+              break;
+
+            case 3 :
+              dead_chip_forward[6]->Draw(); dead_chip_backward[6]->Draw();
+              break;
+
+            default :
+             break;
           }
         }
 
-        // x
+        // cols projection
         h = (TH1D*) h2d_chip_norm[ichip]->ProjectionX();
-        double mx = h->GetMean();
-        double rx = h->GetRMS();
-        fg->SetParameters(h->GetBinContent(h->GetMaximumBin()), mx, rx);
+        double m_col = h->GetMean();
+        double r_col = h->GetRMS();
+        fg->SetParameters(h->GetBinContent(h->GetMaximumBin()), m_col, r_col);
         //YCM: initial range to full stave range
         const int lastBinX = 9 * 1024 - 1;
         const int lastBinY = 511;
@@ -770,31 +784,32 @@ int analysis()
         //cout << " (m:" << m << " s:" << s << ")"<< endl;
 
         // save
-        mx = m;
-        rx = s;
-        if (cBeamCenter) {
-          cBeamCenter->cd(3*ichip+2);
+        m_col = m;
+        r_col = s;
+        if ( cBeamCenter )
+        {
+          cBeamCenter->cd( 3 * ichip + 2 );
           h->GetXaxis()->SetTitle("Stave_Cols");
           h->GetYaxis()->SetTitle("nClusters");
           h->Draw();
-          TF1* fx = (TF1*)fg->Clone("fx");
-          fx->Draw("same");
+          TF1* f_col = (TF1*)fg->Clone("fx");
+          f_col->Draw("same");
           TLatex lt;
           lt.SetNDC();
           lt.SetTextAlign(22);
           lt.SetTextSize(1.5*lt.GetTextSize());
           lt.SetTextColor(2);
-          lt.DrawLatex(.7, .7, Form("#mu_{COL} = %.2f", fx->GetParameter(1)));
-          lt.DrawLatex(.7, .6, Form("offset = %.f", round(fx->GetParameter(1))));
+          lt.DrawLatex(.3, .7, Form("#mu_{COL} = %.2f #pm %.2f ", m_col, r_col));
+          lt.DrawLatex(.3, .6, Form("offset = %.2f", m_col));
         }
         else
           delete h;
 
-        // y
+        // row projection
         h = (TH1D*) h2d_chip_norm[ichip]->ProjectionY();
-        double my = h->GetMean();
-        double ry = h->GetRMS();
-        fg->SetParameters(h->GetBinContent(h->GetMaximumBin()), my, ry);
+        double m_row = h->GetMean();
+        double r_row = h->GetRMS();
+        fg->SetParameters(h->GetBinContent(h->GetMaximumBin()), m_row, r_row);
         fg->SetRange(0, 1023);
         h->Fit(fg, "RQ0N");
         m = fg->GetParameter(1);
@@ -819,37 +834,37 @@ int analysis()
         //cout << " (m:" << m << " s:" << s << ")"<< endl;
 
         // save
-        my = m;
-        ry = s;
-        if (cBeamCenter) {
-          cBeamCenter->cd(3*ichip+3);
+        m_row = m;
+        r_row = s;
+        if ( cBeamCenter )
+        {
+          cBeamCenter->cd( 3 * ichip + 3 );
           h->GetXaxis()->SetTitle("Stave_Cols");
           h->GetYaxis()->SetTitle("nClusters");
           h->Draw();
-          TF1* fy = (TF1*)fg->Clone("fy");
-          fy->Draw("same");
+          TF1* f_row = (TF1*)fg->Clone("fy");
+          f_row->Draw("same");
           TLatex lt;
           lt.SetNDC();
           lt.SetTextAlign(22);
           lt.SetTextSize(1.5*lt.GetTextSize());
           lt.SetTextColor(2);
-          lt.DrawLatex(.3, .7, Form("#mu_{ROW}  = %.2f", fy->GetParameter(1)));
-          lt.DrawLatex(.3, .6, Form("offset = %.f", lastBinY - round(fy->GetParameter(1))));
+          lt.DrawLatex(.3, .7, Form("#mu_{ROW}  = %.2f #pm %.2f ", m_row, r_row));
+          lt.DrawLatex(.3, .6, Form("offset = %.2f", lastBinY - m_row));
         }
         else
           delete h;
 
-        gmpos_chip[ichip]->SetPoint(0, mx, my);
-        gmpos_chip[ichip]->SetPointError(0, rx, rx, ry, ry);
+        gmpos_chip[ichip]->SetPoint(0, m_col, m_row);
+        gmpos_chip[ichip]->SetPointError(0, r_col, r_col, r_row, r_row);
 
         //-- difference in mean pixel index per event for each chip
         hdiffrow_chip_norm[ichip]->Reset();
         hdiffcol_chip_norm[ichip]->Reset();
         for (int ib = 1; ib <= hdiffrow_chip[ichip]->GetNbinsX(); ib++)
         {
-            hdiffrow_chip_norm[ichip]->SetBinContent(ib,hdiffrow_chip[ichip]->GetBinContent(ib));
-
-            hdiffcol_chip_norm[ichip]->SetBinContent(ib,hdiffcol_chip[ichip]->GetBinContent(ib));
+            hdiffrow_chip_norm[ichip]->SetBinContent(ib, hdiffrow_chip[ichip]->GetBinContent(ib));
+            hdiffcol_chip_norm[ichip]->SetBinContent(ib, hdiffcol_chip[ichip]->GetBinContent(ib));
         }
 
         float introw = hdiffrow_chip_norm[ichip]->Integral();
@@ -1215,14 +1230,14 @@ void get_alignment()
   string fname(Form("beamcenter/beamcenter_%08d.txt", mvtx_run));
   ofstream fout(fname);
 
-  for (int istave=0; istave<NSTAVE; ++istave) {
-    double mx, my;
-    gmpos_chip[istave]->GetPoint(0, mx, my);
-    mx = round(mx);
-    my = 511 - round(my); //chip row flipped wrt histo axis
+  for (int istave=0; istave<NSTAVE; ++istave)
+  {
+    double m_col, m_row;
+    gmpos_chip[istave]->GetPoint(0, m_col, m_row);
+    m_row = 511 - m_row; //chip row flipped wrt histo axis
 
-    fout << istave << " 0 " << mx << " " <<  0 << " " << my << endl;
-    cout << istave << " 0 " << mx << " " <<  0 << " " << my << endl;
+    fout << istave << " 0 " << fixed << setprecision(2) << m_row << " " <<  0 << " " << m_col << endl;
+    cout << istave << " 0 " << fixed << setprecision(2) << m_row << " " <<  0 << " " << m_col << endl;
   }
 
   fout.close();

@@ -25,6 +25,7 @@ libMvtxPrototype2_la_LIBADD = \
 if ! MAKEROOT6
 ROOT5_DICTS = \
 	SegmentatioAlpide_Dict.C \
+  MvtxPrototype2Align_Dict.C \
 	MvtxPrototype2Geom_Dict.C \
 	MvtxPrototype2UnpackPRDF_Dict.C \
 	MvtxPrototype2Clusterizer_Dict.C \
@@ -33,6 +34,7 @@ endif
 
 pkginclude_HEADERS = \
   SegmentationAlpide.h \
+  MvtxPrototype2Align.h \
   MvtxPrototype2Geom.h \
   MvtxPrototype2UnpackPRDF.h \
   MvtxPrototype2Clusterizer.h \
@@ -41,7 +43,8 @@ pkginclude_HEADERS = \
 libMvtxPrototype2_la_SOURCES = \
 	$(ROOT5_DICTS) \
   SegmentationAlpide.C \
-  MvtxPrototype2Geom.C \
+  MvtxPrototype2Align.cc cc \
+  MvtxPrototype2Geom.cc \
   MvtxPrototype2UnpackPRDF.C \
   MvtxPrototype2Clusterizer.C \
   MvtxPrototype2Eval.C

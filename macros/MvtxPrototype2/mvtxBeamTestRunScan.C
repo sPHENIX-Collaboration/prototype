@@ -1,7 +1,7 @@
 //#ifdef __cline__
-#include "mvtx.h"
+#include "mvtxOM.h"
 //R__LOAD_LIBRARY(libpmonitor)
-R__LOAD_LIBRARY(libmvtx)
+R__LOAD_LIBRARY(libmvtxOM)
 //#endif
 
 void mvtxBeamTestRunScan(const char *inputFile)

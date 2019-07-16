@@ -1,9 +1,12 @@
 #ifndef __MvtxPrototype2UnpackPRDFF__
 #define __MvtxPrototype2UnpackPRDFF__
 
+#include "MvtxPrototype2Geom.h"
+
 #include <fun4all/SubsysReco.h>
 #include <phool/PHObject.h>
-#include "MvtxPrototype2Geom.h"
+
+#include <map>
 
 class Event;
 class Packet;
@@ -30,30 +33,28 @@ public:
   void
   CreateNodeTree(PHCompositeNode *topNode);
 
-	void MakeHits();
+  void MakeHits();
 
-	int GetStaveID(int ruid, int chid);
-
-	int GetChipID(int ruid, int chid);
-
-	int DecodeRow(int val) const;
-	int DecodeCol(int val) const;
+  int DecodeRow(int val) const;
+  int DecodeCol(int val) const;
 
 private:
 
-	PHCompositeNode* dstNode;
+  PHCompositeNode* dstNode;
 
   Event* _event;
   Packet_hbd_fpgashort* _packet;
-	TrkrHitSetContainer *_hitsetcon;
+  TrkrHitSetContainer *_hitsetcon;
 
-  map<pair<int,int>,pair<int,int>> mMapChips;
+  static std::map <std::pair<int,int>,std::pair<int,int>> s_map_chips; //<ruid, ruchn> to <stave, chipID>
+  static std::map <int, int> s_map_layers; ///< <stave, layer> stave to layer index
+
   int _nevents;
-	int _verbosity;
-	bool _first;
+  int _verbosity;
+  bool _first;
 
-	int _nevent_per_chip[NSTAVE][NCHIP];
-	int _npixel_per_chip[NSTAVE][NCHIP];
+  int _nevent_per_chip[NLAYER][NCHIP];
+  int _npixel_per_chip[NLAYER][NCHIP];
 
 };
 

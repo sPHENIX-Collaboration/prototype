@@ -10,6 +10,7 @@
 #include <mvtxprototype2/MvtxPrototype2Geom.h>
 #include <mvtxprototype2/MvtxPrototype2UnpackPRDF.h>
 #include <mvtxprototype2/MvtxPrototype2Clusterizer.h>
+#include <mvtxprototype2/MvtxPrototype2Align.h>
 #include <mvtxprototype2/MvtxPrototype2Eval.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
@@ -23,7 +24,8 @@ using namespace std;
 void Fun4All_TestBeam(
 		int nEvents = 10,
 		const char *input_file = "calib-00000648-0000.prdf",
-		const char *output_file = "DST-calib-00000648-0000.root"
+		const char *output_file = "DST-calib-00000648-0000.root",
+    bool do_align = true
 		)
 {
   gSystem->Load("libfun4all");
@@ -64,13 +66,16 @@ void Fun4All_TestBeam(
 	clus->Verbosity(0);
 	se->registerSubsystem(clus);
 
-	/*
-	MvtxAlign *align = new MvtxAlign("MvtxAlign");
-	align->SetAlignmentParFileDir("beamcenter/");
-	align->PrintAlignmentPars();
-	align->Verbosity(0);
-	se->registerSubsystem(align);
-	*/
+  if ( do_align )
+  {
+    MvtxPrototype2Align *align = new MvtxPrototype2Align("MvtxAlign");
+    //align->SetAlignmentParFileDir("beamcenter/");
+    align->SetAlignmentParFileDir("./");
+    align->SetAlignmentParFileName("beamcenter_mean_0848_0849_0851.txt");
+    align->PrintAlignmentPars();
+    align->Verbosity(0);
+    se->registerSubsystem(align);
+  }
 
 	MvtxPrototype2Eval *qa = new MvtxPrototype2Eval();
 	qa->set_filename(Form("MvtxPrototype2Eval-%08d-%04d.root",runnumber,segnumber+200));

@@ -191,10 +191,10 @@ int MvtxPrototype2Align::ReadAlignmentParFile()
     float bc0_z = 0;
     while ( getline(fin, line) )
     {
-      int lyr;
+      int lyr, stave;
       float bcx, bcy, bcz;
 
-      sscanf(line.c_str(), "%d %f %f %f", &lyr, &bcx, &bcy, &bcz);
+      sscanf(line.c_str(), "%d %d %f %f %f", &lyr, &stave, &bcx, &bcy, &bcz);
 
       if ( is_first )
       {

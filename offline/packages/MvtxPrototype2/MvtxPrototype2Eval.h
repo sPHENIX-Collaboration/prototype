@@ -19,7 +19,7 @@ class MvtxPrototype2Eval : public SubsysReco
   virtual ~MvtxPrototype2Eval() {}
 
   //! module initialization
-	int Init(PHCompositeNode *topNode);
+  int Init(PHCompositeNode *topNode);
 
   //! run initialization
   int InitRun(PHCompositeNode *topNode);
@@ -30,20 +30,23 @@ class MvtxPrototype2Eval : public SubsysReco
   //! end of process
   int End(PHCompositeNode *topNode);
 
-	void set_filename(const char* file)
-	{ if(file) _outfile = file; }
+  void set_filename(const char* file)
+  { if(file) _outfile = file; }
 
  private:
 
-	std::string _outfile;
+  std::string _outfile;
 
-	TrkrHitSetContainer *m_hits;
-	TrkrClusterContainer *m_clusterlist;
+  TrkrHitSetContainer *m_hits;
+  TrkrClusterContainer *m_clusterlist;
 
+  int _n_events;
   TH1D *h1d_nevents;
-	TH2D *h2d_hit[NSTAVE];
-  TH2D *h2d_clu[NSTAVE];
-	TH1D *h1d_clus_size;
+  TH2D *h2d_hit[NLAYER];
+  TH2D *h2d_clu[NLAYER];
+  TH1D *h1d_clu_diffrow[NLAYER];
+  TH1D *h1d_clu_diffcol[NLAYER];
+  TH1D *h1d_clus_size;
 
 };
 

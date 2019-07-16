@@ -1,4 +1,5 @@
 #include "MvtxPrototype2Clusterizer.h"
+#include "MvtxPrototype2Geom.h"
 
 //#include <g4detectors/PHG4CylinderCellGeom.h>
 //#include <g4detectors/PHG4CylinderCellGeomContainer.h>
@@ -113,7 +114,7 @@ int MvtxPrototype2Clusterizer::InitRun(PHCompositeNode *topNode)
 	DetNode = new PHCompositeNode("TRKR");
 	dstNode->addNode(DetNode);
       }
-    
+
     trkrclusters = new TrkrClusterContainer();
     PHIODataNode<PHObject> *TrkrClusterContainerNode =
       new PHIODataNode<PHObject>(trkrclusters, "TRKR_CLUSTER", "PHObject");
@@ -259,7 +260,7 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 		for (set<int>::iterator clusiter = cluster_ids.begin(); clusiter != cluster_ids.end(); ++clusiter)
 		{
 			int clusid = *clusiter;
-			pair<multimap<int, std::pair<TrkrDefs::hitkey, TrkrHit*>>::iterator,  
+			pair<multimap<int, std::pair<TrkrDefs::hitkey, TrkrHit*>>::iterator,
 				multimap<int, std::pair<TrkrDefs::hitkey, TrkrHit*>>::iterator>  clusrange = clusters.equal_range(clusid);
 			multimap<int, std::pair<TrkrDefs::hitkey, TrkrHit*>>::iterator mapiter = clusrange.first;
 
@@ -272,7 +273,7 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 
 			// we need the geometry object for this layer to get the global positions
 			//int layer = TrkrDefs::getLayer(ckey);
-			//int stave =  MvtxDefs::getStaveId(ckey); 
+			//int stave =  MvtxDefs::getStaveId(ckey);
 			//int chip = MvtxDefs::getChipId(ckey);
 
 			// determine the size of the cluster in phi and z
@@ -319,7 +320,7 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 			clus->setAdc(nhits);
 
 			/*
-			cout << "new mvtx clusterizer layer: " << layer << " stave: " << stave << " chip: " << chip 
+			cout << "new mvtx clusterizer layer: " << layer << " stave: " << stave << " chip: " << chip
 				<< " x: " << clusx << " y: " << clusy << " z: " << clusz << endl;
 			*/
 
@@ -332,7 +333,6 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 
 			TMatrixF DIM(3, 3);
 			DIM[0][0] = pow(0.5 * phisize, 2);
-
 			DIM[0][1] = 0.0;
 			DIM[0][2] = 0.0;
 			DIM[1][0] = 0.0;

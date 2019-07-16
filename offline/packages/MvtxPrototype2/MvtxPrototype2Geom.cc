@@ -49,18 +49,19 @@ TGeoHMatrix* MvtxPrototype2Geom::extractMatrixSensor(int index)
   float shift_dz = (2 * SegmentationAlpide::PassiveEdgeSide) + \
                    SegmentationAlpide::ActiveMatrixSizeCols + s_pitchChip_IB;
 
+  float dx = 0.f;
+  float dy = (lay - m_numOfLayers) * s_gapLayers_TB;
   float dz = (indexInStv - 4) * shift_dz;
-  float dx = lay * s_gapLayers_TB;
 
   if (Verbose()>0) {
     std::cout << "Filling matrix for sensor in chip " << indexInStv << "  in stave " << stv;
     std::cout << "  of layer " << lay << "\n";
-    std::cout << "shift in z " << dz << " and in dy " << dx << std::endl;
+    std::cout << "shift in z " << dz << " and in dx " << dx << std::endl;
   }
 
   static TGeoHMatrix matTmp;
-  matTmp = TGeoTranslation(dx, 0., dz);
-  static TGeoTranslation tra(.5 * Segmentation::SensLayerThickness, 0., 0.);
+  matTmp = TGeoTranslation(dx, dy, dz);
+  static TGeoTranslation tra(0., -.5 * Segmentation::SensLayerThickness, 0.);
   matTmp *= tra;
 
   return &matTmp;

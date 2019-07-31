@@ -1,4 +1,5 @@
 #include "MvtxPrototype2Align.h"
+#include "SegmentationAlpide.h"
 
 #include <mvtx/MvtxDefs.h>
 
@@ -26,6 +27,7 @@ MvtxPrototype2Align::MvtxPrototype2Align(const string &name ) :
   runnumber_(0),
   apff_(true),
   m_afname(""),
+  m_is_global(true),
   _timer(PHTimeServer::get()->insert_new(name))
 {
 
@@ -86,9 +88,9 @@ int MvtxPrototype2Align::process_event(PHCompositeNode *topNode)
       }
 
       // apply the alignment
-      clus->setX(clus->getX() + (aligniter->second).dx);
-      clus->setY(clus->getY() + (aligniter->second).dy);
-      clus->setZ(clus->getZ() + (aligniter->second).dz);
+      clus->setX(clus->getX() - (aligniter->second).dx);//row and xaxis are oppositive
+      clus->setY(clus->getY() - (aligniter->second).dy);
+      clus->setZ(clus->getZ() - (aligniter->second).dz);
 
       if ( Verbosity() > 1 )
         clus->identify();
@@ -185,10 +187,10 @@ int MvtxPrototype2Align::ReadAlignmentParFile()
     //MvtxDefUtil util;
 
     string line;
-    static bool is_first = true;
-    float bc0_x = 0;
-    float bc0_y = 0;
-    float bc0_z = 0;
+    // static bool is_first = true;
+    // float bc0_x = 0;
+    // float bc0_y = 0;
+    // float bc0_z = 0;
     while ( getline(fin, line) )
     {
       int lyr, stave;
@@ -196,23 +198,23 @@ int MvtxPrototype2Align::ReadAlignmentParFile()
 
       sscanf(line.c_str(), "%d %d %f %f %f", &lyr, &stave, &bcx, &bcy, &bcz);
 
-      if ( is_first )
-      {
-        bc0_x = bcx;
-        bc0_y = bcy;
-        bc0_z = bcz;
-        is_first = false;
-      }
+      // if ( is_first )
+      // {
+      //   bc0_x = bcx;
+      //   bc0_y = bcy;
+      //   bc0_z = bcz;
+      //   is_first = false;
+      // }
 
-      double dx = bc0_x - bcx;
-      double dy = bc0_y - bcy;
-      double dz = bc0_z - bcz;
+      // double dx = bc0_x - bcx;
+      // double dy = bc0_y - bcy;
+      // double dz = bc0_z - bcz;
 
       for ( int chip = 0; chip < 9; ++chip )
       {
         AddAlignmentPar(
           MvtxDefs::genHitSetKey(lyr, 0, chip),
-          double(dx), double(dy), double(dz));
+          double(bcx), double(bcy), double(bcz));
       }
     }
   }

@@ -273,13 +273,14 @@ int TpcPrototypeGenFitTrkFitter::InitRun(PHCompositeNode* topNode)
   _fitter = PHGenFit::Fitter::getInstance(tgeo_manager,
                                           field, _track_fitting_alg_name,
                                           "RKTrackRep", _do_evt_display);
-  _fitter->set_verbosity(Verbosity());
 
   if (!_fitter)
   {
     cerr << PHWHERE << endl;
     return Fun4AllReturnCodes::ABORTRUN;
   }
+
+  _fitter->set_verbosity(Verbosity());
 
   //LogDebug(genfit::FieldManager::getInstance()->getFieldVal(TVector3(0, 0, 0)).Z());
 

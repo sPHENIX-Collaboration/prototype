@@ -484,7 +484,6 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
           m_chanData.resize(kSAMPLE_LENGTH, 0);
         }
 
-        assert(real_t >= 0);
         assert(real_t < kSAMPLE_LENGTH);
         m_chanData[real_t] = adc;
         //          h_raw_wave->Fill(real_t, adc);

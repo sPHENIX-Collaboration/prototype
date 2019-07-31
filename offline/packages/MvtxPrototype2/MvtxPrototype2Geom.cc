@@ -50,7 +50,7 @@ TGeoHMatrix* MvtxPrototype2Geom::extractMatrixSensor(int index)
                    SegmentationAlpide::ActiveMatrixSizeCols + s_pitchChip_IB;
 
   float dx = 0.f;
-  float dy = (lay - m_numOfLayers) * s_gapLayers_TB;
+  float dy = (lay - m_numOfLayers + 1) * s_gapLayers_TB;
   float dz = (indexInStv - 4) * shift_dz;
 
   if (Verbose()>0) {

@@ -12,6 +12,9 @@
 
 #include "SegmentationAlpide.h"
 
+#include <trackbase/TrkrDefs.h>
+#include <mvtx/MvtxDefs.h>
+
 #include <TGeoMatrix.h>
 
 typedef SegmentationAlpide Segmentation;
@@ -84,8 +87,12 @@ class MvtxPrototype2Geom
   }
   int getLastChipIndex(int lay) const { return m_lastChipIndex[lay]; }
   int getFirstChipIndex(int lay) const { return (lay == 0) ? 0 : m_lastChipIndex[lay - 1] + 1; }
-  int getChipIndex(int lay, int chipInStave){
+  int getChipIndex(int lay, int chipInStave)
+  {
     return getFirstChipIndex(lay) + chipInStave;
+  }
+  int getChipIndex(TrkrDefs::hitsetkey _key) {
+    return getChipIndex(TrkrDefs::getLayer(_key), MvtxDefs::getChipId(_key));
   }
   int getLayer(int index) const { return index / m_numOfChips; }
   int getChipInLay(int index) const { return index % m_numOfChips; }
@@ -109,7 +116,8 @@ class MvtxPrototype2Geom
 
   //  static bool detectorToStave(int chip, int iRow, int iCol, int& sRow, int& sCol);
   //  static bool staveToDetector(int sRow, int sCol, int& chip, int& iRow, int& iCol);
-    static bool detectorToGlobal(int index, int iCol, int iRow, double* glo);
+    bool detectorToGlobal(int index, int iCol, int iRow, double* glo);
+    bool detectorToGlobal(TrkrDefs::hitsetkey, TrkrDefs::hitkey, double*);
 
  private:
   static int getNumberOfChipsInLay()
@@ -169,6 +177,11 @@ inline bool MvtxPrototype2Geom::detectorToGlobal(int index, int iCol, int iRow, 
   locPoint.GetCoordinates(loc);
   matL2G.LocalToMaster(loc, glo);
   return true;
+}
+
+inline bool MvtxPrototype2Geom::detectorToGlobal(TrkrDefs::hitsetkey _hitsetkey, TrkrDefs::hitkey _hitkey, double* glo)
+{
+  return detectorToGlobal(getChipIndex(_hitsetkey), MvtxDefs::getCol(_hitkey), MvtxDefs::getRow(_hitkey), glo);
 }
 
 #endif

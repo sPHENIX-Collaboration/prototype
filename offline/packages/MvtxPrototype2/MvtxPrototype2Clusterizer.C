@@ -298,10 +298,15 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 				int row = MvtxDefs::getRow( (mapiter->second).first);
 				zbins.insert(col);
 				phibins.insert(row);
+        double gloCoord[3];
+        (MvtxPrototype2Geom::Instance())->detectorToGlobal(hitset->getHitSetKey(), (mapiter->second).first, gloCoord);
 
-				zsum += col;
-				xsum += row;
-				ysum += 0;
+				// zsum += col;
+				// xsum += row;
+				// ysum += 0;
+        xsum += gloCoord[0];
+        ysum += gloCoord[1];
+        zsum += gloCoord[2];
 
 				// add the association between this cluster key and this hitkey to the table
 				m_clusterhitassoc->addAssoc(ckey, mapiter->second.first);
@@ -309,14 +314,18 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 				++nhits;
 			}//mapiter
 
-			float thickness = 50.e-4/28e-4; //sensor thickness converted to pixel size
+			//float thickness = 50.e-4/28e-4; //sensor thickness converted to pixel size
+      float thickness = SegmentationAlpide::SensLayerThickness;
 			float phisize = phibins.size();
 			float zsize = zbins.size();
 
 			// This is the local position
-			clusx = xsum/nhits + 0.5;
-			clusy = ysum/nhits + 0.5;
-			clusz = zsum/nhits + 0.5;
+			// clusx = xsum/nhits + 0.5;
+			// clusy = ysum/nhits + 0.5;
+			// clusz = zsum/nhits + 0.5;
+      clusx = xsum/nhits;
+      clusy = ysum/nhits;
+      clusz = zsum/nhits;
 			clus->setAdc(nhits);
 
 			/*
@@ -327,10 +336,13 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 			clus->setPosition(0, clusx);
 			clus->setPosition(1, clusy);
 			clus->setPosition(2, clusz);
-			clus->setLocal();
+			//clus->setLocal();
+      clus->setGlobal();
 
 			float invsqrt12 = 1.0 / sqrt(12.0);
 
+      phisize *= SegmentationAlpide::PitchRow;
+      zsize   *= SegmentationAlpide::PitchCol;
 			TMatrixF DIM(3, 3);
 			DIM[0][0] = pow(0.5 * phisize, 2);
 			DIM[0][1] = 0.0;

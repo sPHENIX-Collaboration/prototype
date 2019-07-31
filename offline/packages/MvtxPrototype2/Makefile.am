@@ -29,7 +29,7 @@ ROOT5_DICTS = \
 	MvtxPrototype2Geom_Dict.C \
 	MvtxPrototype2UnpackPRDF_Dict.C \
 	MvtxPrototype2Clusterizer_Dict.C \
-	MvtxPrototype2Eval_Dict.C
+  MvtxStandaloneTracking_Dict.C
 endif
 
 pkginclude_HEADERS = \
@@ -38,7 +38,7 @@ pkginclude_HEADERS = \
   MvtxPrototype2Geom.h \
   MvtxPrototype2UnpackPRDF.h \
   MvtxPrototype2Clusterizer.h \
-  MvtxPrototype2Eval.h
+  MvtxStandaloneTracking.h
 
 libMvtxPrototype2_la_SOURCES = \
 	$(ROOT5_DICTS) \
@@ -47,7 +47,7 @@ libMvtxPrototype2_la_SOURCES = \
   MvtxPrototype2Geom.cc \
   MvtxPrototype2UnpackPRDF.C \
   MvtxPrototype2Clusterizer.C \
-  MvtxPrototype2Eval.C
+  MvtxStandaloneTracking.C
 
 # Rule for generating table CINT dictionaries.
 %_Dict.C: %.h %LinkDef.h

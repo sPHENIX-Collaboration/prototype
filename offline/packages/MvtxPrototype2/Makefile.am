@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-lib_LTLIBRARIES = libMvtxPrototype2.la
+lib_LTLIBRARIES = libmvtxprototype2.la
 
 AM_CPPFLAGS = \
   -I$(includedir) \
@@ -13,7 +13,7 @@ AM_LDFLAGS = \
   -L$(ROOTSYS)/lib \
   -L$(OFFLINE_MAIN)/lib
 
-libMvtxPrototype2_la_LIBADD = \
+libmvtxprototype2_la_LIBADD = \
   -lCLHEP \
   -lphool \
   -lfun4all \
@@ -40,7 +40,7 @@ pkginclude_HEADERS = \
   MvtxPrototype2Clusterizer.h \
   MvtxStandaloneTracking.h
 
-libMvtxPrototype2_la_SOURCES = \
+libmvtxprototype2_la_SOURCES = \
 	$(ROOT5_DICTS) \
   SegmentationAlpide.C \
   MvtxPrototype2Align.cc cc \
@@ -62,7 +62,7 @@ noinst_PROGRAMS = \
   testexternals_tracker
 
 testexternals_tracker_SOURCES = testexternals.C
-testexternals_tracker_LDADD = libMvtxPrototype2.la
+testexternals_tracker_LDADD = libmvtxprototype2.la
 
 testexternals.C:
 	echo "//*** this is a generated file. Do not commit, do not edit" > $@

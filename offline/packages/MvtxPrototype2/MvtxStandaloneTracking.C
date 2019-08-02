@@ -141,6 +141,7 @@ MvtxStandaloneTracking::AssociateClusters(MvtxTrackList &trklst, std::vector<int
           // if there's another layer, require it
           if ( lyrs.size() > 3 )
           {
+            bool found_clu3 = false;
             TrkrClusterContainer::ConstRange clusrange3 =
               clusters_->getClusters(TrkrDefs::TrkrId::mvtxId, lyrs.at(3));
             for ( TrkrClusterContainer::ConstIterator iter3 = clusrange3.first;
@@ -152,13 +153,19 @@ MvtxStandaloneTracking::AssociateClusters(MvtxTrackList &trklst, std::vector<int
               if ( fabs((iter3->second)->getX() - CalcProjection((iter3->second)->getY(), mxy, bxy)) < window_x_ &&
                    fabs((iter3->second)->getZ() - CalcProjection((iter3->second)->getY(), mzy, bzy)) < window_z_ )
               {
-
-                (trk.ClusterList).push_back(iter3->second);
+                found_clu3 = true;
+                MvtxTrack tmp_trk = trk;
+                (tmp_trk.ClusterList).push_back(iter3->second);
+                trklst.push_back(tmp_trk);
               }
             }
+            if ( !found_clu3 ) trklst.push_back(trk);
           }
-          // else we're done
-          trklst.push_back(trk);
+          else
+          {
+            // else we're done
+            trklst.push_back(trk);
+          }
         }
       } // clusrange 2
     } // clusrange 1
@@ -190,55 +197,59 @@ MvtxStandaloneTracking::RunGhostRejection(MvtxTrackList &trklst)
   std::set<unsigned int> remove_set;
   for ( auto iter = key_trk_map.begin(); iter != key_trk_map.end(); ++iter)
   {
-    // get the upper bound for this key
-    auto upiter = key_trk_map.upper_bound(iter->first);
-
-    // iterate over common clusters and get the best track
-    double chi2_best = 9999.;
-    unsigned int idx_best = 0;
-    int ntrk = 0;
-    for ( auto jter = iter; jter != upiter; ++jter)
+    int ntrk = key_trk_map.count(iter->first);
+    if ( ntrk > 1 ) //cluster belong to more than one track
     {
-      ntrk++;
-      double chi2 = trklst.at(jter->second).chi2_xy + trklst.at(jter->second).chi2_zy;
-      if ( chi2 < chi2_best && chi2 > 0 )
+      if ( verbosity_ > 1 )
       {
-        chi2_best = chi2;
-        idx_best = jter->second;
+        std::cout << PHWHERE << " Tracks sharing cluster:" << ntrk << std::endl;
       }
-    }
 
-    // FOR TESTING
-    if ( ntrk > 1 && verbosity_ > 1 )
-    {
-      std::cout << PHWHERE << " Tracks sharing cluster:" << ntrk << std::endl;
+      // get the upper bound for this key
+      auto upiter = key_trk_map.upper_bound(iter->first);
+
+      // iterate over common clusters and get the best track
+      double chi2_best = 9999.;
+      unsigned int idx_best = 0;
+      int ntrk = 0;
       for ( auto jter = iter; jter != upiter; ++jter)
       {
+        ntrk++;
         double chi2 = trklst.at(jter->second).chi2_xy + trklst.at(jter->second).chi2_zy;
-        std::cout << "     "
-                  << " trk idx: " << jter->second
-                  << " chi2:" << chi2
-                  << " m_xy:" << trklst.at(jter->second).m_xy;
-
-        if ( jter->second == idx_best)
+        if ( chi2 < chi2_best && chi2 > 0 )
         {
-          std::cout << "  <--- BEST" << std::endl;
-        }
-        else
-        {
-          std::cout << std::endl;
+          chi2_best = chi2;
+          idx_best = jter->second;
         }
       }
-    }
 
-    // remove all pairs that aren't the best
-    for ( auto jter = iter; jter != upiter; ++jter)
-    {
-      if ( jter->second != idx_best )
+      for ( auto jter = iter; jter != upiter; ++jter)
       {
-        remove_set.insert(jter->second);
+        if ( verbosity_ > 1 )
+        {
+          double chi2 = trklst.at(jter->second).chi2_xy + trklst.at(jter->second).chi2_zy;
+          std::cout << "     "
+                    << " trk idx: " << jter->second
+                    << " chi2:" << chi2
+                    << " m_xy:" << trklst.at(jter->second).m_xy;
+
+          if ( jter->second == idx_best)
+          {
+            std::cout << "  <--- BEST" << std::endl;
+          }
+          else
+          {
+            std::cout << std::endl;
+          }
+        }
+        // remove all pairs that aren't the best
+        if ( jter->second != idx_best )
+        {
+          remove_set.insert(jter->second);
+        }
       }
     }
+
   } // iter
 
 

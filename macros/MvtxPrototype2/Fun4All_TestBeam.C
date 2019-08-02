@@ -11,13 +11,13 @@
 #include <mvtxprototype2/MvtxPrototype2UnpackPRDF.h>
 #include <mvtxprototype2/MvtxPrototype2Clusterizer.h>
 #include <mvtxprototype2/MvtxPrototype2Align.h>
-#include <anamvtxprototype2/AnaMvtxBeamTest2019.h>
+#include <anamvtxprototype2/AnaMvtxTestBeam2019.h>
 
 #include <TSystem.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
-R__LOAD_LIBRARY(libMvtxPrototype2.so)
-R__LOAD_LIBRARY(libAnaMvtxBeamTest2019.so)
+R__LOAD_LIBRARY(libmvtxprototype2.so)
+R__LOAD_LIBRARY(libanamvtxtestbeam2019.so)
 #endif
 
 #include <string>
@@ -29,8 +29,8 @@ void Fun4All_TestBeam(
 		const string &input_file = "calib-00000648-0000.prdf")
 {
   gSystem->Load("libfun4all");
-  gSystem->Load("libMvtxPrototype2.so");
-  gSystem->Load("libAnaMvtxBeamTest2019.so");
+  gSystem->Load("libmvtxprototype2.so");
+  gSystem->Load("libanamvtxtestbeam2019.so");
 
   Fun4AllServer *se = Fun4AllServer::instance();
   se->Verbosity(Fun4AllServer::VERBOSITY_SOME);
@@ -67,7 +67,7 @@ void Fun4All_TestBeam(
 	clus->Verbosity(0);
 	se->registerSubsystem(clus);
 
-  bool do_align = true;
+  bool do_align = false;
   if ( do_align )
   {
     MvtxPrototype2Align *align = new MvtxPrototype2Align("MvtxAlign");
@@ -80,18 +80,22 @@ void Fun4All_TestBeam(
   }
 
   bool do_eval  = true;
-  bool do_standalone_tracking = do_eval && true;
+  bool do_standalone_tracking = do_eval && false;//true;
   bool do_ghost_rej = do_standalone_tracking && true;
   if ( do_eval )
   {
 
-    AnaMvtxBeamTest2019 *eval = new AnaMvtxBeamTest2019();
+    AnaMvtxTestBeam2019 *eval = new AnaMvtxTestBeam2019();
 	  eval->set_out_filename(Form("MvtxBT2019Eval-%08d-%04d.root",
                            runnumber,segnumber+200));
+    eval->Verbosity(0);
+    eval->set_ref_align_stave(0);
     eval->set_do_tracking(do_standalone_tracking);
     eval->getStandaloneTracking()->SetGhostRejection(do_ghost_rej);
+    eval->getStandaloneTracking()->SetWindowX(3E-2); //300 um
+    eval->getStandaloneTracking()->SetWindowZ(3E-2); //300 um
     eval->getStandaloneTracking()->Verbosity(0);
-    eval->Verbosity(0);
+
 	  se->registerSubsystem(eval);
 
   }

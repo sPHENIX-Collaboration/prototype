@@ -1,8 +1,8 @@
 #include "PHG4Prototype2HcalCellReco.h"
-#include "PHG4ScintillatorSlatContainer.h"
-#include "PHG4ScintillatorSlat.h"              // for PHG4ScintillatorSlat
-#include "PHG4ScintillatorSlatv1.h"
-#include "PHG4ScintillatorSlatDefs.h"          // for genkey, keytype
+#include <g4detectors/PHG4ScintillatorSlatContainer.h>
+#include <g4detectors/PHG4ScintillatorSlat.h>              // for PHG4ScintillatorSlat
+#include <g4detectors/PHG4ScintillatorSlatv1.h>
+#include <g4detectors/PHG4ScintillatorSlatDefs.h>          // for genkey, keytype
 
 #include <g4main/PHG4Hit.h>
 #include <g4main/PHG4HitContainer.h>

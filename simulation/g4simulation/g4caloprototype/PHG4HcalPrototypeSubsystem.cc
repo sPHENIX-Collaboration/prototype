@@ -3,9 +3,9 @@
 //
 #include "PHG4HcalPrototypeSubsystem.h"
 #include "PHG4HcalPrototypeDetector.h"
-#include "PHG4EventActionClearZeroEdep.h"
 #include "PHG4HcalPrototypeSteppingAction.h"
 
+#include <g4detectors/PHG4EventActionClearZeroEdep.h>
 #include <g4main/PHG4HitContainer.h>
 
 #include <phool/PHCompositeNode.h>

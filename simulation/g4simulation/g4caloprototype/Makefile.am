@@ -25,7 +25,7 @@ AM_LDFLAGS = \
 libg4caloprototype_io_la_LIBADD = \
   -lphool \
   -lphparameter \
-  -lg4detector_io 
+  -lg4detectors_io 
 
 
 libg4caloprototype_la_LIBADD = \
@@ -35,7 +35,7 @@ libg4caloprototype_la_LIBADD = \
   -lCGAL \
   -lSubsysReco \
   -lg4testbench \
-  -lg4detector
+  -lg4detectors
 
 pkginclude_HEADERS = \
   PHG4PrototypeHcalDefs.h \

@@ -43,7 +43,8 @@ pkginclude_HEADERS = \
   PHG4Prototype2OuterHcalSubsystem.h \
   PHG4Prototype2InnerHcalSubsystem.h \
   PHG4Prototype3InnerHcalSubsystem.h \
-  PHG4SpacalPrototypeSubsystem.h 
+  PHG4SpacalPrototypeSubsystem.h \
+  PHG4SpacalPrototype4Subsystem.h 
 
 # I/O dictionaries have to exist for root5 and root6. For ROOT6 we need
 # pcm files in addition. If someone can figure out how to make a list
@@ -67,7 +68,8 @@ else
   PHG4Prototype2HcalCellReco_Dict.cc \
   PHG4Prototype2OuterHcalSubsystem_Dict.cc \
   PHG4Prototype3InnerHcalSubsystem_Dict.cc \
-  PHG4SpacalPrototypeSubsystem_Dict.cc
+  PHG4SpacalPrototypeSubsystem_Dict.cc \
+  PHG4SpacalPrototype4Subsystem_Dict.cc
 
 endif
 
@@ -93,7 +95,10 @@ libg4caloprototype_la_SOURCES = \
   PHG4HcalPrototypeSubsystem.cc \
   PHG4SpacalPrototypeDetector.cc \
   PHG4SpacalPrototypeSteppingAction.cc \
-  PHG4SpacalPrototypeSubsystem.cc
+  PHG4SpacalPrototypeSubsystem.cc \
+  PHG4SpacalPrototype4Detector.cc \
+  PHG4SpacalPrototype4SteppingAction.cc \
+  PHG4SpacalPrototype4Subsystem.cc
 
 # Rule for generating table CINT dictionaries.
 %_Dict.cc: %.h %LinkDef.h

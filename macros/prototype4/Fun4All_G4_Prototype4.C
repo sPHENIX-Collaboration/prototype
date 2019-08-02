@@ -17,7 +17,7 @@
 #include <g4caloprototype/PHG4Prototype2HcalCellReco.h>
 #include <g4caloprototype/PHG4Prototype3InnerHcalSubsystem.h>
 #include <g4caloprototype/PHG4Prototype2OuterHcalSubsystem.h>
-#include <g4caloprototype/PHG4SpacalPrototypeSubsystem.h>
+#include <g4caloprototype/PHG4SpacalPrototype4Subsystem.h>
 
 #include <g4eval/PHG4DSTReader.h>
 
@@ -144,7 +144,7 @@ int Fun4All_G4_Prototype4(int nEvents = 1)
   if (cemc_on)
     {
       PHG4SpacalPrototypeSubsystem *cemc;
-      cemc = new PHG4SpacalPrototypeSubsystem("CEMC");
+      cemc = new PHG4SpacalPrototype4Subsystem("CEMC");
       cemc->SetActive();
       cemc->SuperDetector("CEMC");
       cemc->SetAbsorberActive();

@@ -143,7 +143,7 @@ int Fun4All_G4_Prototype4(int nEvents = 1)
   //----------------------------------------
   if (cemc_on)
     {
-      PHG4SpacalPrototypeSubsystem *cemc;
+    PHG4SpacalPrototype4Subsystem *cemc;
       cemc = new PHG4SpacalPrototype4Subsystem("CEMC");
       cemc->SetActive();
       cemc->SuperDetector("CEMC");

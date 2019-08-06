@@ -177,10 +177,10 @@ void PHG4SpacalPrototype4Detector::Construct(G4LogicalVolume* logicWorld)
   cylinder_logic = new G4LogicalVolume(cylinder_solid, cylinder_mat,
                                        G4String(GetName()), 0, 0, 0);
   G4VisAttributes* VisAtt = new G4VisAttributes();
-  PHG4Utils::SetColour(VisAtt, "W_Epoxy");
+  VisAtt->SetColour(G4Colour::White());
   VisAtt->SetVisibility(true);
-  VisAtt->SetForceSolid(
-      (not _geom->is_virualize_fiber()) and (not _geom->is_azimuthal_seg_visible()));
+  VisAtt->SetForceSolid(false);
+  VisAtt->SetForceWireframe(true);
   cylinder_logic->SetVisAttributes(VisAtt);
 
   G4Transform3D cylinder_place(
@@ -552,8 +552,9 @@ PHG4SpacalPrototype4Detector::Construct_AzimuthalSeg()
       outter_half_width, _geom->get_length() * cm / 2.0, _geom->get_length() * cm / 2.0,  // G4double pDy2, G4double pDx3, G4double pDx4,
       0                                                                                   // G4double pAlp2 //
   );
+  const G4double box_z_shift = 0.5 * (_geom->get_zmin() + _geom->get_zmax()) * cm;
   G4Transform3D sec_solid_transform =
-      G4TranslateY3D(enclosure_center) * G4RotateY3D(halfpi) * G4RotateX3D(-halfpi);
+      G4TranslateZ3D(box_z_shift) * G4TranslateY3D(enclosure_center) * G4RotateY3D(halfpi) * G4RotateX3D(-halfpi);
   G4VSolid* sec_solid_place = new G4DisplacedSolid(
       G4String(GetName() + string("_sec")), sec_solid, sec_solid_transform);
 
@@ -566,8 +567,7 @@ PHG4SpacalPrototype4Detector::Construct_AzimuthalSeg()
 
   G4VisAttributes* VisAtt = new G4VisAttributes();
   VisAtt->SetColor(.5, .9, .5, .1);
-  VisAtt->SetVisibility(
-      _geom->is_azimuthal_seg_visible() or _geom->is_virualize_fiber());
+  VisAtt->SetVisibility(true);
   VisAtt->SetForceSolid(false);
   VisAtt->SetForceWireframe(true);
   sec_logic->SetVisAttributes(VisAtt);

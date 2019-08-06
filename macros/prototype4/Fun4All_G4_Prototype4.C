@@ -149,10 +149,10 @@ int Fun4All_G4_Prototype4(int nEvents = 1)
       cemc->SuperDetector("CEMC");
       cemc->SetAbsorberActive();
       cemc->OverlapCheck(true);
-//      cemc->Verbosity(2);
-//      cemc->set_int_param("construction_verbose",2);
+      cemc->Verbosity(2);
+      cemc->set_int_param("construction_verbose",2);
       cemc->UseCalibFiles(PHG4DetectorSubsystem::xml);
-      cemc->SetCalibrationFileDir(string(getenv("CALIBRATIONROOT")) + string("/Prototype3/Geometry/") );
+      cemc->SetCalibrationFileDir(string(getenv("CALIBRATIONROOT")) + string("/Prototype4/macros/test_geom") );
 //      cemc->SetCalibrationFileDir("./test_geom/" );
       //  cemc->set_double_param("z_rotation_degree", 15); // rotation around CG
 //      cemc->set_double_param("xpos", (116.77 + 137.0)*.5 - 26.5 - 10.2); // location in cm of EMCal CG. Updated with final positioning of EMCal

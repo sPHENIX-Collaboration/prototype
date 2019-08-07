@@ -14,10 +14,10 @@
 
 #include <g4detectors/PHG4BlockSubsystem.h>
 #include <g4detectors/PHG4FullProjSpacalCellReco.h>
-#include <g4detectors/PHG4Prototype2HcalCellReco.h>
-#include <g4detectors/PHG4Prototype2InnerHcalSubsystem.h>
-#include <g4detectors/PHG4Prototype2OuterHcalSubsystem.h>
-#include <g4detectors/PHG4SpacalPrototypeSubsystem.h>
+#include <g4caloprototype/PHG4Prototype2HcalCellReco.h>
+#include <g4caloprototype/PHG4Prototype2InnerHcalSubsystem.h>
+#include <g4caloprototype/PHG4Prototype2OuterHcalSubsystem.h>
+#include <g4caloprototype/PHG4SpacalPrototypeSubsystem.h>
 
 #include <g4eval/PHG4DSTReader.h>
 
@@ -37,7 +37,7 @@
 R__LOAD_LIBRARY(libcalo_reco.so)
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4calo.so)
-R__LOAD_LIBRARY(libg4detectors.so)
+R__LOAD_LIBRARY(libg4caloprototype.so)
 R__LOAD_LIBRARY(libg4eval.so)
 R__LOAD_LIBRARY(libg4histos.so)
 R__LOAD_LIBRARY(libg4testbench.so)
@@ -49,7 +49,7 @@ void Fun4All_G4_Prototype3(int nEvents = 1)
 {
 
   gSystem->Load("libfun4all");
-  gSystem->Load("libg4detectors");
+  gSystem->Load("libg4caloprototype");
   gSystem->Load("libg4testbench");
   gSystem->Load("libg4histos");
   gSystem->Load("libg4eval.so");

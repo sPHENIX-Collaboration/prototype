@@ -25,8 +25,8 @@ AM_LDFLAGS = \
 libg4caloprototype_io_la_LIBADD = \
   -lphool \
   -lphparameter \
-  -lg4detectors_io 
-
+  -lg4detectors_io \
+  -lcalo_io
 
 libg4caloprototype_la_LIBADD = \
   libg4caloprototype_io.la \
@@ -72,7 +72,6 @@ else
 	  PHG4Prototype3InnerHcalSubsystem_Dict.cc \
 	  PHG4SpacalPrototypeSubsystem_Dict.cc \
 	  PHG4SpacalPrototype4Subsystem_Dict.cc
-
 endif
 
 libg4caloprototype_io_la_SOURCES = \

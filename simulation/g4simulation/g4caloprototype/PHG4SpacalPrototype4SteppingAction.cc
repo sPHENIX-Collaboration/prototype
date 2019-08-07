@@ -6,9 +6,9 @@
  * \date $$Date: 2015/01/07 23:50:05 $$
  */
 
+#include "PHG4SpacalPrototype4SteppingAction.h"
 #include <g4detectors/PHG4CylinderGeom_Spacalv3.h>
 #include "PHG4SpacalPrototype4Detector.h"
-#include "PHG4SpacalPrototype4SteppingAction.h"
 
 #include <g4main/PHG4Hit.h>  // for PHG4Hit
 #include <g4main/PHG4HitContainer.h>
@@ -87,56 +87,40 @@ bool PHG4SpacalPrototype4SteppingAction::UserSteppingAction(const G4Step* aStep,
     G4StepPoint* postPoint = aStep->GetPostStepPoint();
     int scint_id = -1;
 
-    if (                                                                                                                                   //
-        detector_->get_geom()->get_config() == PHG4SpacalPrototype4Detector::SpacalGeom_t::kFullProjective_2DTaper                          //
-        or                                                                                                                                 //
-        detector_->get_geom()->get_config() == PHG4SpacalPrototype4Detector::SpacalGeom_t::kFullProjective_2DTaper_SameLengthFiberPerTower  //
-    )
+    //SPACAL ID that is associated with towers
+    int sector_ID = 0;
+    int tower_ID = 0;
+    int fiber_ID = 0;
+
+    if (isactive == PHG4SpacalPrototype4Detector::FIBER_CORE)
     {
-      //SPACAL ID that is associated with towers
-      int sector_ID = 0;
-      int tower_ID = 0;
-      int fiber_ID = 0;
+      fiber_ID = prePoint->GetTouchable()->GetReplicaNumber(1);
+      tower_ID = prePoint->GetTouchable()->GetReplicaNumber(2);
+      sector_ID = prePoint->GetTouchable()->GetReplicaNumber(3);
 
-      if (isactive == PHG4SpacalPrototype4Detector::FIBER_CORE)
-      {
-        fiber_ID = prePoint->GetTouchable()->GetReplicaNumber(1);
-        tower_ID = prePoint->GetTouchable()->GetReplicaNumber(2);
-        sector_ID = prePoint->GetTouchable()->GetReplicaNumber(3);
-      }
-
-      else if (isactive == PHG4SpacalPrototype4Detector::FIBER_CLADING)
-      {
-        fiber_ID = prePoint->GetTouchable()->GetReplicaNumber(0);
-        tower_ID = prePoint->GetTouchable()->GetReplicaNumber(1);
-        sector_ID = prePoint->GetTouchable()->GetReplicaNumber(2);
-      }
-
-      else if (isactive == PHG4SpacalPrototype4Detector::ABSORBER)
-      {
-        tower_ID = prePoint->GetTouchable()->GetReplicaNumber(0);
-        sector_ID = prePoint->GetTouchable()->GetReplicaNumber(1);
-      }
-
-      // compact the tower/sector/fiber ID into 32 bit scint_id, so we could save some space for SPACAL hits
-      scint_id = PHG4CylinderGeom_Spacalv3::scint_id_coder(sector_ID, tower_ID, fiber_ID).scint_ID;
+      if (Verbosity() >= 2)
+        cout << __PRETTY_FUNCTION__ << " FIBER_CORE step with GetReplicaNumber[0-4] = "
+             << prePoint->GetTouchable()->GetReplicaNumber(0) << ", "
+             << prePoint->GetTouchable()->GetReplicaNumber(1) << ", "
+             << prePoint->GetTouchable()->GetReplicaNumber(2) << ", "
+             << prePoint->GetTouchable()->GetReplicaNumber(3) << ". edep = " << edep << ", eion = " << eion << endl;
     }
-    else
+
+    else if (isactive == PHG4SpacalPrototype4Detector::FIBER_CLADING)
     {
-      // other configuraitons
-      if (isactive == PHG4SpacalPrototype4Detector::FIBER_CORE)
-      {
-        scint_id = prePoint->GetTouchable()->GetReplicaNumber(2);
-      }
-      else if (isactive == PHG4SpacalPrototype4Detector::FIBER_CLADING)
-      {
-        scint_id = prePoint->GetTouchable()->GetReplicaNumber(1);
-      }
-      else
-      {
-        scint_id = prePoint->GetTouchable()->GetReplicaNumber(0);
-      }
+      fiber_ID = prePoint->GetTouchable()->GetReplicaNumber(0);
+      tower_ID = prePoint->GetTouchable()->GetReplicaNumber(1);
+      sector_ID = prePoint->GetTouchable()->GetReplicaNumber(2);
     }
+
+    else if (isactive == PHG4SpacalPrototype4Detector::ABSORBER)
+    {
+      tower_ID = prePoint->GetTouchable()->GetReplicaNumber(0);
+      sector_ID = prePoint->GetTouchable()->GetReplicaNumber(1);
+    }
+
+    // compact the tower/sector/fiber ID into 32 bit scint_id, so we could save some space for SPACAL hits
+    scint_id = PHG4CylinderGeom_Spacalv3::scint_id_coder(sector_ID, tower_ID, fiber_ID).scint_ID;
 
     //       cout << "track id " << aTrack->GetTrackID() << endl;
     //        cout << "time prepoint: " << prePoint->GetGlobalTime() << endl;

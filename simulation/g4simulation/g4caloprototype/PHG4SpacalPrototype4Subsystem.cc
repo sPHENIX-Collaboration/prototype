@@ -90,6 +90,7 @@ int PHG4SpacalPrototype4Subsystem::InitRunSubsystem(PHCompositeNode* topNode)
       cylinder_hits->AddLayer(0);
     }
     steppingAction_ = new PHG4SpacalPrototype4SteppingAction(detector_);
+    steppingAction_->Verbosity(Verbosity());
   }
 
   return 0;

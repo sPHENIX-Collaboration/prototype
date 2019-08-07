@@ -8,10 +8,10 @@
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
 
-#include <g4calo/Prototype2RawTowerBuilder.h>
 #include <g4calo/RawTowerBuilder.h>
 #include <g4calo/RawTowerDigitizer.h>
 
+#include <g4caloprototype/Prototype2RawTowerBuilder.h>
 #include <g4detectors/PHG4BlockSubsystem.h>
 #include <g4detectors/PHG4FullProjSpacalCellReco.h>
 #include <g4caloprototype/PHG4Prototype2HcalCellReco.h>

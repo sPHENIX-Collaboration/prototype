@@ -38,6 +38,7 @@ libg4caloprototype_la_LIBADD = \
   -lg4detectors
 
 pkginclude_HEADERS = \
+  Prototype2RawTowerBuilder.h \
   PHG4PrototypeHcalDefs.h \
   PHG4Prototype2HcalCellReco.h \
   PHG4Prototype2OuterHcalSubsystem.h \
@@ -64,12 +65,13 @@ nobase_dist_pcm_DATA =
 else
   ROOT5_IO_DICTS = 
   ROOT5_DICTS = \
-  PHG4Prototype2InnerHcalSubsystem_Dict.cc \
-  PHG4Prototype2HcalCellReco_Dict.cc \
-  PHG4Prototype2OuterHcalSubsystem_Dict.cc \
-  PHG4Prototype3InnerHcalSubsystem_Dict.cc \
-  PHG4SpacalPrototypeSubsystem_Dict.cc \
-  PHG4SpacalPrototype4Subsystem_Dict.cc
+	  Prototype2RawTowerBuilder_Dict.cc \
+	  PHG4Prototype2InnerHcalSubsystem_Dict.cc \
+	  PHG4Prototype2HcalCellReco_Dict.cc \
+	  PHG4Prototype2OuterHcalSubsystem_Dict.cc \
+	  PHG4Prototype3InnerHcalSubsystem_Dict.cc \
+	  PHG4SpacalPrototypeSubsystem_Dict.cc \
+	  PHG4SpacalPrototype4Subsystem_Dict.cc
 
 endif
 
@@ -79,6 +81,7 @@ libg4caloprototype_io_la_SOURCES = \
 
 libg4caloprototype_la_SOURCES = \
   $(ROOT5_DICTS) \
+  Prototype2RawTowerBuilder.cc \
   PHG4Prototype2InnerHcalDetector.cc \
   PHG4Prototype2InnerHcalSteppingAction.cc \
   PHG4Prototype2InnerHcalSubsystem.cc \

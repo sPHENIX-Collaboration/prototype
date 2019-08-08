@@ -1,4 +1,5 @@
 #include "Prototype2RawTowerBuilder.h"
+#include "PHG4PrototypeHcalDefs.h"
 
 #include <calobase/RawTowerContainer.h>
 #include <calobase/RawTowerDefs.h>                      // for convert_name_...
@@ -8,7 +9,6 @@
 #include <calobase/RawTower.h>                          // for RawTower
 #include <calobase/RawTowerv1.h>
 
-#include <g4detectors/PHG4PrototypeHcalDefs.h>
 #include <g4detectors/PHG4ScintillatorSlat.h>
 #include <g4detectors/PHG4ScintillatorSlatContainer.h>
 

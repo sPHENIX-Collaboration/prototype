@@ -32,7 +32,7 @@ pkginclude_HEADERS = \
 ROOTDICTS = \
   TpcPrototypeTrack_Dict.cc \
   TpcPrototypeDefs_Dict.cc
-  
+
 if MAKEROOT6
   pcmdir = $(libdir)
   nobase_dist_pcm_DATA =  \
@@ -40,13 +40,14 @@ if MAKEROOT6
     TpcPrototypeDefs_Dict_rdict.pcm \
     TpcPrototypeUnpacker_Dict_rdict.pcm
 else
-  ROOT5_IO_DICTS = 
-  ROOT5_DICTS = 
+  ROOT5_DICTS = \
+  TpcPrototypeClusterizer_Dict.cc \
+  TpcPrototypeGenFitTrkFinder_Dict.cc \
+  TpcPrototypeGenFitTrkFitter_Dict.cc
 endif
 
 libtpc2019_io_la_SOURCES = \
   $(ROOTDICTS) \
-  $(ROOT5_IO_DICTS) \
   TpcPrototypeTrack.cc \
   TpcPrototypeDefs.cc
 

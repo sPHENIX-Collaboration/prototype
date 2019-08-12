@@ -10,35 +10,23 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <TMatrixFfwd.h>  // for TMatrixF
-#include <TVector3.h>     // for TVector3
-
-#include <cstddef>  // for NULL
-#include <memory>   // for shared_ptr
 #include <string>
 #include <vector>
 
-class TClonesArray;
 
 namespace PHGenFit
 {
-class Track;
-} /* namespace PHGenFit */
+  class Fitter;
+}
 
-class SvtxTrack;
-namespace PHGenFit
-{
-class Fitter;
-} /* namespace PHGenFit */
-
+class AssocInfoContainer;
+class PHCompositeNode;
 class SvtxTrackMap;
 class SvtxVertexMap;
-class TrkrCluster;
-class SvtxVertex;
-class PHCompositeNode;
-class AssocInfoContainer;
-class TrkrClusterContainer;
+class TClonesArray;
 class TTree;
+class TrkrCluster;
+class TrkrClusterContainer;
 
 //! \brief	find tracks
 class TpcPrototypeGenFitTrkFinder : public SubsysReco

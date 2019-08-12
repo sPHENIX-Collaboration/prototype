@@ -6,7 +6,6 @@
  */
 
 #include "TpcPrototypeGenFitTrkFinder.h"
-#include "TpcPrototypeTrack.h"
 
 #include <trackbase/TrkrCluster.h>  // for TrkrCluster
 #include <trackbase/TrkrClusterContainer.h>
@@ -19,38 +18,10 @@
 #include <trackbase_historic/SvtxVertexMap.h>
 
 #include <trackbase_historic/SvtxTrack.h>
-#include <trackbase_historic/SvtxTrackMap.h>
-#include <trackbase_historic/SvtxTrackMap_v1.h>
-#include <trackbase_historic/SvtxTrackState.h>  // for SvtxTrackState
-#include <trackbase_historic/SvtxTrackState_v1.h>
-#include <trackbase_historic/SvtxTrack_v1.h>
-#include <trackbase_historic/SvtxVertex.h>     // for SvtxVertex
-#include <trackbase_historic/SvtxVertexMap.h>  // for SvtxVertexMap
 #include <trackbase_historic/SvtxVertexMap_v1.h>
-#include <trackbase_historic/SvtxVertex_v1.h>
-
-#include <mvtx/MvtxDefs.h>
-
-#include <intt/InttDefs.h>
-
-#include <g4detectors/PHG4CylinderGeom.h>  // for PHG4CylinderGeom
-#include <g4detectors/PHG4CylinderGeomContainer.h>
-
-//
-#include <intt/CylinderGeomIntt.h>
-
-#include <mvtx/CylinderGeom_Mvtx.h>
-
-#include <g4main/PHG4Particle.h>
-#include <g4main/PHG4Particlev2.h>
-#include <g4main/PHG4TruthInfoContainer.h>
-#include <g4main/PHG4VtxPoint.h>  // for PHG4VtxPoint
-#include <g4main/PHG4VtxPointv1.h>
 
 #include <phgenfit/Fitter.h>
-#include <phgenfit/Measurement.h>  // for Measurement
 #include <phgenfit/PlanarMeasurement.h>
-#include <phgenfit/SpacepointMeasurement.h>
 #include <phgenfit/Track.h>
 
 #include <fun4all/Fun4AllReturnCodes.h>
@@ -68,38 +39,20 @@
 #include <phfield/PHFieldUtility.h>
 #include <phgeom/PHGeomUtility.h>
 
-#include <GenFit/AbsMeasurement.h>  // for AbsMeasurement
 #include <GenFit/EventDisplay.h>    // for EventDisplay
-#include <GenFit/Exception.h>       // for Exception
-#include <GenFit/GFRaveConverters.h>
-#include <GenFit/GFRaveTrackParameters.h>  // for GFRaveTrackParame...
-#include <GenFit/GFRaveVertex.h>
-#include <GenFit/GFRaveVertexFactory.h>
-#include <GenFit/KalmanFitterInfo.h>
-#include <GenFit/MeasuredStateOnPlane.h>
 #include <GenFit/RKTrackRep.h>
-#include <GenFit/Track.h>
-#include <GenFit/TrackPoint.h>  // for TrackPoint
-
-//Rave
-#include <rave/ConstantMagneticField.h>
-#include <rave/VacuumPropagator.h>  // for VacuumPropagator
-#include <rave/VertexFactory.h>
 
 #include <TClonesArray.h>
-#include <TMath.h>           // for ATan2
 #include <TMatrixDSymfwd.h>  // for TMatrixDSym
-#include <TMatrixT.h>        // for TMatrixT, operator*
 #include <TMatrixTSym.h>     // for TMatrixTSym
 #include <TMatrixTUtils.h>   // for TMatrixTRow
-#include <TRotation.h>
 #include <TTree.h>
 #include <TVector3.h>
-#include <TVectorDfwd.h>  // for TVectorD
-#include <TVectorT.h>     // for TVectorT
+
+#include <algorithm>                              // for find
+#include <set>                                    // for set
 
 #include <cassert>
-#include <cmath>  // for sqrt, NAN
 #include <iostream>
 #include <map>
 #include <memory>
@@ -112,6 +65,7 @@ namespace genfit
 {
 class AbsTrackRep;
 }
+namespace PHGenFit { class Measurement; }
 
 #define LogDebug(exp) std::cout << "DEBUG: " << __FILE__ << ": " << __LINE__ << ": " << exp << std::endl
 #define LogError(exp) std::cout << "ERROR: " << __FILE__ << ": " << __LINE__ << ": " << exp << std::endl

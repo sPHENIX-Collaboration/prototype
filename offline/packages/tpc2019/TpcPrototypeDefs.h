@@ -5,10 +5,8 @@
 #include "ChanMap.h"
 #endif
 
-#include <stdint.h>
 #include <map>
 #include <string>
-#include <utility>  // std::pair, std::make_pair
 #include <vector>
 
 class TCanvas;

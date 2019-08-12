@@ -11,14 +11,9 @@
 #ifndef TPCPROTOTYPETRACK_H_
 #define TPCPROTOTYPETRACK_H_
 
-#include <trackbase/TrkrDefs.h>
 
 #include <phool/PHObject.h>
 
-#include <cmath>
-#include <iostream>
-#include <map>
-#include <set>
 /*!
  * \brief TpcPrototypeTrack
  */

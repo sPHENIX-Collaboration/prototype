@@ -17,18 +17,16 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>               // for pair
 #include <vector>
 
 class PHCompositeNode;
 class Fun4AllHistoManager;
 class TTree;
 class TClonesArray;
-class Event;
 class PHG4TpcPadPlane;
 class PHG4CylinderCellGeomContainer;
-class TrkrHitSetContainer;
 class TrkrClusterContainer;
-class TrkrClusterHitAssoc;
 
 namespace TpcPrototypeDefs
 {
@@ -123,7 +121,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     //! 3-D Graph clustering based on PHMakeGroups()
     void Clustering(int zero_suppression, bool verbosity = false);
 
-#ifndef __CINT__
+#if !defined(__CINT__) || defined (__CLING__)
 
     const std::vector<std::vector<std::vector<int>>> &getData() const
     {
@@ -141,7 +139,7 @@ class TpcPrototypeUnpacker : public SubsysReco
 
     std::multimap<int, SampleID> m_groups;
 
-#endif  // #ifndef __CINT__
+#endif  // #if !defined(__CINT__) || defined (__CLING__)
   };
 
   //! buffer for a cluster's data
@@ -251,7 +249,7 @@ class TpcPrototypeUnpacker : public SubsysReco
   int exportDSTCluster(ClusterData &cluster, const int i);
   int InitField(PHCompositeNode *topNode);
 
-#ifndef __CINT__
+#if !defined(__CINT__) || defined (__CLING__)
 
   // IO stuff
 
@@ -285,7 +283,7 @@ class TpcPrototypeUnpacker : public SubsysReco
   //! Clustering then prepare IOs
   int Clustering(void);
 
-#endif  // #ifndef __CINT__
+#endif  // !defined(__CINT__) || defined (__CLING__)
 
   int m_clusteringZeroSuppression;
   int m_nPreSample;

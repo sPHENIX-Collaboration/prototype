@@ -18,29 +18,10 @@
 #include <trackbase_historic/SvtxTrackMap_v1.h>
 #include <trackbase_historic/SvtxTrackState.h>  // for SvtxTrackState
 #include <trackbase_historic/SvtxTrackState_v1.h>
-#include <trackbase_historic/SvtxTrack_v1.h>
 #include <trackbase_historic/SvtxVertex.h>     // for SvtxVertex
 #include <trackbase_historic/SvtxVertexMap.h>  // for SvtxVertexMap
 #include <trackbase_historic/SvtxVertexMap_v1.h>
 #include <trackbase_historic/SvtxVertex_v1.h>
-
-#include <mvtx/MvtxDefs.h>
-
-#include <intt/InttDefs.h>
-
-#include <g4detectors/PHG4CylinderGeom.h>  // for PHG4CylinderGeom
-#include <g4detectors/PHG4CylinderGeomContainer.h>
-
-//
-#include <intt/CylinderGeomIntt.h>
-
-#include <mvtx/CylinderGeom_Mvtx.h>
-
-#include <g4main/PHG4Particle.h>
-#include <g4main/PHG4Particlev2.h>
-#include <g4main/PHG4TruthInfoContainer.h>
-#include <g4main/PHG4VtxPoint.h>  // for PHG4VtxPoint
-#include <g4main/PHG4VtxPointv1.h>
 
 #include <phgenfit/Fitter.h>
 #include <phgenfit/Measurement.h>  // for Measurement
@@ -82,8 +63,8 @@
 #include <rave/VertexFactory.h>
 
 #include <TClonesArray.h>
-#include <TMath.h>           // for ATan2
 #include <TMatrixDSymfwd.h>  // for TMatrixDSym
+#include <TMatrixFfwd.h>                           // for TMatrixF
 #include <TMatrixT.h>        // for TMatrixT, operator*
 #include <TMatrixTSym.h>     // for TMatrixTSym
 #include <TMatrixTUtils.h>   // for TMatrixTRow
@@ -98,6 +79,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -1728,7 +1710,7 @@ bool TpcPrototypeGenFitTrkFitter::pos_cov_uvn_to_rz(const TVector3& u, const TVe
   try
   {
     // rotate u along z to up
-    float phi = -TMath::ATan2(up_uvn.Y(), up_uvn.X());
+    float phi = -atan2(up_uvn.Y(), up_uvn.X());
     R[0][0] = cos(phi);
     R[0][1] = -sin(phi);
     R[0][2] = 0;
@@ -1837,7 +1819,7 @@ bool TpcPrototypeGenFitTrkFitter::pos_cov_XYZ_to_RZ(
   try
   {
     // rotate u along z to up
-    float phi = -TMath::ATan2(r.Y(), r.X());
+    float phi = -atan2(r.Y(), r.X());
     R[0][0] = cos(phi);
     R[0][1] = -sin(phi);
     R[0][2] = 0;
@@ -1945,7 +1927,7 @@ TMatrixF TpcPrototypeGenFitTrkFitter::get_rotation_matrix(const TVector3 x,
     //		TMatrixF ROT3(3, 3);
     //
     //		// rotate n along z to xz plane
-    //		float phi = -TMath::ATan2(n.Y(), n.X());
+    //		float phi = -atan2(n.Y(), n.X());
     //		ROT1[0][0] = cos(phi);
     //		ROT1[0][1] = -sin(phi);
     //		ROT1[0][2] = 0;
@@ -1959,7 +1941,7 @@ TMatrixF TpcPrototypeGenFitTrkFitter::get_rotation_matrix(const TVector3 x,
     //		// rotate n along y to z
     //		TVector3 n1(n);
     //		n1.RotateZ(phi);
-    //		float theta = -TMath::ATan2(n1.X(), n1.Z());
+    //		float theta = -atan2(n1.X(), n1.Z());
     //		ROT2[0][0] = cos(theta);
     //		ROT2[0][1] = 0;
     //		ROT2[0][2] = sin(theta);
@@ -1974,7 +1956,7 @@ TMatrixF TpcPrototypeGenFitTrkFitter::get_rotation_matrix(const TVector3 x,
     //		TVector3 u2(u);
     //		u2.RotateZ(phi);
     //		u2.RotateY(theta);
-    //		float phip = -TMath::ATan2(u2.Y(), u2.X());
+    //		float phip = -atan2(u2.Y(), u2.X());
     //		ROT3[0][0] = cos(phip);
     //		ROT3[0][1] = -sin(phip);
     //		ROT3[0][2] = 0;

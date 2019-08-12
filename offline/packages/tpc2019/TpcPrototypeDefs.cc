@@ -1,16 +1,16 @@
 #include "TpcPrototypeDefs.h"
 
+#include <TAttMarker.h>
 #include <TCanvas.h>
 #include <TF1.h>
 #include <TGraph.h>
 #include <TPaveText.h>
 #include <TStyle.h>
-#include <TVirtualFitter.h>
 
-#include <cassert>
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <string>
 
 using namespace std;

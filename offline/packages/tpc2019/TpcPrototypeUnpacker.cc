@@ -8,52 +8,50 @@
 #include "TpcPrototypeUnpacker.h"
 
 #include "TpcPrototypeDefs.h"
+#include "ChanMap.h"
 
 #include <g4tpc/PHG4TpcPadPlane.h>  // for PHG4TpcPadPlane
 
 #include <tpc/TpcDefs.h>
-#include <tpc/TpcHit.h>
 
 #include <g4detectors/PHG4CylinderCellGeom.h>
 #include <g4detectors/PHG4CylinderCellGeomContainer.h>
 
+#include <fun4all/Fun4AllBase.h>
 #include <fun4all/Fun4AllHistoManager.h>
 #include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/PHTFileServer.h>
+#include <fun4all/SubsysReco.h>
 
-#include <phfield/PHFieldConfigv1.h>
+#include <phfield/PHFieldConfig.h>                              // for PHFie...
 #include <phfield/PHFieldConfigv2.h>
 #include <phfield/PHFieldUtility.h>
 
 #include <trackbase/TrkrClusterContainer.h>
-#include <trackbase/TrkrClusterHitAssoc.h>
 #include <trackbase/TrkrClusterv1.h>
 #include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
-#include <trackbase/TrkrHit.h>
-#include <trackbase/TrkrHitSet.h>
-#include <trackbase/TrkrHitSetContainer.h>
 
-#include <phhepmc/PHHepMCGenEvent.h>
-#include <phhepmc/PHHepMCGenEventMap.h>
 #include <phool/PHCompositeNode.h>
+#include <phool/PHIODataNode.h>                                 // for PHIOD...
+#include <phool/PHNode.h>                                       // for PHNode
+#include <phool/PHNodeIterator.h>                               // for PHNod...
+#include <phool/PHObject.h>                                     // for PHObject
 #include <phool/getClass.h>
+#include <phool/phool.h>                                        // for PHWHERE
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
-//#include <Event/packetConstants.h>
-#include <Event/oncsSubConstants.h>
 
+#include <TAxis.h>                                              // for TAxis
 #include <TClonesArray.h>
-#include <TFile.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TString.h>
+#include <TH1.h>                                                // for TH1D
+#include <TMatrixFfwd.h>                                        // for TMatrixF
+#include <TMatrixT.h>                                           // for TMatrixT
+#include <TMatrixTUtils.h>                                      // for TMatr...
+#include <TNamed.h>                                             // for TNamed
 #include <TTree.h>
-#include <TVector3.h>
-
-#include <CLHEP/Units/SystemOfUnits.h>
 
 #include <boost/bimap.hpp>
 #include <boost/bind.hpp>
@@ -62,16 +60,17 @@
 #include <boost/graph/connected_components.hpp>
 
 #include <algorithm>
-#include <array>
 #include <cassert>
 #include <cmath>
+#include <cstdint>                                              // for uint32_t
 #include <iostream>
-#include <limits>
+#include <iterator>                                             // for rever...
 #include <map>
 #include <sstream>
 #include <stdexcept>
-#include <tuple>
 #include <memory>
+
+class PHField;
 
 using namespace std;
 using namespace TpcPrototypeDefs::FEEv2;

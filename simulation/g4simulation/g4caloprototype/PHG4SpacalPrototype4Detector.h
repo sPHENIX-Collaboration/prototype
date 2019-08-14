@@ -1,8 +1,8 @@
 // Tell emacs that this is a C++ source
 //  -*- C++ -*-.
 
-#ifndef G4DETECTORS_PHG4SpacalPrototype4Detector_H
-#define G4DETECTORS_PHG4SpacalPrototype4Detector_H
+#ifndef G4CALOPROTOTYPE_PHG4SPACALPROTOTYPE4DETECTOR_H
+#define G4CALOPROTOTYPE_PHG4SPACALPROTOTYPE4DETECTOR_H
 
 #include <g4detectors/PHG4CylinderGeom_Spacalv3.h>
 

@@ -32,6 +32,7 @@
 #include <iostream>  // for operator<<, basic_ostream, endl
 #include <map>
 #include <sstream>
+#include <utility>                       // for pair
 
 class PHCompositeNode;
 

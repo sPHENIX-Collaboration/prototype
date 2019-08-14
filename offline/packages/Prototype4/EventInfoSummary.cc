@@ -31,8 +31,10 @@
 #include <string>
 #include <utility>  // for pair
 
+// with the exception of std,  please no using namespaces
+// it severely muddies the ability to figure out
+// where things come from
 using namespace std;
-using namespace boost::accumulators;
 
 //____________________________________
 EventInfoSummary::EventInfoSummary()
@@ -85,14 +87,14 @@ int EventInfoSummary::process_event(PHCompositeNode *topNode)
           TOWER_RAW_SPILL_WARBLER->getTower(0));
       assert(raw_tower);
 
-      accumulator_set<double, features<tag::variance>> acc;
+      boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::variance>> acc;
 
       for (int i = 0; i < RawTower_Prototype4::NSAMPLES; i++)
       {
         acc(raw_tower->get_signal_samples(i));
       }
 
-      const double warbler_rms = variance(acc);
+      const double warbler_rms = boost::accumulators::variance(acc);
       const bool is_in_spill = warbler_rms > (1000 * 1000);
       Params.set_double_param("beam_SPILL_WARBLER_RMS", warbler_rms);
       Params.set_double_param("beam_Is_In_Spill", is_in_spill);

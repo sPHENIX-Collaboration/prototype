@@ -1,7 +1,7 @@
 // Tell emacs that this is a C++ source
-// This file is really -*- C++ -*-.
-#ifndef G4CALO_PROTOTYPE2RAWTOWERBUILDER_H
-#define G4CALO_PROTOTYPE2RAWTOWERBUILDER_H
+//  -*- C++ -*-.
+#ifndef G4CALOPROTOTYPE_PROTOTYPE2RAWTOWERBUILDER_H
+#define G4CALOPROTOTYPE_PROTOTYPE2RAWTOWERBUILDER_H
 
 #include <phparameter/PHParameterInterface.h>
 

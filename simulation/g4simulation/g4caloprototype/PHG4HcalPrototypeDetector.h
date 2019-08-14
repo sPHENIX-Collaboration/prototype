@@ -4,21 +4,16 @@
 // created on 1/27/2014, Liang, HeXC
 // Updated on 3/21/2014, Liang, HeXC
 
-#ifndef G4DETECTORS_PHG4HCALPROTOTYPEDETECTOR_H
-#define G4DETECTORS_PHG4HCALPROTOTYPEDETECTOR_H
-
-#include "PHG4HcalPrototypeDetectorMessenger.h"
+#ifndef G4CALOPROTOTYPE_PHG4HCALPROTOTYPEDETECTOR_H
+#define G4CALOPROTOTYPE_PHG4HCALPROTOTYPEDETECTOR_H
 
 #include <g4main/PHG4Detector.h>
 
-#include <Geant4/globals.hh>
 #include <Geant4/G4String.hh>           // for G4String
 #include <Geant4/G4SystemOfUnits.hh>
 #include <Geant4/G4Types.hh>
 
-#include <map>
 #include <string>                       // for string
-#include <vector>
 
 class G4Box;
 class G4LogicalVolume;

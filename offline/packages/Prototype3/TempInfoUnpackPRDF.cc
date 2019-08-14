@@ -7,8 +7,6 @@
 #include <calobase/RawTowerContainer.h>
 #include <calobase/RawTowerDefs.h>  // for CEMC, HCALIN, HCALOUT
 
-#include <phparameter/PHParameters.h>
-
 #include <fun4all/Fun4AllBase.h>  // for Fun4AllBase::VERBOSITY_SOME
 #include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/SubsysReco.h>  // for SubsysReco

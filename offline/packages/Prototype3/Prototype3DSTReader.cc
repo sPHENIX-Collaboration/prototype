@@ -31,6 +31,7 @@
 #include <cassert>
 #include <iostream>  // for operator<<, basic_ostream, endl
 #include <map>
+#include <utility>                       // for pair
 
 class PHCompositeNode;
 

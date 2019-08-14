@@ -18,7 +18,6 @@
 #include <phool/phool.h>
 
 #include <Event/Event.h>
-#include <Event/packetConstants.h>
 #include <Event/packet.h>
 
 #include <cassert>

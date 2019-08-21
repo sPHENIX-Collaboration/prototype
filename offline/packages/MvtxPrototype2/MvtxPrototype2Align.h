@@ -1,5 +1,7 @@
-#ifndef __MVTXP2ALIGN_H__
-#define __MVTXP2ALIGN_H__
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef MVTX_P2_ALIGN_H
+#define MVTX_P2_ALIGN_H
 
 #include <fun4all/SubsysReco.h>
 #include <phool/PHTimeServer.h>

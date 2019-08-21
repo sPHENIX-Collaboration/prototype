@@ -2,52 +2,52 @@ AUTOMAKE_OPTIONS = foreign
 
 lib_LTLIBRARIES = libmvtxprototype2.la
 
-AM_CPPFLAGS = \
-  -I$(includedir) \
-  -I$(OFFLINE_MAIN)/include  \
-  -I$(ROOTSYS)/include \
+AM_CPPFLAGS = 								\
+  -I$(includedir) 						\
+  -I$(OFFLINE_MAIN)/include		\
+  -I$(ROOTSYS)/include				\
   -I$(OPT_SPHENIX)/include
 
-AM_LDFLAGS = \
-  -L$(libdir) \
-  -L$(ROOTSYS)/lib \
+AM_LDFLAGS =							\
+  -L$(libdir) 						\
+  -L$(ROOTSYS)/lib 				\
   -L$(OFFLINE_MAIN)/lib
 
 libmvtxprototype2_la_LIBADD = \
-  -lCLHEP \
-  -lphool \
-  -lfun4all \
-  -lphparameter \
-	-ltrack_io \
-	-ltrackbase_historic_io \
+  -lCLHEP 										\
+  -lphool 										\
+  -lfun4all 									\
+  -lphparameter 							\
+	-ltrack_io 									\
+	-ltrackbase_historic_io 		\
   -lmvtx
 
 if ! MAKEROOT6
 ROOT5_DICTS = \
-	SegmentatioAlpide_Dict.C \
-  MvtxPrototype2Align_Dict.C \
-	MvtxPrototype2Geom_Dict.C \
-	MvtxPrototype2UnpackPRDF_Dict.C \
-	MvtxPrototype2Clusterizer_Dict.C \
+	SegmentatioAlpide_Dict.C 					\
+  MvtxPrototype2Align_Dict.C 				\
+	MvtxPrototype2Geom_Dict.C 				\
+	MvtxPrototype2UnpackPRDF_Dict.C 	\
+	MvtxPrototype2Clusterizer_Dict.C 	\
   MvtxStandaloneTracking_Dict.C
 endif
 
-pkginclude_HEADERS = \
-  SegmentationAlpide.h \
-  MvtxPrototype2Align.h \
-  MvtxPrototype2Geom.h \
-  MvtxPrototype2UnpackPRDF.h \
+pkginclude_HEADERS = 					\
+  SegmentationAlpide.h 				\
+  MvtxPrototype2Align.h 			\
+  MvtxPrototype2Geom.h 				\
+  MvtxPrototype2UnpackPRDF.h 	\
   MvtxPrototype2Clusterizer.h \
   MvtxStandaloneTracking.h
 
 libmvtxprototype2_la_SOURCES = \
-	$(ROOT5_DICTS) \
-  SegmentationAlpide.C \
-  MvtxPrototype2Align.cc cc \
-  MvtxPrototype2Geom.cc \
-  MvtxPrototype2UnpackPRDF.C \
-  MvtxPrototype2Clusterizer.C \
-  MvtxStandaloneTracking.C
+	$(ROOT5_DICTS) 							 \
+  SegmentationAlpide.cc 	     \
+  MvtxPrototype2Align.cc 	     \
+  MvtxPrototype2Geom.cc 	     \
+  MvtxPrototype2UnpackPRDF.cc  \
+  MvtxPrototype2Clusterizer.cc \
+  MvtxStandaloneTracking.cc
 
 # Rule for generating table CINT dictionaries.
 %_Dict.C: %.h %LinkDef.h

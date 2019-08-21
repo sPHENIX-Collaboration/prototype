@@ -1,5 +1,5 @@
-#ifndef MVTX_ALPIDE_SEGMENTATION_H_
-#define MVTX_ALPIDE_SEGMENTATION_H_
+#ifndef MVTX_ALPIDE_SEGMENTATION_H
+#define MVTX_ALPIDE_SEGMENTATION_H
 
 #include <Math/GenVector/DisplacementVector3D.h>
 #include <Math/GenVector/PositionVector3D.h>

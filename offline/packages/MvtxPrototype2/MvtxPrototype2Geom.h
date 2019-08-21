@@ -1,5 +1,7 @@
-#ifndef MVTX_TB_SETUP_STAVE_GEOM_H_
-#define MVTX_TB_SETUP_STAVE_GEOM_H_
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef MVTX_TB_SETUP_STAVE_GEOM_H
+#define MVTX_TB_SETUP_STAVE_GEOM_H
 
 #define NMAXRU 2
 #define NMAXRUCHN 28

@@ -1,5 +1,7 @@
-#ifndef __MvtxPrototype2UnpackPRDFF__
-#define __MvtxPrototype2UnpackPRDFF__
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef MVTX_P2_UnpackPRDF_H
+#define MVTX_P2_UnpackPRDF_H
 
 #include "MvtxPrototype2Geom.h"
 

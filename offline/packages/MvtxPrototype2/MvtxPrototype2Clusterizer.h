@@ -1,5 +1,7 @@
-#ifndef MVTX_MVTXCLUSTERIZER_H
-#define MVTX_MVTXCLUSTERIZER_H
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef MVTX_P2_CLUSTERIZER_H
+#define MVTX_P2_CLUSTERIZER_H
 
 #include <fun4all/SubsysReco.h>
 #include <utility>
@@ -53,7 +55,7 @@ class MvtxPrototype2Clusterizer : public SubsysReco
 
   // node tree storage pointers
   TrkrHitSetContainer *m_hits;
-  TrkrClusterContainer *m_clusterlist; 
+  TrkrClusterContainer *m_clusterlist;
   TrkrClusterHitAssoc *m_clusterhitassoc;
 
   // settings

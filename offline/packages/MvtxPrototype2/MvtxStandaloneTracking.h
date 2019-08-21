@@ -1,5 +1,7 @@
-#ifndef __MvtxStandaloneTracking_h__
-#define __MvtxStandaloneTracking_h__
+// Tell emacs that this is a C++ source
+//  -*- C++ -*-.
+#ifndef MVTX_StandaloneTracking_H
+#define MVTX_StandaloneTracking_H
 
 #include <vector>
 #include <set>

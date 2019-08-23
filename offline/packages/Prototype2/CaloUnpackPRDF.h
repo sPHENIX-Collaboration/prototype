@@ -9,7 +9,7 @@
 #include <fun4all/SubsysReco.h>
 
 class Event;
-class Packet_hbd_fpgashort;
+class Packet;
 class PHCompositeNode;
 class RawTowerContainer;
 
@@ -30,7 +30,7 @@ class CaloUnpackPRDF : public SubsysReco
 
  private:
   Event *_event;
-  Packet_hbd_fpgashort *_packet;
+  Packet *_packet;
   int _nevents;
 
   // HCAL node

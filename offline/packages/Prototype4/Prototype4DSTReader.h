@@ -20,7 +20,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>  // for swap
 #include <vector>
 
 class PHCompositeNode;

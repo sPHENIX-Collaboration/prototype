@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="TPC_GasVol_00x40b6f90inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="-20" unit="cm"/>
+    <position name="TPC_FieldCage_10x4124cb0inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="-20" unit="cm"/>
+    <position name="TPC_EndCap_30x4124ed0inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="-40.250100000000003" unit="cm"/>
+    <position name="TPC_EndCap_50x4125120inWorldpos" x="-48.296291314453406" y="-12.940952255126001" z="0.25009999999999999" unit="cm"/>
+    <position name="GEM_00x40dc9a0inWorldpos" x="0" y="0" z="-20" unit="cm"/>
+    <rotation name="GEM_00x40dc9a0inWorldrot" x="0" y="-0" z="165" unit="deg"/>
+    <position name="GEM_10x40dcbe0inWorldpos" x="19.318516525781401" y="5.1763809020504201" z="-20" unit="cm"/>
+    <rotation name="GEM_10x40dcbe0inWorldrot" x="0" y="-0" z="165" unit="deg"/>
+    <position name="GEM_20x40dcda0inWorldpos" x="38.637033051562703" y="10.352761804100801" z="-20" unit="cm"/>
+    <rotation name="GEM_20x40dcda0inWorldrot" x="0" y="-0" z="165" unit="deg"/>
+  </define>
+  <materials>
+    <element name="CARBON_elm" formula="C" Z="6">
+      <atom unit="g/mole" value="12.0107"/>
+    </element>
+    <element name="FLUORINE_elm" formula="F" Z="9">
+      <atom unit="g/mole" value="18.998403199999998"/>
+    </element>
+    <element name="NEON_elm" formula="NE" Z="10">
+      <atom unit="g/mole" value="20.1797"/>
+    </element>
+    <material name="sPHENIX_TPC_Gas">
+      <D unit="g/cm3" value="0.0011266545000000001"/>
+      <fraction n="0.045062754303216934" ref="CARBON_elm"/>
+      <fraction n="0.28511831164360046" ref="FLUORINE_elm"/>
+      <fraction n="0.6698189377784729" ref="NEON_elm"/>
+    </material>
+    <element name="COPPER_elm" formula="CU" Z="29">
+      <atom unit="g/mole" value="63.545999999999999"/>
+    </element>
+    <material name="G4_Cu">
+      <D unit="g/cm3" value="8.9600000000000009"/>
+      <fraction n="1" ref="COPPER_elm"/>
+    </material>
+    <material name="G4_Al" Z="13">
+      <D unit="g/cm3" value="2.6989999999999998"/>
+      <atom unit="g/mole" value="26.9815"/>
+    </material>
+    <element name="ARGON_elm" formula="AR" Z="18">
+      <atom unit="g/mole" value="39.948"/>
+    </element>
+    <element name="OXYGEN_elm" formula="O" Z="8">
+      <atom unit="g/mole" value="15.9994"/>
+    </element>
+    <material name="ePHEINX_TPC_Gas">
+      <D unit="g/cm3" value="0.0018858200000000001"/>
+      <fraction n="0.70505565404891968" ref="ARGON_elm"/>
+      <fraction n="0.053580865263938904" ref="CARBON_elm"/>
+      <fraction n="0.17033961415290833" ref="FLUORINE_elm"/>
+      <fraction n="0.071023896336555481" ref="OXYGEN_elm"/>
+    </material>
+    <element name="NITROGEN_elm" formula="N" Z="7">
+      <atom unit="g/mole" value="14.006740000000001"/>
+    </element>
+    <material name="G4_AIR">
+      <D unit="g/cm3" value="0.0012047900000000001"/>
+      <fraction n="0.012827012687921524" ref="ARGON_elm"/>
+      <fraction n="0.0001240001292899251" ref="CARBON_elm"/>
+      <fraction n="0.75526773929595947" ref="NITROGEN_elm"/>
+      <fraction n="0.23178122937679291" ref="OXYGEN_elm"/>
+    </material>
+  </materials>
+  <solids>
+    <tube name="World" rmin="0" rmax="500" z="1000" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_GasVol_00x1" rmin="0" rmax="20" z="40" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_FieldCage_10x1" rmin="20.000100000000003" rmax="20.00357" z="40" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_EndCap_30x1" rmin="0" rmax="20" z="0.5" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="TPC_EndCap_50x1" rmin="0" rmax="20" z="0.5" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <box name="GEM_00x1" x="0.5" y="40" z="40" lunit="cm"/>
+    <box name="GEM_10x1" x="0.5" y="40" z="40" lunit="cm"/>
+    <box name="GEM_20x1" x="0.5" y="40" z="40" lunit="cm"/>
+  </solids>
+  <structure>
+    <volume name="TPC_GasVol_0">
+      <materialref ref="sPHENIX_TPC_Gas"/>
+      <solidref ref="TPC_GasVol_00x1"/>
+    </volume>
+    <volume name="TPC_FieldCage_1">
+      <materialref ref="G4_Cu"/>
+      <solidref ref="TPC_FieldCage_10x1"/>
+    </volume>
+    <volume name="TPC_EndCap_3">
+      <materialref ref="G4_Al"/>
+      <solidref ref="TPC_EndCap_30x1"/>
+    </volume>
+    <volume name="TPC_EndCap_5">
+      <materialref ref="G4_Al"/>
+      <solidref ref="TPC_EndCap_50x1"/>
+    </volume>
+    <volume name="GEM_0">
+      <materialref ref="ePHEINX_TPC_Gas"/>
+      <solidref ref="GEM_00x1"/>
+    </volume>
+    <volume name="GEM_1">
+      <materialref ref="ePHEINX_TPC_Gas"/>
+      <solidref ref="GEM_10x1"/>
+    </volume>
+    <volume name="GEM_2">
+      <materialref ref="ePHEINX_TPC_Gas"/>
+      <solidref ref="GEM_20x1"/>
+    </volume>
+    <volume name="World">
+      <materialref ref="G4_AIR"/>
+      <solidref ref="World"/>
+      <physvol name="TPC_GasVol_00x40b6f90" copynumber="0">
+        <volumeref ref="TPC_GasVol_0"/>
+        <positionref ref="TPC_GasVol_00x40b6f90inWorldpos"/>
+      </physvol>
+      <physvol name="TPC_FieldCage_10x4124cb0" copynumber="0">
+        <volumeref ref="TPC_FieldCage_1"/>
+        <positionref ref="TPC_FieldCage_10x4124cb0inWorldpos"/>
+      </physvol>
+      <physvol name="TPC_EndCap_30x4124ed0" copynumber="0">
+        <volumeref ref="TPC_EndCap_3"/>
+        <positionref ref="TPC_EndCap_30x4124ed0inWorldpos"/>
+      </physvol>
+      <physvol name="TPC_EndCap_50x4125120" copynumber="0">
+        <volumeref ref="TPC_EndCap_5"/>
+        <positionref ref="TPC_EndCap_50x4125120inWorldpos"/>
+      </physvol>
+      <physvol name="GEM_00x40dc9a0" copynumber="0">
+        <volumeref ref="GEM_0"/>
+        <positionref ref="GEM_00x40dc9a0inWorldpos"/>
+        <rotationref ref="GEM_00x40dc9a0inWorldrot"/>
+      </physvol>
+      <physvol name="GEM_10x40dcbe0" copynumber="0">
+        <volumeref ref="GEM_1"/>
+        <positionref ref="GEM_10x40dcbe0inWorldpos"/>
+        <rotationref ref="GEM_10x40dcbe0inWorldrot"/>
+      </physvol>
+      <physvol name="GEM_20x40dcda0" copynumber="0">
+        <volumeref ref="GEM_2"/>
+        <positionref ref="GEM_20x40dcda0inWorldpos"/>
+        <rotationref ref="GEM_20x40dcda0inWorldrot"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="default" version="1.0">
+    <world ref="World"/>
+  </setup>
+</gdml>

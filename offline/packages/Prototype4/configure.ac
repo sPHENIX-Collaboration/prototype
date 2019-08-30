@@ -7,7 +7,8 @@ LT_INIT([disable-static])
 
 case $CXX in
  clang++)
-  CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated-declarations -Werror"
+dnl boost accumulators
+ CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-deprecated-declarations"
  ;;
  g++)
   CXXFLAGS="$CXXFLAGS -Wall -Werror"

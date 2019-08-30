@@ -6,13 +6,15 @@ AC_PROG_CXX(g++)
 LT_INIT([disable-static])
 
 case $CXX in
- clang++)
-  CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated-declarations -Werror"
- ;;
- g++)
-  CXXFLAGS="$CXXFLAGS -Wall -Werror"
- ;;
+  clang++)
+# boost statistics
+  CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-deprecated-declarations"
+  ;;
+  g++)
+   CXXFLAGS="$CXXFLAGS -Wall -Werror"
+  ;;
 esac
+
 
 dnl test for root 6
 if test `root-config --version | awk '{print $1>=6.?"1":"0"}'` = 1; then

@@ -327,7 +327,7 @@ int Fun4All_G4_Prototype4(int nEvents = 1)
     RawTowerDigitizer *TowerDigitizer = new RawTowerDigitizer("EmcRawTowerDigitizerLG");
     TowerDigitizer->Detector("CEMC");
     TowerDigitizer->set_raw_tower_node_prefix("RAW_LG");
-    TowerDigitizer->set_digi_algorithm(RawTowerDigitizer::kSimple_photon_digitalization);
+    TowerDigitizer->set_digi_algorithm(RawTowerDigitizer::kSiPM_photon_digitization);
     TowerDigitizer->set_pedstal_central_ADC(0);
     TowerDigitizer->set_pedstal_width_ADC(1);  // From Jin's guess. No EMCal High Gain data yet! TODO: update
     TowerDigitizer->set_photonelec_ADC(1. / ADC_per_photoelectron_LG);

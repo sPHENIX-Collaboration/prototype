@@ -5,6 +5,9 @@ lib_LTLIBRARIES = \
     libg4caloprototype_io.la \
     libg4caloprototype.la
 
+#AM_CXXFLAGS = `geant4-config --cflags | sed s/-Woverloaded-virtual// | sed s/-W\ // | sed s/-Wshadow//`
+AM_CXXFLAGS = `geant4-config --cflags | sed s/-Woverloaded-virtual// | sed s/-W\ // | sed s/-Wshadow// `
+
 AM_CPPFLAGS = \
     -DCGAL_DISABLE_ROUNDING_MATH_CHECK \
     -I$(includedir) \

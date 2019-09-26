@@ -9,6 +9,6 @@ namespace PHG4PrototypeHcalDefs
 {
   // parameter names used in lookups by other modules
   static const std::string scipertwr = "n_scinti_plates_per_tower";
-};
+}
 
 #endif

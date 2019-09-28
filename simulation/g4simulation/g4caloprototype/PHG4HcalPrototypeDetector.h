@@ -21,6 +21,7 @@ class G4Material;
 class G4PVPlacement;
 class G4VPhysicalVolume;
 class PHCompositeNode;
+class PHG4Subsystem;
 class PHG4HcalPrototypeDetectorMessenger;
 
 class PHG4HcalPrototypeDetector: public PHG4Detector
@@ -29,14 +30,14 @@ class PHG4HcalPrototypeDetector: public PHG4Detector
   public:
 
   //! constructor
-  PHG4HcalPrototypeDetector( PHCompositeNode *Node, const std::string &dnam="HCAL", const int lyr = 0 );
+  PHG4HcalPrototypeDetector(PHG4Subsystem* subsys, PHCompositeNode *Node, const std::string &dnam, const int lyr = 0 );
 
   //! destructor
   virtual ~PHG4HcalPrototypeDetector( void )
   {}
 
   //! construct
-  virtual void Construct( G4LogicalVolume* world );
+  virtual void ConstructMe( G4LogicalVolume* world );
 
   //!@name volume accessors
   //@{

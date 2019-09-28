@@ -29,6 +29,7 @@
 #include <Geant4/G4VUserTrackInformation.hh>   // for G4VUserTrackInformation
 
 #include <iostream>
+#include <string>                              // for operator+, string, ope...
 
 class PHCompositeNode;
 

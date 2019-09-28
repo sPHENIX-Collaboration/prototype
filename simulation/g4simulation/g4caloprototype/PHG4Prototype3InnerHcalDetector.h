@@ -15,18 +15,19 @@ class G4AssemblyVolume;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class PHCompositeNode;
+class PHG4Subsystem;
 class PHParameters;
 
 class PHG4Prototype3InnerHcalDetector : public PHG4Detector
 {
  public:
   //! constructor
-  PHG4Prototype3InnerHcalDetector(PHCompositeNode *Node, PHParameters *parameters, const std::string &dnam);
+  PHG4Prototype3InnerHcalDetector(PHG4Subsystem* subsys, PHCompositeNode *Node, PHParameters *parameters, const std::string &dnam);
 
   //! destructor
   virtual ~PHG4Prototype3InnerHcalDetector();
   //! construct method called by G4
-  void Construct(G4LogicalVolume *world);
+  void ConstructMe(G4LogicalVolume *world);
 
   //! print detector info
   void Print(const std::string &what = "ALL") const;

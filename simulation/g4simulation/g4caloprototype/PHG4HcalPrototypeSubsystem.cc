@@ -6,7 +6,9 @@
 #include "PHG4HcalPrototypeSteppingAction.h"
 
 #include <g4detectors/PHG4EventActionClearZeroEdep.h>
+
 #include <g4main/PHG4HitContainer.h>
+#include <g4main/PHG4Subsystem.h>                      // for PHG4Subsystem
 
 #include <phool/PHCompositeNode.h>
 #include <phool/PHIODataNode.h>               // for PHIODataNode
@@ -57,7 +59,7 @@ int PHG4HcalPrototypeSubsystem::Init( PHCompositeNode* topNode )
   PHCompositeNode *dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST" ));
 
   // create detector
-  detector_ = new PHG4HcalPrototypeDetector(topNode, Name(), layer);
+  detector_ = new PHG4HcalPrototypeDetector(this, topNode, Name(), layer);
   detector_->SetYRot(rot_in_y);
   detector_->SetZRot(rot_in_z);
   detector_->SetActive(active);

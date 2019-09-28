@@ -5,6 +5,8 @@
 
 #include <phparameter/PHParameters.h>
 
+#include <g4detectors/PHG4DetectorSubsystem.h>      // for PHG4DetectorSubsy...
+
 #include <g4main/PHG4HitContainer.h>
 #include <g4main/PHG4SteppingAction.h>              // for PHG4SteppingAction
 
@@ -42,7 +44,7 @@ int PHG4Prototype2InnerHcalSubsystem::InitRunSubsystem(PHCompositeNode *topNode)
   PHCompositeNode *dstNode = dynamic_cast<PHCompositeNode *>(iter.findFirst("PHCompositeNode", "DST"));
 
   // create detector
-  m_Detector = new PHG4Prototype2InnerHcalDetector(topNode, GetParams(), Name());
+  m_Detector = new PHG4Prototype2InnerHcalDetector(this, topNode, GetParams(), Name());
   m_Detector->SuperDetector(SuperDetector());
   m_Detector->OverlapCheck(CheckOverlap());
   set<string> nodes;

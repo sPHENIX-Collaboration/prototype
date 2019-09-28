@@ -20,6 +20,7 @@
 #include <Geant4/G4NistManager.hh>
 #include <Geant4/G4RotationMatrix.hh>            // for G4RotationMatrix
 #include <Geant4/G4RunManager.hh>
+#include <Geant4/G4String.hh>                    // for G4String
 #include <Geant4/G4SystemOfUnits.hh>             // for cm, mm, deg, rad
 #include <Geant4/G4ThreeVector.hh>               // for G4ThreeVector
 #include <Geant4/G4Transform3D.hh>               // for G4Transform3D
@@ -35,8 +36,8 @@ using namespace std;
 
 // static double no_overlap = 0.00015 * cm; // added safety margin against overlaps by using same boundary between volumes
 
-PHG4HcalPrototypeDetector::PHG4HcalPrototypeDetector( PHCompositeNode *Node, const std::string &dnam, const int lyr  ):
-  PHG4Detector(Node, dnam),
+PHG4HcalPrototypeDetector::PHG4HcalPrototypeDetector(PHG4Subsystem* subsys, PHCompositeNode *Node, const std::string &dnam, const int lyr  ):
+  PHG4Detector(subsys, Node, dnam),
   nScint360(15),  // This is legacy variable in case one wants to build a cylindrical calorimeter 
   nHcal1Layers(16),
   nHcal2Layers(nHcal1Layers),
@@ -103,7 +104,7 @@ PHG4HcalPrototypeDetector::IsInHcalPrototype(G4VPhysicalVolume * volume) const
   return 0;  // not sure what value to return for now.
 }
 
-void PHG4HcalPrototypeDetector::Construct( G4LogicalVolume* world )
+void PHG4HcalPrototypeDetector::ConstructMe( G4LogicalVolume* world )
 {
   logicWorld = world;
 

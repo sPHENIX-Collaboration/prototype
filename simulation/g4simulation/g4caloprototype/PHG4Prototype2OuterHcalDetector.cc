@@ -35,8 +35,8 @@ using namespace std;
 static const string scintimothername = "OuterHcalScintiMother";
 static const string steelplatename = "OuterHcalSteelPlate";
 
-PHG4Prototype2OuterHcalDetector::PHG4Prototype2OuterHcalDetector(PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam)
-  : PHG4Detector(Node, dnam)
+PHG4Prototype2OuterHcalDetector::PHG4Prototype2OuterHcalDetector(PHG4Subsystem* subsys, PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam)
+  : PHG4Detector(subsys, Node, dnam)
   , m_Params(parameters)
   , m_OuterHcalSteelPlate(nullptr)
   , m_OuterHcalAssembly(nullptr)
@@ -390,7 +390,7 @@ PHG4Prototype2OuterHcalDetector::ConstructScintiTile12(G4LogicalVolume* hcalenve
 
 // Construct the envelope and the call the
 // actual outer hcal construction
-void PHG4Prototype2OuterHcalDetector::Construct(G4LogicalVolume* logicWorld)
+void PHG4Prototype2OuterHcalDetector::ConstructMe(G4LogicalVolume* logicWorld)
 {
   G4ThreeVector g4vec(m_Params->get_double_param("place_x") * cm,
                       m_Params->get_double_param("place_y") * cm,

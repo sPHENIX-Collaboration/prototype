@@ -38,8 +38,8 @@ using namespace std;
 static const string scintimothername = "InnerHcalScintiMother";
 static const string steelplatename = "InnerHcalSteelPlate";
 
-PHG4Prototype3InnerHcalDetector::PHG4Prototype3InnerHcalDetector(PHCompositeNode *Node, PHParameters *parameters, const std::string &dnam)
-  : PHG4Detector(Node, dnam)
+PHG4Prototype3InnerHcalDetector::PHG4Prototype3InnerHcalDetector(PHG4Subsystem* subsys, PHCompositeNode *Node, PHParameters *parameters, const std::string &dnam)
+  : PHG4Detector(subsys, Node, dnam)
   , m_params(parameters)
   , m_InnerHcalSteelPlate(nullptr)
   , m_InnerHcalAssembly(nullptr)
@@ -298,7 +298,7 @@ PHG4Prototype3InnerHcalDetector::ConstructScintiTile12(G4LogicalVolume *hcalenve
 
 // Construct the envelope and the call the
 // actual inner hcal construction
-void PHG4Prototype3InnerHcalDetector::Construct(G4LogicalVolume *logicWorld)
+void PHG4Prototype3InnerHcalDetector::ConstructMe(G4LogicalVolume *logicWorld)
 {
   G4ThreeVector g4vec(m_params->get_double_param("place_x") * cm,
                       m_params->get_double_param("place_y") * cm,

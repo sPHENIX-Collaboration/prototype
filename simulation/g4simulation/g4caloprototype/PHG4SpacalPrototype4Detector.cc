@@ -2,9 +2,11 @@
 
 #include <g4detectors/PHG4CylinderGeomContainer.h>
 #include <g4detectors/PHG4CylinderGeom_Spacalv1.h>  // for PHG4CylinderGeom_Spacalv1:...
+#include <g4detectors/PHG4CylinderGeom_Spacalv3.h>  // for PHG4CylinderGeom_...
 
 #include <phparameter/PHParameters.h>
 
+#include <g4main/PHG4Detector.h>                    // for PHG4Detector
 #include <g4main/PHG4Utils.h>
 
 #include <phool/PHCompositeNode.h>
@@ -15,6 +17,7 @@
 #include <phool/getClass.h>
 
 #include <Geant4/G4Box.hh>
+#include <Geant4/G4Colour.hh>                       // for G4Colour
 #include <Geant4/G4DisplacedSolid.hh>
 #include <Geant4/G4LogicalVolume.hh>
 #include <Geant4/G4Material.hh>
@@ -37,10 +40,14 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstdlib>                                 // for exit
 #include <iostream>  // for operator<<, basic_ostream
+#include <limits>                                   // for numeric_limits
+#include <memory>                                   // for allocator_traits<...
 #include <numeric>   // std::accumulate
 #include <sstream>
 #include <string>  // std::string, std::to_string
+#include <vector>                                   // for vector
 
 class PHG4CylinderGeom;
 
@@ -48,8 +55,8 @@ using namespace std;
 
 //_______________________________________________________________
 //note this inactive thickness is ~1.5% of a radiation length
-PHG4SpacalPrototype4Detector::PHG4SpacalPrototype4Detector(PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam)
-  : PHG4Detector(Node, dnam)
+PHG4SpacalPrototype4Detector::PHG4SpacalPrototype4Detector(PHG4Subsystem* subsys, PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam)
+  : PHG4Detector(subsys, Node, dnam)
   , construction_params(parameters)
   , cylinder_solid(nullptr)
   , cylinder_logic(nullptr)
@@ -104,7 +111,7 @@ int PHG4SpacalPrototype4Detector::IsInCylinderActive(
 }
 
 //_______________________________________________________________
-void PHG4SpacalPrototype4Detector::Construct(G4LogicalVolume* logicWorld)
+void PHG4SpacalPrototype4Detector::ConstructMe(G4LogicalVolume* logicWorld)
 {
   PHNodeIterator iter(topNode());
   PHCompositeNode* parNode = dynamic_cast<PHCompositeNode*>(iter.findFirst(

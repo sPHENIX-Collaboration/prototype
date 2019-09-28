@@ -6,6 +6,8 @@
 
 #include <phparameter/PHParameters.h>
 
+#include <g4detectors/PHG4DetectorSubsystem.h>  // for PHG4DetectorSubsystem
+
 #include <g4main/PHG4HitContainer.h>
 #include <g4main/PHG4SteppingAction.h>          // for PHG4SteppingAction
 
@@ -43,7 +45,7 @@ PHG4SpacalPrototypeSubsystem::InitRunSubsystem(PHCompositeNode* topNode)
     cout
         << "PHG4SpacalPrototypeSubsystem::InitRun - use PHG4SpacalPrototypeDetector"
         << endl;
-  detector_ = new PHG4SpacalPrototypeDetector(topNode, GetParams(), Name());
+  detector_ = new PHG4SpacalPrototypeDetector(this, topNode, GetParams(), Name());
 
   detector_->SetActive(GetParams()->get_int_param("active"));
   detector_->SetAbsorberActive(GetParams()->get_int_param("absorberactive"));

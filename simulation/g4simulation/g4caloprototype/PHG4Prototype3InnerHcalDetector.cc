@@ -2,7 +2,7 @@
 
 #include <phparameter/PHParameters.h>
 
-#include <g4main/PHG4Detector.h>                   // for PHG4Detector
+#include <g4main/PHG4Detector.h>  // for PHG4Detector
 #include <g4main/PHG4Units.h>
 
 #include <TSystem.h>
@@ -14,22 +14,22 @@
 #include <Geant4/G4LogicalVolume.hh>
 #include <Geant4/G4Material.hh>
 #include <Geant4/G4PVPlacement.hh>
-#include <Geant4/G4RotationMatrix.hh>              // for G4RotationMatrix
-#include <Geant4/G4String.hh>                      // for G4String
-#include <Geant4/G4SystemOfUnits.hh>               // for mm, deg, cm, cm3, rad
-#include <Geant4/G4ThreeVector.hh>                 // for G4ThreeVector
+#include <Geant4/G4RotationMatrix.hh>  // for G4RotationMatrix
+#include <Geant4/G4String.hh>          // for G4String
+#include <Geant4/G4SystemOfUnits.hh>   // for mm, deg, cm, cm3, rad
+#include <Geant4/G4ThreeVector.hh>     // for G4ThreeVector
 #include <Geant4/G4TwoVector.hh>
+#include <Geant4/G4VPhysicalVolume.hh>  // for G4VPhysicalVolume
+#include <Geant4/G4VSolid.hh>           // for G4VSolid
 #include <Geant4/G4VisAttributes.hh>
-#include <Geant4/G4VPhysicalVolume.hh>             // for G4VPhysicalVolume
-#include <Geant4/G4VSolid.hh>                      // for G4VSolid
 
 #include <boost/format.hpp>
 
 #include <cmath>
-#include <iostream>                                // for operator<<, endl
+#include <iostream>  // for operator<<, endl
 #include <sstream>
-#include <utility>                                 // for pair, make_pair
-#include <vector>                                  // for vector, vector<>::...
+#include <utility>  // for pair, make_pair
+#include <vector>   // for vector, vector<>::...
 
 class PHCompositeNode;
 
@@ -38,7 +38,7 @@ using namespace std;
 static const string scintimothername = "InnerHcalScintiMother";
 static const string steelplatename = "InnerHcalSteelPlate";
 
-PHG4Prototype3InnerHcalDetector::PHG4Prototype3InnerHcalDetector(PHG4Subsystem* subsys, PHCompositeNode *Node, PHParameters *parameters, const std::string &dnam)
+PHG4Prototype3InnerHcalDetector::PHG4Prototype3InnerHcalDetector(PHG4Subsystem *subsys, PHCompositeNode *Node, PHParameters *parameters, const std::string &dnam)
   : PHG4Detector(subsys, Node, dnam)
   , m_params(parameters)
   , m_InnerHcalSteelPlate(nullptr)
@@ -94,7 +94,7 @@ PHG4Prototype3InnerHcalDetector::PHG4Prototype3InnerHcalDetector(PHG4Subsystem* 
   , m_AbsorberActive(m_params->get_int_param("absorberactive"))
   , m_Layer(0)
 {
-// patch to get the upper steel plate location right within less than a mm
+  // patch to get the upper steel plate location right within less than a mm
   m_DeltaPhi += 0.00125 * m_DeltaPhi;
 }
 
@@ -310,39 +310,39 @@ void PHG4Prototype3InnerHcalDetector::ConstructMe(G4LogicalVolume *logicWorld)
   m_InnerHcalAssembly = new G4AssemblyVolume();
   ConstructInnerHcal(logicWorld);
   m_InnerHcalAssembly->MakeImprint(logicWorld, g4vec, &Rot, 0, OverlapCheck());
-// this is rather pathetic - there is no way to extract the name when a volume is added
-// to the assembly. The only thing we can do is get an iterator over the placed volumes
-// in the order in which they were placed. Since this code does not install the scintillators
-// for the Al version, parsing the volume names to get the id does not work since it changes
-// So now we loop over all volumes and store them in a map for fast lookup of the row
+  // this is rather pathetic - there is no way to extract the name when a volume is added
+  // to the assembly. The only thing we can do is get an iterator over the placed volumes
+  // in the order in which they were placed. Since this code does not install the scintillators
+  // for the Al version, parsing the volume names to get the id does not work since it changes
+  // So now we loop over all volumes and store them in a map for fast lookup of the row
   int isteel = 0;
   int iscinti = 0;
-  vector<G4VPhysicalVolume*>::iterator it = m_InnerHcalAssembly->GetVolumesIterator();
-  for (unsigned int i=0; i<m_InnerHcalAssembly-> TotalImprintedVolumes();i++)
+  vector<G4VPhysicalVolume *>::iterator it = m_InnerHcalAssembly->GetVolumesIterator();
+  for (unsigned int i = 0; i < m_InnerHcalAssembly->TotalImprintedVolumes(); i++)
   {
     string volname = (*it)->GetName();
     if (volname.find(steelplatename) != string::npos)
-    { 
-      m_SteelPlateIdMap.insert(make_pair(volname,isteel));
+    {
+      m_SteelPlateIdMap.insert(make_pair(volname, isteel));
       ++isteel;
     }
     else if (volname.find(scintimothername) != string::npos)
     {
-      m_ScintillatorIdMap.insert(make_pair(volname,iscinti));
+      m_ScintillatorIdMap.insert(make_pair(volname, iscinti));
       ++iscinti;
     }
     ++it;
   }
-// print out volume names and their assigned id
-   // map<string,int>::const_iterator iter;
-   // for (iter = m_SteelPlateIdMap.begin(); iter != m_SteelPlateIdMap.end(); ++iter)
-   // {
-   //   cout << iter->first << ", " << iter->second << endl;
-   // }
-   // for (iter = m_ScintillatorIdMap.begin(); iter != m_ScintillatorIdMap.end(); ++iter)
-   // {
-   //   cout << iter->first << ", " << iter->second << endl;
-   // }
+  // print out volume names and their assigned id
+  // map<string,int>::const_iterator iter;
+  // for (iter = m_SteelPlateIdMap.begin(); iter != m_SteelPlateIdMap.end(); ++iter)
+  // {
+  //   cout << iter->first << ", " << iter->second << endl;
+  // }
+  // for (iter = m_ScintillatorIdMap.begin(); iter != m_ScintillatorIdMap.end(); ++iter)
+  // {
+  //   cout << iter->first << ", " << iter->second << endl;
+  // }
   return;
 }
 
@@ -425,7 +425,7 @@ void PHG4Prototype3InnerHcalDetector::Print(const string &what) const
 
 int PHG4Prototype3InnerHcalDetector::get_scinti_row_id(const string &volname)
 {
-  int id=-9999;
+  int id = -9999;
   auto it = m_ScintillatorIdMap.find(volname);
   if (it != m_ScintillatorIdMap.end())
   {
@@ -441,7 +441,7 @@ int PHG4Prototype3InnerHcalDetector::get_scinti_row_id(const string &volname)
 
 int PHG4Prototype3InnerHcalDetector::get_steel_plate_id(const string &volname)
 {
-  int id=-9999;
+  int id = -9999;
   auto it = m_SteelPlateIdMap.find(volname);
   if (it != m_SteelPlateIdMap.end())
   {

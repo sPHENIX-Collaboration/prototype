@@ -8,11 +8,11 @@
 
 #include <g4main/PHG4Detector.h>
 
-#include <Geant4/G4Types.hh>
 #include <Geant4/G4Transform3D.hh>
+#include <Geant4/G4Types.hh>
 
 #include <map>
-#include <string>                       // for string
+#include <string>  // for string
 #include <utility>
 
 class G4LogicalVolume;
@@ -25,36 +25,33 @@ class PHParameters;
 
 class PHG4SpacalPrototypeDetector : public PHG4Detector
 {
-
-public:
+ public:
   typedef PHG4CylinderGeom_Spacalv3 SpacalGeom_t;
 
-  PHG4SpacalPrototypeDetector(PHG4Subsystem* subsys, PHCompositeNode* Node, PHParameters *parameters, const std::string& dnam);
+  PHG4SpacalPrototypeDetector(PHG4Subsystem* subsys, PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam);
 
-  virtual
-  ~PHG4SpacalPrototypeDetector(void);
+  virtual ~PHG4SpacalPrototypeDetector(void);
 
   virtual void
   ConstructMe(G4LogicalVolume* world);
 
-  virtual std::pair<G4LogicalVolume *, G4Transform3D>
+  virtual std::pair<G4LogicalVolume*, G4Transform3D>
   Construct_AzimuthalSeg();
 
   //! a block along z axis built with G4Trd that is slightly tapered in x dimension
   virtual G4LogicalVolume*
-  Construct_Tower(const SpacalGeom_t::geom_tower & tower);
+  Construct_Tower(const SpacalGeom_t::geom_tower& tower);
   //! a block for the light guide along z axis that fit to the tower
   virtual G4LogicalVolume*
-  Construct_LightGuide(const SpacalGeom_t::geom_tower & tower, const int index_x, const int index_y);
+  Construct_LightGuide(const SpacalGeom_t::geom_tower& tower, const int index_x, const int index_y);
 
   //! Fully projective spacal with 2D tapered modules. To speed up construction, same-length fiber is used cross one tower
   virtual int
   Construct_Fibers_SameLengthFiberPerTower(
-      const SpacalGeom_t::geom_tower & tower, G4LogicalVolume* LV_tower);
+      const SpacalGeom_t::geom_tower& tower, G4LogicalVolume* LV_tower);
 
-  virtual
-  G4LogicalVolume *
-  Construct_Fiber(const G4double length, const std::string & id);
+  virtual G4LogicalVolume*
+  Construct_Fiber(const G4double length, const std::string& id);
 
   void
   SetActive(const int i = 1)
@@ -74,8 +71,7 @@ public:
     detector_type = typ;
   }
 
-  int
-  IsInCylinderActive(const G4VPhysicalVolume*);
+  int IsInCylinderActive(const G4VPhysicalVolume*);
 
   void
   SuperDetector(const std::string& name)
@@ -92,7 +88,7 @@ public:
   virtual void
   Print(const std::string& what = "ALL") const;
 
-  const SpacalGeom_t *
+  const SpacalGeom_t*
   get_geom() const
   {
     return _geom;
@@ -107,9 +103,8 @@ public:
     INACTIVE = -100
   };
 
-protected:
-
-  PHParameters *construction_params;
+ protected:
+  PHParameters* construction_params;
 
   G4VSolid* cylinder_solid;
   G4LogicalVolume* cylinder_logic;
@@ -130,13 +125,12 @@ protected:
   std::string detector_type;
   std::string superdetector;
 
-  G4UserLimits * step_limits;
-  G4UserLimits * clading_step_limits;
-  G4UserLimits * fiber_core_step_limits;
+  G4UserLimits* step_limits;
+  G4UserLimits* clading_step_limits;
+  G4UserLimits* fiber_core_step_limits;
 
-private:
-  SpacalGeom_t * _geom;
-
+ private:
+  SpacalGeom_t* _geom;
 };
 
 #endif

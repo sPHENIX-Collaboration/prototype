@@ -2,7 +2,7 @@
 
 #include <phparameter/PHParameters.h>
 
-#include <g4main/PHG4Detector.h>                   // for PHG4Detector
+#include <g4main/PHG4Detector.h>  // for PHG4Detector
 
 #include <Geant4/G4AssemblyVolume.hh>
 #include <Geant4/G4Box.hh>
@@ -11,22 +11,22 @@
 #include <Geant4/G4LogicalVolume.hh>
 #include <Geant4/G4Material.hh>
 #include <Geant4/G4PVPlacement.hh>
-#include <Geant4/G4RotationMatrix.hh>              // for G4RotationMatrix
-#include <Geant4/G4String.hh>                      // for G4String
+#include <Geant4/G4RotationMatrix.hh>  // for G4RotationMatrix
+#include <Geant4/G4String.hh>          // for G4String
 #include <Geant4/G4SystemOfUnits.hh>
-#include <Geant4/G4ThreeVector.hh>                 // for G4ThreeVector
+#include <Geant4/G4ThreeVector.hh>  // for G4ThreeVector
 #include <Geant4/G4TwoVector.hh>
+#include <Geant4/G4VPhysicalVolume.hh>  // for G4VPhysicalVolume
+#include <Geant4/G4VSolid.hh>           // for G4VSolid
 #include <Geant4/G4VisAttributes.hh>
-#include <Geant4/G4VPhysicalVolume.hh>             // for G4VPhysicalVolume
-#include <Geant4/G4VSolid.hh>                      // for G4VSolid
 
 #include <boost/format.hpp>
 
 #include <cmath>
-#include <iostream>                                // for operator<<, endl
+#include <iostream>  // for operator<<, endl
 #include <sstream>
-#include <utility>                                 // for pair, make_pair
-#include <vector>                                  // for vector, vector<>::...
+#include <utility>  // for pair, make_pair
+#include <vector>   // for vector, vector<>::...
 
 class PHCompositeNode;
 

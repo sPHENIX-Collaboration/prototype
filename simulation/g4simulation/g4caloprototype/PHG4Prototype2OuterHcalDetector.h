@@ -9,7 +9,7 @@
 
 #include <map>
 #include <set>
-#include <string>                 // for string
+#include <string>  // for string
 
 class G4AssemblyVolume;
 class G4LogicalVolume;

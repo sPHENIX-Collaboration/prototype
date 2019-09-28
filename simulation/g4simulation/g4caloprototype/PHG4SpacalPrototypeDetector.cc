@@ -43,7 +43,7 @@
 #include <numeric>   // std::accumulate
 #include <sstream>
 #include <string>  // std::string, std::to_string
-#include <vector>                                   // for vector
+#include <vector>  // for vector
 
 class PHG4CylinderGeom;
 

@@ -3,8 +3,8 @@
 #include "PROTOTYPE2_FEM.h"
 #include "RawTower_Prototype2.h"
 
+#include <calobase/RawTower.h>           // for RawTower
 #include <calobase/RawTowerDefs.h>  // for NONE
-
 #include <calobase/RawTowerContainer.h>
 
 #include <fun4all/Fun4AllBase.h>  // for Fun4AllBase::VERBOSITY_SOME

@@ -3,9 +3,9 @@
 #include "PROTOTYPE2_FEM.h"
 #include "RawTower_Prototype2.h"
 
-#include <calobase/RawTowerDefs.h>  // for NONE
-
+#include <calobase/RawTower.h>  // for RawTower
 #include <calobase/RawTowerContainer.h>
+#include <calobase/RawTowerDefs.h>  // for NONE
 
 #include <fun4all/Fun4AllBase.h>  // for Fun4AllBase::VERBOSITY_SOME
 #include <fun4all/Fun4AllReturnCodes.h>
@@ -69,7 +69,7 @@ int GenericUnpackPRDF::process_event(PHCompositeNode *topNode)
 
     if (packet_list.find(packet_id) == packet_list.end())
     {
-      packet_list[packet_id] =_event->getPacket(packet_id);
+      packet_list[packet_id] = _event->getPacket(packet_id);
     }
 
     Packet *packet = packet_list[packet_id];

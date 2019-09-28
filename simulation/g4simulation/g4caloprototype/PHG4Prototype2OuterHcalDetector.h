@@ -9,25 +9,26 @@
 
 #include <map>
 #include <set>
-#include <string>                 // for string
+#include <string>  // for string
 
 class G4AssemblyVolume;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class PHCompositeNode;
+class PHG4Subsystem;
 class PHParameters;
 
 class PHG4Prototype2OuterHcalDetector : public PHG4Detector
 {
  public:
   //! constructor
-  PHG4Prototype2OuterHcalDetector(PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam);
+  PHG4Prototype2OuterHcalDetector(PHG4Subsystem* subsys, PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam);
 
   //! destructor
   virtual ~PHG4Prototype2OuterHcalDetector();
 
   //! construct
-  virtual void Construct(G4LogicalVolume* world);
+  virtual void ConstructMe(G4LogicalVolume* world);
 
   virtual void Print(const std::string& what = "ALL") const;
 

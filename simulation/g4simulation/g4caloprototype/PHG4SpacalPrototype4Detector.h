@@ -20,6 +20,7 @@ class G4UserLimits;
 class G4VPhysicalVolume;
 class G4VSolid;
 class PHCompositeNode;
+class PHG4Subsystem;
 class PHParameters;
 
 class PHG4SpacalPrototype4Detector : public PHG4Detector
@@ -27,12 +28,12 @@ class PHG4SpacalPrototype4Detector : public PHG4Detector
  public:
   typedef PHG4CylinderGeom_Spacalv3 SpacalGeom_t;
 
-  PHG4SpacalPrototype4Detector(PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam);
+  PHG4SpacalPrototype4Detector(PHG4Subsystem* subsys, PHCompositeNode* Node, PHParameters* parameters, const std::string& dnam);
 
   virtual ~PHG4SpacalPrototype4Detector(void);
 
   virtual void
-  Construct(G4LogicalVolume* world);
+  ConstructMe(G4LogicalVolume* world);
 
   virtual std::pair<G4LogicalVolume*, G4Transform3D>
   Construct_AzimuthalSeg();

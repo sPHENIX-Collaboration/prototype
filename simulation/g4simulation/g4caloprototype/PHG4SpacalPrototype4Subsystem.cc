@@ -41,7 +41,7 @@ int PHG4SpacalPrototype4Subsystem::InitRunSubsystem(PHCompositeNode* topNode)
     cout
         << "PHG4SpacalPrototype4Subsystem::InitRun - use PHG4SpacalPrototype4Detector"
         << endl;
-  detector_ = new PHG4SpacalPrototype4Detector(topNode, GetParams(), Name());
+  detector_ = new PHG4SpacalPrototype4Detector(this, topNode, GetParams(), Name());
 
   detector_->SetActive(GetParams()->get_int_param("active"));
   detector_->SetAbsorberActive(GetParams()->get_int_param("absorberactive"));

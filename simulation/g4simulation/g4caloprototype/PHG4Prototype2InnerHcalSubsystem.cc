@@ -5,20 +5,22 @@
 
 #include <phparameter/PHParameters.h>
 
+#include <g4detectors/PHG4DetectorSubsystem.h>  // for PHG4DetectorSubsy...
+
 #include <g4main/PHG4HitContainer.h>
-#include <g4main/PHG4SteppingAction.h>              // for PHG4SteppingAction
+#include <g4main/PHG4SteppingAction.h>  // for PHG4SteppingAction
 
 #include <phool/PHCompositeNode.h>
-#include <phool/PHIODataNode.h>                     // for PHIODataNode
-#include <phool/PHNode.h>                           // for PHNode
-#include <phool/PHNodeIterator.h>                   // for PHNodeIterator
-#include <phool/PHObject.h>                         // for PHObject
+#include <phool/PHIODataNode.h>    // for PHIODataNode
+#include <phool/PHNode.h>          // for PHNode
+#include <phool/PHNodeIterator.h>  // for PHNodeIterator
+#include <phool/PHObject.h>        // for PHObject
 #include <phool/getClass.h>
 
 #include <boost/foreach.hpp>
 
-#include <cmath>                                   // for NAN
-#include <iostream>                                 // for operator<<, basic...
+#include <cmath>     // for NAN
+#include <iostream>  // for operator<<, basic...
 #include <set>
 #include <sstream>
 
@@ -42,7 +44,7 @@ int PHG4Prototype2InnerHcalSubsystem::InitRunSubsystem(PHCompositeNode *topNode)
   PHCompositeNode *dstNode = dynamic_cast<PHCompositeNode *>(iter.findFirst("PHCompositeNode", "DST"));
 
   // create detector
-  m_Detector = new PHG4Prototype2InnerHcalDetector(topNode, GetParams(), Name());
+  m_Detector = new PHG4Prototype2InnerHcalDetector(this, topNode, GetParams(), Name());
   m_Detector->SuperDetector(SuperDetector());
   m_Detector->OverlapCheck(CheckOverlap());
   set<string> nodes;

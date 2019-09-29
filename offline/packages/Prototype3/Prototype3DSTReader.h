@@ -76,7 +76,7 @@ class Prototype3DSTReader : public SubsysReco
 
   int nblocks;
 
-#ifndef __CINT__
+#if !defined(__CINT__) || defined(__CLING__)
 
   typedef std::shared_ptr<TClonesArray> arr_ptr;
 

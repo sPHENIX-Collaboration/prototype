@@ -3,33 +3,16 @@
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
-#include <fun4all/Fun4AllPrdfInputManager.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/SubsysReco.h>
 
-#include <fun4all/Fun4AllServer.h>
-
-#include <g4eval/SvtxEvaluator.h>
-#include <g4eval/TrkrEvaluator.h>
+#include <fun4allraw/Fun4AllPrdfInputManager.h>
 
 #include <g4detectors/PHG4BlockSubsystem.h>
-#include <g4main/PHG4Reco.h>
-#include <phgeom/PHGeomFileImport.h>
-
-#include <g4tpc/PHG4TpcDigitizer.h>
-#include <g4tpc/PHG4TpcElectronDrift.h>
-#include <g4tpc/PHG4TpcPadPlane.h>
-#include <g4tpc/PHG4TpcPadPlaneReadout.h>
-#include <g4tpc/PHG4TpcSubsystem.h>
-#include <trackreco/PHGenFitTrkFitter.h>
-#include <trackreco/PHGenFitTrkProp.h>
-#include <trackreco/PHHoughSeeding.h>
-#include <trackreco/PHInitVertexing.h>
-#include <trackreco/PHTrackSeeding.h>
-#include <trackreco/PHTruthTrackSeeding.h>
-#include <trackreco/PHTruthVertexing.h>
 
 #include <g4eval/PHG4DSTReader.h>
+#include <g4eval/SvtxEvaluator.h>
+#include <g4eval/TrkrEvaluator.h>
 
 #include <g4histos/G4HitNtuple.h>
 
@@ -39,6 +22,14 @@
 #include <g4main/PHG4SimpleEventGenerator.h>
 #include <g4main/PHG4TruthSubsystem.h>
 
+#include <g4tpc/PHG4TpcDigitizer.h>
+#include <g4tpc/PHG4TpcElectronDrift.h>
+#include <g4tpc/PHG4TpcPadPlane.h>
+#include <g4tpc/PHG4TpcPadPlaneReadout.h>
+#include <g4tpc/PHG4TpcSubsystem.h>
+
+#include <phgeom/PHGeomFileImport.h>
+
 #include <phool/recoConsts.h>
 
 #include <tpc2019/TpcPrototypeClusterizer.h>
@@ -46,7 +37,15 @@
 #include <tpc2019/TpcPrototypeGenFitTrkFitter.h>
 #include <tpc2019/TpcPrototypeUnpacker.h>
 
-R__LOAD_LIBRARY(libfun4all.so)
+#include <trackreco/PHGenFitTrkFitter.h>
+#include <trackreco/PHGenFitTrkProp.h>
+#include <trackreco/PHHoughSeeding.h>
+#include <trackreco/PHInitVertexing.h>
+#include <trackreco/PHTrackSeeding.h>
+#include <trackreco/PHTruthTrackSeeding.h>
+#include <trackreco/PHTruthVertexing.h>
+
+R__LOAD_LIBRARY(libfun4allraw.so)
 R__LOAD_LIBRARY(libg4tpc.so)
 R__LOAD_LIBRARY(libintt.so)
 R__LOAD_LIBRARY(libmvtx.so)

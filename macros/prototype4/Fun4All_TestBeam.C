@@ -2,7 +2,8 @@
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllInputManager.h>
-#include <fun4all/Fun4AllPrdfInputManager.h>
+
+#include <fun4allraw/Fun4AllPrdfInputManager.h>
 
 #include <phool/recoConsts.h>
 
@@ -15,6 +16,7 @@
 #include <prototype4/RunInfoUnpackPRDF.h>
 #include <prototype4/TempInfoUnpackPRDF.h>
 
+R__LOAD_LIBRARY(libfun4allraw.so)
 R__LOAD_LIBRARY(libPrototype4.so)
 #endif
 

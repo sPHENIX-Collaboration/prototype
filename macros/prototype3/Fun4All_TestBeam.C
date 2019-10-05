@@ -16,7 +16,7 @@
 #include <prototype3/RunInfoUnpackPRDF.h>
 #include <prototype3/TempInfoUnpackPRDF.h>
 
-R__LOAD_LIBRARY(libfun4all_raw.so)
+R__LOAD_LIBRARY(libfun4allraw.so)
 R__LOAD_LIBRARY(libPrototype3.so)
 #endif
 

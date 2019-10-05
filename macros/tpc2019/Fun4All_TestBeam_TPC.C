@@ -45,8 +45,7 @@
 #include <trackreco/PHTruthTrackSeeding.h>
 #include <trackreco/PHTruthVertexing.h>
 
-R__LOAD_LIBRARY(libfun4all.so)
-R__LOAD_LIBRARY(libfun4all_raw.so)
+R__LOAD_LIBRARY(libfun4allraw.so)
 R__LOAD_LIBRARY(libg4tpc.so)
 R__LOAD_LIBRARY(libintt.so)
 R__LOAD_LIBRARY(libmvtx.so)

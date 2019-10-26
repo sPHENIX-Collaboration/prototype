@@ -7,9 +7,6 @@ lib_LTLIBRARIES = \
   libPrototype4_io.la \
   libPrototype4.la
 
-AM_CXXFLAGS = \
- -Werror
-
 AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \

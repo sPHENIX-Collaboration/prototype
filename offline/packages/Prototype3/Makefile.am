@@ -7,9 +7,6 @@ lib_LTLIBRARIES = \
   libPrototype3_io.la \
   libPrototype3.la
 
-AM_CXXFLAGS = \
- -Werror
-
 AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \

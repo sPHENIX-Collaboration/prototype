@@ -10,11 +10,15 @@ case $CXX in
 # boost statistics
   CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-deprecated-declarations"
   ;;
-  g++)
-   CXXFLAGS="$CXXFLAGS -Wall -Werror"
-  ;;
 esac
 
+if test $ac_cv_prog_gxx = yes; then
+  if test `g++ -dumpversion | gawk '{print $1>=8.0?"1":"0"}'` = 1; then
+   CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated-declarations -Werror"
+  else
+   CXXFLAGS="$CXXFLAGS -Wall -Werror"
+  fi
+fi
 
 dnl test for root 6
 if test `root-config --version | awk '{print $1>=6.?"1":"0"}'` = 1; then

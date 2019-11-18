@@ -61,7 +61,7 @@ TGeoHMatrix* MvtxPrototype2Geom::extractMatrixSensor(int index)
 
   static TGeoHMatrix matTmp;
   matTmp = TGeoTranslation(dx, dy, dz);
-  static TGeoTranslation tra(0., -.5 * Segmentation::SensLayerThickness, 0.);
+  static TGeoTranslation tra(0., -.5 * Segmentation::SensorLayerThicknessEff, 0.);
   matTmp *= tra;
 
   return &matTmp;

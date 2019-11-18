@@ -315,7 +315,7 @@ void MvtxPrototype2Clusterizer::ClusterMvtx(PHCompositeNode *topNode)
 			}//mapiter
 
 			//float thickness = 50.e-4/28e-4; //sensor thickness converted to pixel size
-      float thickness = SegmentationAlpide::SensLayerThickness;
+      float thickness = SegmentationAlpide::SensorLayerThicknessEff;
 			float phisize = phibins.size();
 			float zsize = zbins.size();
 

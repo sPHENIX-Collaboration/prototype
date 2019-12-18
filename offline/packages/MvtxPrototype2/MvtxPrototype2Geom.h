@@ -12,10 +12,9 @@
 #define NREGION 32
 #define NCOL_PER_REGION 32
 
-#include "SegmentationAlpide.h"
-
 #include <trackbase/TrkrDefs.h>
 #include <mvtx/MvtxDefs.h>
+#include <mvtx/SegmentationAlpide.h>
 
 #include <TGeoMatrix.h>
 

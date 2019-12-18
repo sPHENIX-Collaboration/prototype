@@ -1,7 +1,7 @@
 #include "MvtxPrototype2Align.h"
-#include "SegmentationAlpide.h"
 
 #include <mvtx/MvtxDefs.h>
+#include "mvtx/SegmentationAlpide.h"
 
 #include <trackbase/TrkrClusterContainer.h>
 #include <trackbase/TrkrClusterv1.h>

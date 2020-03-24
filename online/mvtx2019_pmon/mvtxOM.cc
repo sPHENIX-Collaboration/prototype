@@ -3,9 +3,6 @@
 //
 #include "mvtxOM.h"
 
-#include <mvtx/MvtxDefs.h>
-#include <pmonitor/pmonitor.h>
-
 #include <TCanvas.h>
 #include <TF1.h>
 #include <TGaxis.h>

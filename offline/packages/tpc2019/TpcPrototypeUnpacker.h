@@ -17,7 +17,7 @@
 #include <map>
 #include <set>
 #include <string>
-#include <utility>               // for pair
+#include <utility>  // for pair
 #include <vector>
 
 class PHCompositeNode;
@@ -121,7 +121,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     //! 3-D Graph clustering based on PHMakeGroups()
     void Clustering(int zero_suppression, bool verbosity = false);
 
-#if !defined(__CINT__) || defined (__CLING__)
+#if !defined(__CINT__) || defined(__CLING__)
 
     const std::vector<std::vector<std::vector<int>>> &getData() const
     {
@@ -147,7 +147,8 @@ class TpcPrototypeUnpacker : public SubsysReco
   {
    public:
     ClusterData()
-      : min_sample(-1)
+      : clusterID(-1)
+      , min_sample(-1)
       , max_sample(-1)
       , peak(NAN)
       , peak_sample(NAN)
@@ -164,6 +165,8 @@ class TpcPrototypeUnpacker : public SubsysReco
 
     void Clear(Option_t * /*option*/ = "");
 
+    int clusterID;
+
     std::set<int> pad_radials;
     std::set<int> pad_azimuths;
     std::set<int> samples;
@@ -179,7 +182,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     double peak_sample;
     double pedstal;
 
-//    std::map<int, double> pad_radial_peaks; // radial always have size = 1 in this analysis
+    //    std::map<int, double> pad_radial_peaks; // radial always have size = 1 in this analysis
     std::map<int, double> pad_azimuth_peaks;
 
     //! pad coordinate
@@ -249,7 +252,7 @@ class TpcPrototypeUnpacker : public SubsysReco
   int exportDSTCluster(ClusterData &cluster, const int i);
   int InitField(PHCompositeNode *topNode);
 
-#if !defined(__CINT__) || defined (__CLING__)
+#if !defined(__CINT__) || defined(__CLING__)
 
   // IO stuff
 

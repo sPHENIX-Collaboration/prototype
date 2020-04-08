@@ -748,6 +748,7 @@ int TpcPrototypeUnpacker::Clustering()
     ClusterData& cluster = m_clusters[iter.second];
 
     //output to DST clusters
+    cluster.clusterID = m_nClusters; // sync cluster id from cluster container to m_nClusters::ClusterData
     int ret = exportDSTCluster(cluster, m_nClusters);
     if (ret != Fun4AllReturnCodes::EVENT_OK) return ret;
 

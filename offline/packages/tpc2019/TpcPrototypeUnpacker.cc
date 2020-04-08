@@ -7,8 +7,8 @@
 
 #include "TpcPrototypeUnpacker.h"
 
-#include "TpcPrototypeDefs.h"
 #include "ChanMap.h"
+#include "TpcPrototypeDefs.h"
 
 #include <g4tpc/PHG4TpcPadPlane.h>  // for PHG4TpcPadPlane
 
@@ -24,7 +24,7 @@
 #include <fun4all/PHTFileServer.h>
 #include <fun4all/SubsysReco.h>
 
-#include <phfield/PHFieldConfig.h>                              // for PHFie...
+#include <phfield/PHFieldConfig.h>  // for PHFie...
 #include <phfield/PHFieldConfigv2.h>
 #include <phfield/PHFieldUtility.h>
 
@@ -33,24 +33,24 @@
 #include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
 
 #include <phool/PHCompositeNode.h>
-#include <phool/PHIODataNode.h>                                 // for PHIOD...
-#include <phool/PHNode.h>                                       // for PHNode
-#include <phool/PHNodeIterator.h>                               // for PHNod...
-#include <phool/PHObject.h>                                     // for PHObject
+#include <phool/PHIODataNode.h>    // for PHIOD...
+#include <phool/PHNode.h>          // for PHNode
+#include <phool/PHNodeIterator.h>  // for PHNod...
+#include <phool/PHObject.h>        // for PHObject
 #include <phool/getClass.h>
-#include <phool/phool.h>                                        // for PHWHERE
+#include <phool/phool.h>  // for PHWHERE
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
 
-#include <TAxis.h>                                              // for TAxis
+#include <TAxis.h>  // for TAxis
 #include <TClonesArray.h>
-#include <TH1.h>                                                // for TH1D
-#include <TMatrixFfwd.h>                                        // for TMatrixF
-#include <TMatrixT.h>                                           // for TMatrixT
-#include <TMatrixTUtils.h>                                      // for TMatr...
-#include <TNamed.h>                                             // for TNamed
+#include <TH1.h>            // for TH1D
+#include <TMatrixFfwd.h>    // for TMatrixF
+#include <TMatrixT.h>       // for TMatrixT
+#include <TMatrixTUtils.h>  // for TMatr...
+#include <TNamed.h>         // for TNamed
 #include <TTree.h>
 
 #include <boost/bimap.hpp>
@@ -62,13 +62,13 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <cstdint>                                              // for uint32_t
+#include <cstdint>  // for uint32_t
 #include <iostream>
-#include <iterator>                                             // for rever...
+#include <iterator>  // for rever...
 #include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
-#include <memory>
 
 class PHField;
 
@@ -153,20 +153,15 @@ void TpcPrototypeUnpacker::ClusterData::Clear(Option_t*)
     pad_azimuth_samples.erase(pad_azimuth_samples.begin());
   }
 
-  while (pad_radial_peaks.begin() != pad_radial_peaks.end())
-  {
-    pad_radial_peaks.erase(pad_radial_peaks.begin());
-  }
-
   while (pad_azimuth_peaks.begin() != pad_azimuth_peaks.end())
   {
     pad_azimuth_peaks.erase(pad_azimuth_peaks.begin());
   }
 
-//  while (sum_samples.begin() != sum_samples.end())
-//  {
-//    sum_samples.erase(sum_samples.begin());
-//  }
+  //  while (sum_samples.begin() != sum_samples.end())
+  //  {
+  //    sum_samples.erase(sum_samples.begin());
+  //  }
   sum_samples.clear();
   sum_samples.shrink_to_fit();
 }
@@ -748,7 +743,7 @@ int TpcPrototypeUnpacker::Clustering()
     ClusterData& cluster = m_clusters[iter.second];
 
     //output to DST clusters
-    cluster.clusterID = m_nClusters; // sync cluster id from cluster container to m_nClusters::ClusterData
+    cluster.clusterID = m_nClusters;  // sync cluster id from cluster container to m_nClusters::ClusterData
     int ret = exportDSTCluster(cluster, m_nClusters);
     if (ret != Fun4AllReturnCodes::EVENT_OK) return ret;
 
@@ -812,7 +807,7 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   const double clusz = layergeom->get_zcenter(cluster.min_sample)  //
                        + (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample)) * cluster.peak_sample;
 
-  const double phi_size = cluster.size_pad_azimuth;                       // * radius * layergeom->get_phistep();
+  const double phi_size = cluster.size_pad_azimuth;                 // * radius * layergeom->get_phistep();
   const double z_size = (cluster.max_sample - cluster.min_sample);  // * layergeom->get_zstep();
 
   static const double phi_err = 170e-4;
@@ -831,6 +826,9 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   cluster.avg_pos_x = clus->getPosition(0);
   cluster.avg_pos_y = clus->getPosition(1);
   cluster.avg_pos_z = clus->getPosition(2);
+
+  cluster.delta_z = (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample));
+  cluster.delta_azimuth_bin = (layergeom->get_phicenter(lowery + 1) - layergeom->get_phicenter(lowery));
 
   TMatrixF DIM(3, 3);
   DIM[0][0] = 0.0;

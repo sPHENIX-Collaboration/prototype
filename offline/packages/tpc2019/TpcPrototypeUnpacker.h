@@ -160,6 +160,8 @@ class TpcPrototypeUnpacker : public SubsysReco
       , avg_pos_x(NAN)
       , avg_pos_y(NAN)
       , avg_pos_z(NAN)
+      , delta_azimuth_bin(NAN)
+      , delta_z(NAN)
     {
     }
 
@@ -189,7 +191,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     int avg_pad_radial;
     double avg_pad_azimuth;
 
-    //! pad size
+    //! cluster size in units of pad bins
     int size_pad_radial;
     int size_pad_azimuth;
 
@@ -197,6 +199,12 @@ class TpcPrototypeUnpacker : public SubsysReco
     double avg_pos_x;
     double avg_pos_y;
     double avg_pos_z;
+
+    //! pad bin size
+    //! phi size per pad in rad
+    double delta_azimuth_bin;
+    //! z size per ADC sample bin
+    double delta_z;
 
     ClassDef(TpcPrototypeUnpacker::ClusterData, 5);
   };

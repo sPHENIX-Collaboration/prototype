@@ -724,6 +724,9 @@ int TpcPrototypeUnpacker::Clustering()
       }
       cluster.avg_pad_azimuth = sum_peak_pad_azimuth / sum_peak;
       cluster.size_pad_azimuth = cluster.pad_azimuths.size();
+
+      cluster.min_pad_azimuth = *cluster.pad_azimuths.begin();
+      cluster.max_pad_azimuth = *cluster.pad_azimuths.rbegin();
     }
   }  //   for (auto& iter : m_clusters)
 

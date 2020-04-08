@@ -150,6 +150,8 @@ class TpcPrototypeUnpacker : public SubsysReco
       : clusterID(-1)
       , min_sample(-1)
       , max_sample(-1)
+      , min_pad_azimuth(-1)
+      , max_pad_azimuth(-1)
       , peak(NAN)
       , peak_sample(NAN)
       , pedstal(NAN)
@@ -179,6 +181,8 @@ class TpcPrototypeUnpacker : public SubsysReco
 
     int min_sample;
     int max_sample;
+    int min_pad_azimuth;
+    int max_pad_azimuth;
 
     double peak;
     double peak_sample;

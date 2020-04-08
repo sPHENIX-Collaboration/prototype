@@ -64,7 +64,7 @@
 
 #include <TClonesArray.h>
 #include <TMatrixDSymfwd.h>  // for TMatrixDSym
-#include <TMatrixFfwd.h>                           // for TMatrixF
+#include <TMatrixFfwd.h>     // for TMatrixF
 #include <TMatrixT.h>        // for TMatrixT, operator*
 #include <TMatrixTSym.h>     // for TMatrixTSym
 #include <TMatrixTUtils.h>   // for TMatrixTRow
@@ -546,8 +546,8 @@ void TpcPrototypeGenFitTrkFitter::fill_eval_tree(PHCompositeNode* topNode)
   for (SvtxTrackMap::ConstIter itr = _trackmap->begin();
        itr != _trackmap->end(); ++itr)
   {
-//    new ((*_tca_trackmap)[i])(SvtxTrack_v1)(
-//        *dynamic_cast<SvtxTrack_v1*>(itr->second));
+    //    new ((*_tca_trackmap)[i])(SvtxTrack_v1)(
+    //        *dynamic_cast<SvtxTrack_v1*>(itr->second));
 
     new ((*_tca_tpctrackmap)[i])(TpcPrototypeTrack)(*(MakeTpcPrototypeTrack(itr->second)));
 
@@ -1142,6 +1142,7 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
   }
 
   shared_ptr<TpcPrototypeTrack> track(new TpcPrototypeTrack);
+  track->event = _event;
   track->trackID = svtxtrack->get_id();
   track->chisq = svtxtrack->get_chisq();
   track->ndf = svtxtrack->get_ndf();
@@ -1228,8 +1229,8 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
 
       TVector3 pos(cluster->getPosition(0), cluster->getPosition(1), cluster->getPosition(2));
 
-//      seed_mom.SetPhi(pos.Phi());
-//      seed_mom.SetTheta(pos.Theta());
+      //      seed_mom.SetPhi(pos.Phi());
+      //      seed_mom.SetTheta(pos.Theta());
 
       //TODO use u, v explicitly?
       TVector3 n(cluster->getPosition(0), cluster->getPosition(1), 0);
@@ -1321,7 +1322,11 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
         cout << ", azimuth_residual = " << azimuth_residual;
         cout << endl;
       }
-      assert(abs(n_residual) < 1e-4);//same layer check
+      assert(abs(n_residual) < 1e-4);  //same layer check
+
+      (track->clusterKey)[layerStudy] = cluster->getClusKey();
+      (track->clusterlayer)[layerStudy] = layerStudy;
+      (track->clusterid)[layerStudy] = TrkrDefs::getClusIndex(cluster->getClusKey());
 
       (track->clusterX)[layerStudy] = cluster->getPosition(0);
       (track->clusterY)[layerStudy] = cluster->getPosition(1);

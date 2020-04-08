@@ -26,6 +26,7 @@ class TpcPrototypeTrack : public PHObject
   //max number of layer under consideration
   static const int nLayer = 16;
 
+  unsigned int event;
   unsigned int trackID;
   float chisq;
   unsigned int ndf;
@@ -68,6 +69,9 @@ class TpcPrototypeTrack : public PHObject
   //  };
 
   //  Cluster clusters[nLayer];
+  uint64_t clusterKey[nLayer];
+  int clusterlayer[nLayer];
+  int clusterid[nLayer];
   float clusterX[nLayer];
   float clusterY[nLayer];
   float clusterZ[nLayer];
@@ -77,7 +81,7 @@ class TpcPrototypeTrack : public PHObject
   float clusterProjectionPhi[nLayer];
   float clusterResidualZ[nLayer];
 
-  ClassDef(TpcPrototypeTrack, 4);
+  ClassDef(TpcPrototypeTrack, 5);
 };
 
 #endif /* TPCPROTOTYPETRACK_H_ */

@@ -7,8 +7,8 @@
 
 #include "TpcPrototypeUnpacker.h"
 
-#include "TpcPrototypeDefs.h"
 #include "ChanMap.h"
+#include "TpcPrototypeDefs.h"
 
 #include <g4tpc/PHG4TpcPadPlane.h>  // for PHG4TpcPadPlane
 
@@ -24,7 +24,7 @@
 #include <fun4all/PHTFileServer.h>
 #include <fun4all/SubsysReco.h>
 
-#include <phfield/PHFieldConfig.h>                              // for PHFie...
+#include <phfield/PHFieldConfig.h>  // for PHFie...
 #include <phfield/PHFieldConfigv2.h>
 #include <phfield/PHFieldUtility.h>
 
@@ -33,24 +33,24 @@
 #include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
 
 #include <phool/PHCompositeNode.h>
-#include <phool/PHIODataNode.h>                                 // for PHIOD...
-#include <phool/PHNode.h>                                       // for PHNode
-#include <phool/PHNodeIterator.h>                               // for PHNod...
-#include <phool/PHObject.h>                                     // for PHObject
+#include <phool/PHIODataNode.h>    // for PHIOD...
+#include <phool/PHNode.h>          // for PHNode
+#include <phool/PHNodeIterator.h>  // for PHNod...
+#include <phool/PHObject.h>        // for PHObject
 #include <phool/getClass.h>
-#include <phool/phool.h>                                        // for PHWHERE
+#include <phool/phool.h>  // for PHWHERE
 
 #include <Event/Event.h>
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
 
-#include <TAxis.h>                                              // for TAxis
+#include <TAxis.h>  // for TAxis
 #include <TClonesArray.h>
-#include <TH1.h>                                                // for TH1D
-#include <TMatrixFfwd.h>                                        // for TMatrixF
-#include <TMatrixT.h>                                           // for TMatrixT
-#include <TMatrixTUtils.h>                                      // for TMatr...
-#include <TNamed.h>                                             // for TNamed
+#include <TH1.h>            // for TH1D
+#include <TMatrixFfwd.h>    // for TMatrixF
+#include <TMatrixT.h>       // for TMatrixT
+#include <TMatrixTUtils.h>  // for TMatr...
+#include <TNamed.h>         // for TNamed
 #include <TTree.h>
 
 #include <boost/bimap.hpp>
@@ -62,13 +62,13 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <cstdint>                                              // for uint32_t
+#include <cstdint>  // for uint32_t
 #include <iostream>
-#include <iterator>                                             // for rever...
+#include <iterator>  // for rever...
 #include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
-#include <memory>
 
 class PHField;
 
@@ -131,42 +131,37 @@ int TpcPrototypeUnpacker::ResetEvent(PHCompositeNode* topNode)
 
 void TpcPrototypeUnpacker::ClusterData::Clear(Option_t*)
 {
-  padxs.clear();
-  padys.clear();
+  pad_radials.clear();
+  pad_azimuths.clear();
   samples.clear();
 
-  //  for (auto& s : padx_samples) s.second.clear();
-  //  padx_samples.clear();
+  //  for (auto& s : pad_radial_samples) s.second.clear();
+  //  pad_radial_samples.clear();
   //
-  //  for (auto& s : pady_samples) s.second.clear();
-  //  pady_samples.clear();
+  //  for (auto& s : pad_azimuth_samples) s.second.clear();
+  //  pad_azimuth_samples.clear();
 
-  while (padx_samples.begin() != padx_samples.end())
+  while (pad_radial_samples.begin() != pad_radial_samples.end())
   {
-    padx_samples.begin()->second.clear();
-    padx_samples.erase(padx_samples.begin());
+    pad_radial_samples.begin()->second.clear();
+    pad_radial_samples.erase(pad_radial_samples.begin());
   }
 
-  while (pady_samples.begin() != pady_samples.end())
+  while (pad_azimuth_samples.begin() != pad_azimuth_samples.end())
   {
-    pady_samples.begin()->second.clear();
-    pady_samples.erase(pady_samples.begin());
+    pad_azimuth_samples.begin()->second.clear();
+    pad_azimuth_samples.erase(pad_azimuth_samples.begin());
   }
 
-  while (padx_peaks.begin() != padx_peaks.end())
+  while (pad_azimuth_peaks.begin() != pad_azimuth_peaks.end())
   {
-    padx_peaks.erase(padx_peaks.begin());
+    pad_azimuth_peaks.erase(pad_azimuth_peaks.begin());
   }
 
-  while (pady_peaks.begin() != pady_peaks.end())
-  {
-    pady_peaks.erase(pady_peaks.begin());
-  }
-
-//  while (sum_samples.begin() != sum_samples.end())
-//  {
-//    sum_samples.erase(sum_samples.begin());
-//  }
+  //  while (sum_samples.begin() != sum_samples.end())
+  //  {
+  //    sum_samples.erase(sum_samples.begin());
+  //  }
   sum_samples.clear();
   sum_samples.shrink_to_fit();
 }
@@ -603,8 +598,8 @@ int TpcPrototypeUnpacker::Clustering()
   {
     const int& i = iter.first;
     const PadPlaneData::SampleID& id = iter.second;
-    m_clusters[i].padxs.insert(id.padx);
-    m_clusters[i].padys.insert(id.pady);
+    m_clusters[i].pad_radials.insert(id.pad_radial);
+    m_clusters[i].pad_azimuths.insert(id.pad_azimuth);
     m_clusters[i].samples.insert(id.sample);
   }
 
@@ -613,33 +608,33 @@ int TpcPrototypeUnpacker::Clustering()
   {
     ClusterData& cluster = iter.second;
 
-    assert(cluster.padxs.size() > 0);
-    assert(cluster.padys.size() > 0);
+    assert(cluster.pad_radials.size() > 0);
+    assert(cluster.pad_azimuths.size() > 0);
     assert(cluster.samples.size() > 0);
 
     //expand cluster by +/-1 in y
-    if (*(cluster.padys.begin()) - 1 >= 0)
-      cluster.padys.insert(*(cluster.padys.begin()) - 1);
-    if (*(cluster.padys.rbegin()) + 1 < (int) kMaxPadY)
-      cluster.padys.insert(*(cluster.padys.rbegin()) + 1);
+    if (*(cluster.pad_azimuths.begin()) - 1 >= 0)
+      cluster.pad_azimuths.insert(*(cluster.pad_azimuths.begin()) - 1);
+    if (*(cluster.pad_azimuths.rbegin()) + 1 < (int) kMaxPadY)
+      cluster.pad_azimuths.insert(*(cluster.pad_azimuths.rbegin()) + 1);
 
     cluster.min_sample = max(0, *cluster.samples.begin() - m_nPreSample);
     cluster.max_sample = min((int) (kSAMPLE_LENGTH) -1, *cluster.samples.rbegin() + m_nPostSample);
     const int n_sample = cluster.max_sample - cluster.min_sample + 1;
 
     cluster.sum_samples.assign(n_sample, 0);
-    for (int pad_x = *cluster.padxs.begin(); pad_x <= *cluster.padxs.rbegin(); ++pad_x)
+    for (int pad_x = *cluster.pad_radials.begin(); pad_x <= *cluster.pad_radials.rbegin(); ++pad_x)
     {
-      cluster.padx_samples[pad_x].assign(n_sample, 0);
+      cluster.pad_radial_samples[pad_x].assign(n_sample, 0);
     }
-    for (int pad_y = *cluster.padys.begin(); pad_y <= *cluster.padys.rbegin(); ++pad_y)
+    for (int pad_y = *cluster.pad_azimuths.begin(); pad_y <= *cluster.pad_azimuths.rbegin(); ++pad_y)
     {
-      cluster.pady_samples[pad_y].assign(n_sample, 0);
+      cluster.pad_azimuth_samples[pad_y].assign(n_sample, 0);
     }
 
-    for (int pad_x = *cluster.padxs.begin(); pad_x <= *cluster.padxs.rbegin(); ++pad_x)
+    for (int pad_x = *cluster.pad_radials.begin(); pad_x <= *cluster.pad_radials.rbegin(); ++pad_x)
     {
-      for (int pad_y = *cluster.padys.begin(); pad_y <= *cluster.padys.rbegin(); ++pad_y)
+      for (int pad_y = *cluster.pad_azimuths.begin(); pad_y <= *cluster.pad_azimuths.rbegin(); ++pad_y)
       {
         assert(m_padPlaneData.IsValidPad(pad_x, pad_y));
 
@@ -649,13 +644,13 @@ int TpcPrototypeUnpacker::Clustering()
         {
           int adc = padsamples.at(cluster.min_sample + i);
           cluster.sum_samples[i] += adc;
-          cluster.padx_samples[pad_x][i] += adc;
-          cluster.pady_samples[pad_y][i] += adc;
+          cluster.pad_radial_samples[pad_x][i] += adc;
+          cluster.pad_azimuth_samples[pad_y][i] += adc;
         }
 
-      }  //    	    for (int pad_y = *cluster.padys.begin(); pad_y<=*cluster.padys.rbegin() ;++pady)
+      }  //    	    for (int pad_y = *cluster.pad_azimuths.begin(); pad_y<=*cluster.pad_azimuths.rbegin() ;++pad_azimuth)
 
-    }  //    for (int pad_x = *cluster.padxs.begin(); pad_x<=*cluster.padxs.rbegin() ;++padx)
+    }  //    for (int pad_x = *cluster.pad_radials.begin(); pad_x<=*cluster.pad_radials.rbegin() ;++pad_radial)
 
     if (m_pdfMaker)
     {
@@ -683,52 +678,55 @@ int TpcPrototypeUnpacker::Clustering()
       cluster.pedstal = pedstal;
     }
 
-    // fit - X
+    // fit - X -> radial direction
     {
       //      double sum_peak = 0;
-      //      double sum_peak_padx = 0;
-      //      for (int pad_x = *cluster.padxs.begin(); pad_x <= *cluster.padxs.rbegin(); ++pad_x)
+      //      double sum_peak_pad_radial = 0;
+      //      for (int pad_x = *cluster.pad_radials.begin(); pad_x <= *cluster.pad_radials.rbegin(); ++pad_x)
       //      {
       //        double peak = NAN;
       //        double peak_sample = NAN;
       //        double pedstal = NAN;
       //        map<int, double> parameters_io(parameters_constraints);
       //
-      //        SampleFit_PowerLawDoubleExp(cluster.padx_samples[pad_x], peak,
+      //        SampleFit_PowerLawDoubleExp(cluster.pad_radial_samples[pad_x], peak,
       //                                    peak_sample, pedstal, parameters_io, Verbosity());
       //
-      //        cluster.padx_peaks[pad_x] = peak;
+      //        cluster.pad_radial_peaks[pad_x] = peak;
       //        sum_peak += peak;
-      //        sum_peak_padx += peak * pad_x;
+      //        sum_peak_pad_radial += peak * pad_x;
       //      }
-      //      cluster.avg_padx = sum_peak_padx / sum_peak;
-      //      cluster.size_pad_x = cluster.padxs.size();
+      //      cluster.avg_pad_radial = sum_peak_pad_radial / sum_peak;
+      //      cluster.size_pad_radial = cluster.pad_radials.size();
 
-      assert(cluster.padxs.size() == 1);
-      cluster.avg_padx = *cluster.padxs.begin();
-      cluster.size_pad_x = cluster.padxs.size();
+      assert(cluster.pad_radials.size() == 1);
+      cluster.avg_pad_radial = *cluster.pad_radials.begin();
+      cluster.size_pad_radial = cluster.pad_radials.size();
     }
 
-    // fit - Y
+    // fit - Y -> azimuthal direction
     {
       double sum_peak = 0;
-      double sum_peak_pady = 0;
-      for (int pad_y = *cluster.padys.begin(); pad_y <= *cluster.padys.rbegin(); ++pad_y)
+      double sum_peak_pad_azimuth = 0;
+      for (int pad_y = *cluster.pad_azimuths.begin(); pad_y <= *cluster.pad_azimuths.rbegin(); ++pad_y)
       {
         double peak = NAN;
         double peak_sample = NAN;
         double pedstal = NAN;
         map<int, double> parameters_io(parameters_constraints);
 
-        SampleFit_PowerLawDoubleExp(cluster.pady_samples[pad_y], peak,
+        SampleFit_PowerLawDoubleExp(cluster.pad_azimuth_samples[pad_y], peak,
                                     peak_sample, pedstal, parameters_io, Verbosity());
 
-        cluster.pady_peaks[pad_y] = peak;
+        cluster.pad_azimuth_peaks[pad_y] = peak;
         sum_peak += peak;
-        sum_peak_pady += peak * pad_y;
+        sum_peak_pad_azimuth += peak * pad_y;
       }
-      cluster.avg_pady = sum_peak_pady / sum_peak;
-      cluster.size_pad_y = cluster.padys.size();
+      cluster.avg_pad_azimuth = sum_peak_pad_azimuth / sum_peak;
+      cluster.size_pad_azimuth = cluster.pad_azimuths.size();
+
+      cluster.min_pad_azimuth = *cluster.pad_azimuths.begin();
+      cluster.max_pad_azimuth = *cluster.pad_azimuths.rbegin();
     }
   }  //   for (auto& iter : m_clusters)
 
@@ -748,6 +746,7 @@ int TpcPrototypeUnpacker::Clustering()
     ClusterData& cluster = m_clusters[iter.second];
 
     //output to DST clusters
+    cluster.clusterID = m_nClusters;  // sync cluster id from cluster container to m_nClusters::ClusterData
     int ret = exportDSTCluster(cluster, m_nClusters);
     if (ret != Fun4AllReturnCodes::EVENT_OK) return ret;
 
@@ -762,9 +761,9 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   assert(tpcCylinderCellGeom);
   assert(trkrclusters);
 
-  assert(cluster.avg_padx >= 0);
-  assert(cluster.avg_padx < (int) kMaxPadX);
-  const uint8_t layer = static_cast<uint8_t>(cluster.avg_padx);
+  assert(cluster.avg_pad_radial >= 0);
+  assert(cluster.avg_pad_radial < (int) kMaxPadX);
+  const uint8_t layer = static_cast<uint8_t>(cluster.avg_pad_radial);
   const PHG4CylinderCellGeom* layergeom = tpcCylinderCellGeom->GetLayerCellGeom(layer);
   const int NPhiBins = layergeom->get_phibins();
   const int NZBins = layergeom->get_zbins();
@@ -777,41 +776,41 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
 
   //  calculate geometry
   const double radius = layergeom->get_radius();  // returns center of layer
-  if (cluster.avg_pady < 0)
+  if (cluster.avg_pad_azimuth < 0)
   {
-    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pady = " << cluster.avg_pady << " < 0"
-         << ", cluster.avg_padx = " << cluster.avg_padx << endl;
+    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pad_azimuth = " << cluster.avg_pad_azimuth << " < 0"
+         << ", cluster.avg_pad_radial = " << cluster.avg_pad_radial << endl;
 
     return Fun4AllReturnCodes::ABORTEVENT;
   }
-  if (cluster.avg_pady >= NPhiBins)
+  if (cluster.avg_pad_azimuth >= NPhiBins)
   {
-    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pady = " << cluster.avg_pady << " > " << NPhiBins
-         << ", cluster.avg_padx = " << cluster.avg_padx << endl;
+    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pad_azimuth = " << cluster.avg_pad_azimuth << " > " << NPhiBins
+         << ", cluster.avg_pad_radial = " << cluster.avg_pad_radial << endl;
 
     return Fun4AllReturnCodes::ABORTEVENT;
   }
-  const int lowery = floor(cluster.avg_pady);
+  const int lowery = floor(cluster.avg_pad_azimuth);
 
   if (lowery < 0)
   {
-    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pady = " << cluster.avg_pady << " -> "
+    cout << __PRETTY_FUNCTION__ << " WARNING - cluster.avg_pad_azimuth = " << cluster.avg_pad_azimuth << " -> "
          << " lower = " << lowery << " < 0"
-         << ", cluster.avg_padx = " << cluster.avg_padx << endl;
+         << ", cluster.avg_pad_radial = " << cluster.avg_pad_radial << endl;
 
     return Fun4AllReturnCodes::ABORTEVENT;
   }
 
   const double clusphi = layergeom->get_phicenter(lowery)                                             //
                          + (layergeom->get_phicenter(lowery + 1) - layergeom->get_phicenter(lowery))  //
-                               * (cluster.avg_pady - lowery);
+                               * (cluster.avg_pad_azimuth - lowery);
 
   assert(cluster.min_sample >= 0);
   assert(cluster.min_sample + cluster.peak_sample < NZBins);
   const double clusz = layergeom->get_zcenter(cluster.min_sample)  //
                        + (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample)) * cluster.peak_sample;
 
-  const double phi_size = cluster.size_pad_y;                       // * radius * layergeom->get_phistep();
+  const double phi_size = cluster.size_pad_azimuth;                 // * radius * layergeom->get_phistep();
   const double z_size = (cluster.max_sample - cluster.min_sample);  // * layergeom->get_zstep();
 
   static const double phi_err = 170e-4;
@@ -830,6 +829,9 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   cluster.avg_pos_x = clus->getPosition(0);
   cluster.avg_pos_y = clus->getPosition(1);
   cluster.avg_pos_z = clus->getPosition(2);
+
+  cluster.delta_z = (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample));
+  cluster.delta_azimuth_bin = (layergeom->get_phicenter(lowery + 1) - layergeom->get_phicenter(lowery));
 
   TMatrixF DIM(3, 3);
   DIM[0][0] = 0.0;
@@ -957,17 +959,17 @@ std::pair<int, int> TpcPrototypeUnpacker::roughZeroSuppression(std::vector<int>&
 
 bool operator<(const TpcPrototypeUnpacker::PadPlaneData::SampleID& s1, const TpcPrototypeUnpacker::PadPlaneData::SampleID& s2)
 {
-  if (s1.pady == s2.pady)
+  if (s1.pad_azimuth == s2.pad_azimuth)
   {
-    if (s1.padx == s2.padx)
+    if (s1.pad_radial == s2.pad_radial)
     {
       return s1.sample < s2.sample;
     }
     else
-      return s1.padx < s2.padx;
+      return s1.pad_radial < s2.pad_radial;
   }
   else
-    return s1.pady < s2.pady;
+    return s1.pad_azimuth < s2.pad_azimuth;
 }
 
 //! 3-D Graph clustering based on PHMakeGroups()
@@ -980,15 +982,15 @@ void TpcPrototypeUnpacker::PadPlaneData::Clustering(int zero_suppression, bool v
   Graph G;
   VertexList vertex_list;
 
-  for (unsigned int pady = 0; pady < kMaxPadY; ++pady)
+  for (unsigned int pad_azimuth = 0; pad_azimuth < kMaxPadY; ++pad_azimuth)
   {
-    for (unsigned int padx = 0; padx < kMaxPadX; ++padx)
+    for (unsigned int pad_radial = 0; pad_radial < kMaxPadX; ++pad_radial)
     {
       for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
       {
-        if (m_data[pady][padx][sample] > zero_suppression)
+        if (m_data[pad_azimuth][pad_radial][sample] > zero_suppression)
         {
-          SampleID id{(int) (pady), (int) (padx), (int) (sample)};
+          SampleID id{(int) (pad_azimuth), (int) (pad_radial), (int) (sample)};
           Graph::vertex_descriptor v = boost::add_vertex(G);
           vertex_list.insert(VertexList::value_type(v, id));
 
@@ -996,7 +998,7 @@ void TpcPrototypeUnpacker::PadPlaneData::Clustering(int zero_suppression, bool v
         }
       }  //      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
     }
-  }  //   for (unsigned int pady = 0; pady < kMaxPadY; ++pady)
+  }  //   for (unsigned int pad_azimuth = 0; pad_azimuth < kMaxPadY; ++pad_azimuth)
 
   // connect 2-D adjacent samples within each pad_x
   vector<SampleID> search_directions;
@@ -1050,7 +1052,7 @@ void TpcPrototypeUnpacker::PadPlaneData::Clustering(int zero_suppression, bool v
       for (auto iter = range.first; iter != range.second; ++iter)
       {
         const SampleID& id = iter->second;
-        cout << "adc[" << id.pady << "][" << id.padx << "][" << id.sample << "] = " << m_data[id.pady][id.padx][id.sample] << ", ";
+        cout << "adc[" << id.pad_azimuth << "][" << id.pad_radial << "][" << id.sample << "] = " << m_data[id.pad_azimuth][id.pad_radial][id.sample] << ", ";
       }
       cout << endl;
     }  //  for (const int& comp : comps)

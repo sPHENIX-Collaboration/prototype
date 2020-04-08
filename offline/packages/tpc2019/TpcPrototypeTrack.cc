@@ -16,7 +16,8 @@
 using namespace std;
 
 TpcPrototypeTrack::TpcPrototypeTrack()
-  : trackID(-1)
+  : event(0)
+  , trackID(-1)
   , chisq(NAN)
   , ndf(0)
   , px(NAN)
@@ -29,6 +30,9 @@ TpcPrototypeTrack::TpcPrototypeTrack()
 {
   for (int i = 0; i < nLayer; ++i)
   {
+    clusterKey[i] = numeric_limits<uint64_t>::max();
+    clusterlayer[i] = -1;
+    clusterid[i] = -1;
     clusterX[i] = numeric_limits<float>::signaling_NaN();
     clusterY[i] = numeric_limits<float>::signaling_NaN();
     clusterZ[i] = numeric_limits<float>::signaling_NaN();

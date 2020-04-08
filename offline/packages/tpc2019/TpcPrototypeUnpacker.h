@@ -102,14 +102,14 @@ class TpcPrototypeUnpacker : public SubsysReco
 
     struct SampleID
     {
-      int pady;
-      int padx;
+      int pad_azimuth;
+      int pad_radial;
       int sample;
 
       void adjust(const SampleID &adjustment)
       {
-        pady += adjustment.pady;
-        padx += adjustment.padx;
+        pad_azimuth += adjustment.pad_azimuth;
+        pad_radial += adjustment.pad_radial;
         sample += adjustment.sample;
       }
     };
@@ -134,7 +134,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     }
 
    private:
-    //! full event data in index order of m_data[pady][padx][sample]
+    //! full event data in index order of m_data[pad_azimuth][pad_radial][sample]
     std::vector<std::vector<std::vector<int>>> m_data;
 
     std::multimap<int, SampleID> m_groups;
@@ -152,10 +152,10 @@ class TpcPrototypeUnpacker : public SubsysReco
       , peak(NAN)
       , peak_sample(NAN)
       , pedstal(NAN)
-      , avg_padx(-1)
-      , avg_pady(NAN)
-      , size_pad_x(-1)
-      , size_pad_y(-1)
+      , avg_pad_radial(-1)
+      , avg_pad_azimuth(NAN)
+      , size_pad_radial(-1)
+      , size_pad_azimuth(-1)
       , avg_pos_x(NAN)
       , avg_pos_y(NAN)
       , avg_pos_z(NAN)
@@ -164,12 +164,12 @@ class TpcPrototypeUnpacker : public SubsysReco
 
     void Clear(Option_t * /*option*/ = "");
 
-    std::set<int> padxs;
-    std::set<int> padys;
+    std::set<int> pad_radials;
+    std::set<int> pad_azimuths;
     std::set<int> samples;
 
-    std::map<int, std::vector<double>> padx_samples;
-    std::map<int, std::vector<double>> pady_samples;
+    std::map<int, std::vector<double>> pad_radial_samples;
+    std::map<int, std::vector<double>> pad_azimuth_samples;
     std::vector<double> sum_samples;
 
     int min_sample;
@@ -179,23 +179,23 @@ class TpcPrototypeUnpacker : public SubsysReco
     double peak_sample;
     double pedstal;
 
-    std::map<int, double> padx_peaks;
-    std::map<int, double> pady_peaks;
+//    std::map<int, double> pad_radial_peaks; // radial always have size = 1 in this analysis
+    std::map<int, double> pad_azimuth_peaks;
 
     //! pad coordinate
-    int avg_padx;
-    double avg_pady;
+    int avg_pad_radial;
+    double avg_pad_azimuth;
 
     //! pad size
-    int size_pad_x;
-    int size_pad_y;
+    int size_pad_radial;
+    int size_pad_azimuth;
 
     //! pad coordinate
     double avg_pos_x;
     double avg_pos_y;
     double avg_pos_z;
 
-    ClassDef(TpcPrototypeUnpacker::ClusterData, 3);
+    ClassDef(TpcPrototypeUnpacker::ClusterData, 5);
   };
 
   //! simple channel header class for ROOT file IO

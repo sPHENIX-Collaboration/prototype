@@ -13,12 +13,13 @@ AM_CXXFLAGS = \
 AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \
-  -I`root-config --incdir` \
-  -I$(OFFLINE_MAIN)/include/eigen3
+  -I$(OFFLINE_MAIN)/include/eigen3 \
+  -I`root-config --incdir`
 
 AM_LDFLAGS = \
   -L$(libdir) \
   -L$(OFFLINE_MAIN)/lib \
+  -L$(OFFLINE_MAIN)/lib64 \
   `root-config --libs`
 
 pkginclude_HEADERS = \

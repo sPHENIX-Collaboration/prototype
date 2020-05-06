@@ -1322,7 +1322,7 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
         cout << ", azimuth_residual = " << azimuth_residual;
         cout << endl;
 
-        cout << "Cluster data which provide much more detailed information on the raw signals: ";
+        cout << "Cluster data which provide much more detailed information on the raw signals: "<<endl;
         cluster->identify();
       }
       assert(abs(n_residual) < 1e-4);  //same layer check

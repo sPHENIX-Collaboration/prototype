@@ -27,6 +27,7 @@ class TClonesArray;
 class PHG4TpcPadPlane;
 class PHG4CylinderCellGeomContainer;
 class TrkrClusterContainer;
+class TrkrHitSetContainer;
 
 namespace TpcPrototypeDefs
 {
@@ -260,6 +261,7 @@ class TpcPrototypeUnpacker : public SubsysReco
  private:
   PHG4TpcPadPlane *padplane;
   PHG4CylinderCellGeomContainer *tpcCylinderCellGeom;
+  TrkrHitSetContainer *hitsetcontainer;
   TrkrClusterContainer *trkrclusters;
   int exportDSTCluster(ClusterData &cluster, const int i);
   int InitField(PHCompositeNode *topNode);

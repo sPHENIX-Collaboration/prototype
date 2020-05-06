@@ -31,6 +31,9 @@
 
 #include <trackbase/TrkrClusterContainer.h>
 #include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
+#include <trackbase/TrkrHit.h>   // for TrkrHit
+#include <trackbase/TrkrHitSet.h>
+#include <trackbase/TrkrHitSetContainer.h>
 
 #include <phool/PHCompositeNode.h>
 #include <phool/PHIODataNode.h>    // for PHIOD...
@@ -79,6 +82,7 @@ TpcPrototypeUnpacker::TpcPrototypeUnpacker(const std::string& outputfilename)
   : SubsysReco("TpcPrototypeUnpacker")
   , padplane(nullptr)
   , tpcCylinderCellGeom(nullptr)
+  , hitsetcontainer(nullptr)
   , trkrclusters(nullptr)
   , m_outputFileName(outputfilename)
   , m_eventT(nullptr)
@@ -176,6 +180,14 @@ int TpcPrototypeUnpacker::Init(PHCompositeNode* topNode)
 
 int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
 {
+  // Looking for the DST node
+  PHCompositeNode* dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST"));
+  if (!dstNode)
+  {
+    cout << PHWHERE << "DST Node missing, doing nothing." << endl;
+    return Fun4AllReturnCodes::ABORTRUN;
+  }
+
   if (padplane)
   {
     if (Verbosity() >= VERBOSITY_SOME)
@@ -207,19 +219,30 @@ int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
     padplane->CreateReadoutGeometry(topNode, tpcCylinderCellGeom);
   }
 
+  // Create the TrkrHit node if required
+
+  hitsetcontainer = findNode::getClass<TrkrHitSetContainer>(topNode, "TRKR_HITSET");
+  if (!hitsetcontainer)
+  {
+    PHNodeIterator dstiter(dstNode);
+    PHCompositeNode* DetNode =
+        dynamic_cast<PHCompositeNode*>(dstiter.findFirst("PHCompositeNode", "TRKR"));
+    if (!DetNode)
+    {
+      DetNode = new PHCompositeNode("TRKR");
+      dstNode->addNode(DetNode);
+    }
+
+    hitsetcontainer = new TrkrHitSetContainer();
+    PHIODataNode<PHObject>* newNode = new PHIODataNode<PHObject>(hitsetcontainer, "TRKR_HITSET", "PHObject");
+    DetNode->addNode(newNode);
+  }
+
   // Create the Cluster node if required
   trkrclusters = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
   if (!trkrclusters)
   {
     PHNodeIterator iter(topNode);
-
-    // Looking for the DST node
-    PHCompositeNode* dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST"));
-    if (!dstNode)
-    {
-      cout << PHWHERE << "DST Node missing, doing nothing." << endl;
-      return Fun4AllReturnCodes::ABORTRUN;
-    }
 
     PHNodeIterator dstiter(dstNode);
     PHCompositeNode* DetNode =
@@ -497,41 +520,6 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
       m_chanHeader.pad_x = TpcR2Map.GetRpos(fee, channel);
       m_chanHeader.pad_y = TpcR2Map.Getphipos(fee, channel);
 
-      //      if (first_channel)
-      //      {
-      //        first_channel = false;
-      //        m_eventHeader.bx_counter = m_chanHeader.bx_counter;
-      //      }
-      //      else if (m_eventHeader.bx_counter != m_chanHeader.bx_counter)
-      //      {
-      //        m_eventHeader.bx_counter_consistent = false;
-      //
-      //        //      printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bx_counter mismatch (expected 0x%x, got 0x%x)\n", m_eventHeader.event, m_eventHeader.bx_counter, m_chanHeader.bx_counter);
-      //        //
-      //        //      event->identify();
-      //        //      p->identify();
-      //        //      return Fun4AllReturnCodes::DISCARDEVENT;
-      //      }
-
-      //      if (m_chanHeader.fee_channel > 255 || m_chanHeader.sampa_address > 7 || m_chanHeader.sampa_channel > 31)
-      //      {
-      //        printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bad channel (got %i, sampa_addr: %i, sampa_chan: %i)\n", m_eventHeader.event, m_chanHeader.fee_channel, m_chanHeader.sampa_address, m_chanHeader.sampa_channel);
-      //
-      //        event->identify();
-      //        p->identify();
-      //        return Fun4AllReturnCodes::DISCARDEVENT;
-      //      }
-
-      //    SampaChannel *chan = fee_data->append(new SampaChannel(fee_channel, bx_counter, packet_type));
-
-      //      assert(m_chanData.size() == kSAMPLE_LENGTH);
-      //      fill(m_chanData.begin(), m_chanData.end(), 0);
-      //      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
-      //      {
-      //        //        chan->append(p->iValue(channel * PACKET_LENGTH + 9 + sample) & 0xffff);
-      //        uint32_t value = p->iValue(channel * kPACKET_LENGTH + 9 + sample) & 0xffff;
-      //        m_chanData[sample] = value;
-      //      }
       //
       if (Verbosity() >= VERBOSITY_MORE)
       {
@@ -552,7 +540,7 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
         cout << endl;
       }
 
-      //      // fill event data
+      // fill event data
       //      if (PadPlaneData::IsValidPad(m_chanHeader.pad_x, m_chanHeader.pad_y))
       //      {
       vector<int>& paddata = m_padPlaneData.getPad(m_chanHeader.pad_x, m_chanHeader.pad_y);

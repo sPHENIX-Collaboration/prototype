@@ -7,6 +7,7 @@
 
 #include "TpcPrototypeGenFitTrkFitter.h"
 #include "TpcPrototypeTrack.h"
+#include "TpcPrototypeCluster.h"
 
 #include <trackbase/TrkrCluster.h>  // for TrkrCluster
 #include <trackbase/TrkrClusterContainer.h>
@@ -1323,7 +1324,12 @@ shared_ptr<TpcPrototypeTrack> TpcPrototypeGenFitTrkFitter::MakeTpcPrototypeTrack
         cout << endl;
 
         cout << "Cluster data which provide much more detailed information on the raw signals: "<<endl;
-        cluster->identify();
+
+        // in case TpcPrototypeCluster specific functionality is needed, first to a conversion and check
+        const TpcPrototypeCluster * prototype_cluster = dynamic_cast<const TpcPrototypeCluster *>(cluster);
+        assert(prototype_cluster);
+
+        prototype_cluster->identify();
       }
       assert(abs(n_residual) < 1e-4);  //same layer check
 

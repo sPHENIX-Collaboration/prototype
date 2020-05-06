@@ -24,6 +24,7 @@ AM_LDFLAGS = \
 
 pkginclude_HEADERS = \
   TpcPrototypeTrack.h \
+  TpcPrototypeCluster.h \
   TpcPrototypeClusterizer.h \
   TpcPrototypeGenFitTrkFinder.h \
   TpcPrototypeGenFitTrkFitter.h \
@@ -32,12 +33,14 @@ pkginclude_HEADERS = \
 
 ROOTDICTS = \
   TpcPrototypeTrack_Dict.cc \
+  TpcPrototypeCluster_Dict.cc \
   TpcPrototypeDefs_Dict.cc
 
 if MAKEROOT6
   pcmdir = $(libdir)
   nobase_dist_pcm_DATA =  \
     TpcPrototypeTrack_Dict_rdict.pcm \
+    TpcPrototypeCluster_Dict_rdict.pcm \
     TpcPrototypeDefs_Dict_rdict.pcm \
     TpcPrototypeUnpacker_Dict_rdict.pcm
 else
@@ -50,6 +53,7 @@ endif
 libtpc2019_io_la_SOURCES = \
   $(ROOTDICTS) \
   TpcPrototypeTrack.cc \
+  TpcPrototypeCluster.cc \
   TpcPrototypeDefs.cc
 
 libtpc2019_la_SOURCES = \

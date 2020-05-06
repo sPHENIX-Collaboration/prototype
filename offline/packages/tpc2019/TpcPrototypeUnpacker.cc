@@ -8,6 +8,7 @@
 #include "TpcPrototypeUnpacker.h"
 
 #include "ChanMap.h"
+#include "TpcPrototypeCluster.h"
 #include "TpcPrototypeDefs.h"
 
 #include <g4tpc/PHG4TpcPadPlane.h>  // for PHG4TpcPadPlane
@@ -29,7 +30,6 @@
 #include <phfield/PHFieldUtility.h>
 
 #include <trackbase/TrkrClusterContainer.h>
-#include <trackbase/TrkrClusterv1.h>
 #include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
 
 #include <phool/PHCompositeNode.h>
@@ -771,7 +771,7 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   // create the cluster entry directly in the node tree
   const TrkrDefs::hitsetkey hit_set_key(TpcDefs::genHitSetKey(layer, 0, 0));
   const TrkrDefs::cluskey ckey = TpcDefs::genClusKey(hit_set_key, iclus);
-  TrkrClusterv1* clus = static_cast<TrkrClusterv1*>((trkrclusters->findOrAddCluster(ckey))->second);
+  TpcPrototypeCluster* clus = static_cast<TpcPrototypeCluster*>((trkrclusters->findOrAddCluster(ckey))->second);
   assert(clus);
 
   //  calculate geometry

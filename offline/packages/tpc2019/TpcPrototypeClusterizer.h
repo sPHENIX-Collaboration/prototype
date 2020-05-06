@@ -3,8 +3,8 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class PHCompositeNode;
 class TrkrHitSetContainer;
@@ -15,7 +15,7 @@ class TpcPrototypeClusterizer : public SubsysReco
 {
  public:
   TpcPrototypeClusterizer(const std::string &name = "TpcPrototypeClusterizer");
-  virtual ~TpcPrototypeClusterizer(){}
+  virtual ~TpcPrototypeClusterizer() {}
 
   int InitRun(PHCompositeNode *topNode);
   int process_event(PHCompositeNode *topNode);
@@ -35,7 +35,6 @@ class TpcPrototypeClusterizer : public SubsysReco
   int NPhiBinsMin;
   int NZBinsMax;
   int NZBinsMin;
-
 };
 
 #endif

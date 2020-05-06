@@ -140,6 +140,7 @@ int Fun4All_TestBeam_TPC(int nEvents = 10, int nSkip = 0,
   //
   TpcPrototypeGenFitTrkFitter *kalman = new TpcPrototypeGenFitTrkFitter();
   kalman->Verbosity(verbosity);
+//  kalman->Verbosity(2); // use a higher verbosity to print
   kalman->set_do_evt_display(eventDisp);
   kalman->set_eval_filename(input_file + "_TpcPrototypeGenFitTrkFitter.root");
   kalman->set_do_eval(true);

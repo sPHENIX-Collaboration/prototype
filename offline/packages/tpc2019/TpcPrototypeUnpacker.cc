@@ -8,6 +8,7 @@
 #include "TpcPrototypeUnpacker.h"
 
 #include "ChanMap.h"
+#include "TpcPrototypeCluster.h"
 #include "TpcPrototypeDefs.h"
 
 #include <g4tpc/PHG4TpcPadPlane.h>  // for PHG4TpcPadPlane
@@ -28,9 +29,13 @@
 #include <phfield/PHFieldConfigv2.h>
 #include <phfield/PHFieldUtility.h>
 
+#include <tpc/TpcDefs.h>
+#include <tpc/TpcHit.h>
 #include <trackbase/TrkrClusterContainer.h>
-#include <trackbase/TrkrClusterv1.h>
 #include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
+#include <trackbase/TrkrHit.h>   // for TrkrHit
+#include <trackbase/TrkrHitSet.h>
+#include <trackbase/TrkrHitSetContainer.h>
 
 #include <phool/PHCompositeNode.h>
 #include <phool/PHIODataNode.h>    // for PHIOD...
@@ -79,6 +84,7 @@ TpcPrototypeUnpacker::TpcPrototypeUnpacker(const std::string& outputfilename)
   : SubsysReco("TpcPrototypeUnpacker")
   , padplane(nullptr)
   , tpcCylinderCellGeom(nullptr)
+  , hitsetcontainer(nullptr)
   , trkrclusters(nullptr)
   , m_outputFileName(outputfilename)
   , m_eventT(nullptr)
@@ -176,6 +182,15 @@ int TpcPrototypeUnpacker::Init(PHCompositeNode* topNode)
 
 int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
 {
+  // Looking for the DST node
+  PHNodeIterator iter(topNode);
+  PHCompositeNode* dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST"));
+  if (!dstNode)
+  {
+    cout << PHWHERE << "DST Node missing, doing nothing." << endl;
+    return Fun4AllReturnCodes::ABORTRUN;
+  }
+
   if (padplane)
   {
     if (Verbosity() >= VERBOSITY_SOME)
@@ -207,19 +222,29 @@ int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
     padplane->CreateReadoutGeometry(topNode, tpcCylinderCellGeom);
   }
 
+  // Create the TrkrHit node if required
+
+  hitsetcontainer = findNode::getClass<TrkrHitSetContainer>(topNode, "TRKR_HITSET");
+  if (!hitsetcontainer)
+  {
+    PHNodeIterator dstiter(dstNode);
+    PHCompositeNode* DetNode =
+        dynamic_cast<PHCompositeNode*>(dstiter.findFirst("PHCompositeNode", "TRKR"));
+    if (!DetNode)
+    {
+      DetNode = new PHCompositeNode("TRKR");
+      dstNode->addNode(DetNode);
+    }
+
+    hitsetcontainer = new TrkrHitSetContainer();
+    PHIODataNode<PHObject>* newNode = new PHIODataNode<PHObject>(hitsetcontainer, "TRKR_HITSET", "PHObject");
+    DetNode->addNode(newNode);
+  }
+
   // Create the Cluster node if required
   trkrclusters = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
   if (!trkrclusters)
   {
-    PHNodeIterator iter(topNode);
-
-    // Looking for the DST node
-    PHCompositeNode* dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST"));
-    if (!dstNode)
-    {
-      cout << PHWHERE << "DST Node missing, doing nothing." << endl;
-      return Fun4AllReturnCodes::ABORTRUN;
-    }
 
     PHNodeIterator dstiter(dstNode);
     PHCompositeNode* DetNode =
@@ -497,41 +522,6 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
       m_chanHeader.pad_x = TpcR2Map.GetRpos(fee, channel);
       m_chanHeader.pad_y = TpcR2Map.Getphipos(fee, channel);
 
-      //      if (first_channel)
-      //      {
-      //        first_channel = false;
-      //        m_eventHeader.bx_counter = m_chanHeader.bx_counter;
-      //      }
-      //      else if (m_eventHeader.bx_counter != m_chanHeader.bx_counter)
-      //      {
-      //        m_eventHeader.bx_counter_consistent = false;
-      //
-      //        //      printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bx_counter mismatch (expected 0x%x, got 0x%x)\n", m_eventHeader.event, m_eventHeader.bx_counter, m_chanHeader.bx_counter);
-      //        //
-      //        //      event->identify();
-      //        //      p->identify();
-      //        //      return Fun4AllReturnCodes::DISCARDEVENT;
-      //      }
-
-      //      if (m_chanHeader.fee_channel > 255 || m_chanHeader.sampa_address > 7 || m_chanHeader.sampa_channel > 31)
-      //      {
-      //        printf("TpcPrototypeUnpacker::process_event - ERROR: Malformed packet, event number %i, reason: bad channel (got %i, sampa_addr: %i, sampa_chan: %i)\n", m_eventHeader.event, m_chanHeader.fee_channel, m_chanHeader.sampa_address, m_chanHeader.sampa_channel);
-      //
-      //        event->identify();
-      //        p->identify();
-      //        return Fun4AllReturnCodes::DISCARDEVENT;
-      //      }
-
-      //    SampaChannel *chan = fee_data->append(new SampaChannel(fee_channel, bx_counter, packet_type));
-
-      //      assert(m_chanData.size() == kSAMPLE_LENGTH);
-      //      fill(m_chanData.begin(), m_chanData.end(), 0);
-      //      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
-      //      {
-      //        //        chan->append(p->iValue(channel * PACKET_LENGTH + 9 + sample) & 0xffff);
-      //        uint32_t value = p->iValue(channel * kPACKET_LENGTH + 9 + sample) & 0xffff;
-      //        m_chanData[sample] = value;
-      //      }
       //
       if (Verbosity() >= VERBOSITY_MORE)
       {
@@ -552,7 +542,7 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
         cout << endl;
       }
 
-      //      // fill event data
+      // fill event data
       //      if (PadPlaneData::IsValidPad(m_chanHeader.pad_x, m_chanHeader.pad_y))
       //      {
       vector<int>& paddata = m_padPlaneData.getPad(m_chanHeader.pad_x, m_chanHeader.pad_y);
@@ -571,6 +561,8 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
     }  //    for (unsigned int channel = 0; channel < kN_CHANNELS; channel++)
   }    //  for (unsigned int fee = 0; fee < kN_FEES; ++fee)
 
+  exportDSTHits();
+
   if (enableClustering)
   {
     int ret = Clustering();
@@ -581,6 +573,58 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
   m_eventT->Fill();
 
   return Fun4AllReturnCodes::EVENT_OK;
+}
+
+int TpcPrototypeUnpacker::exportDSTHits()
+{
+  int nHits(0);
+
+  assert(hitsetcontainer);
+
+  for (unsigned int pad_radial = 0; pad_radial < kMaxPadX; ++pad_radial)
+  {
+    TrkrDefs::hitsetkey hitsetkey = TpcDefs::genHitSetKey(pad_radial, 0, 0);
+    // Use existing hitset or add new one if needed
+    TrkrHitSetContainer::Iterator hitsetit = hitsetcontainer->findOrAddHitSet(hitsetkey);
+
+    for (unsigned int pad_azimuth = 0; pad_azimuth < kMaxPadY; ++pad_azimuth)
+    {
+      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
+      {
+        unsigned int adc = static_cast<unsigned int>(m_padPlaneData.getData()[pad_azimuth][pad_radial][sample]);
+
+        if (adc)
+        {
+          // generate the key for this hit, requires zbin and phibin
+          TrkrDefs::hitkey hitkey = TpcDefs::genHitKey(pad_azimuth, sample);
+          // See if this hit already exists
+          TrkrHit* hit = nullptr;
+          hit = hitsetit->second->getHit(hitkey);
+          if (!hit)
+          {
+            // create a new one
+            hit = new TpcHit();
+            hitsetit->second->addHitSpecificKey(hitkey, hit);
+          }
+          else
+          {
+            cout << "TpcPrototypeUnpacker::exportDSTHits "
+                 << " - Fatal error - hit with "
+                 << " hitkey = " << hitkey << " already exist";
+            exit(1);
+          }
+
+          // Either way, add the energy to it  -- adc values will be added at digitization
+          hit->setAdc(adc);
+          ++nHits;
+
+        }  //        if (m_padPlaneData.m_data[pad_azimuth][pad_radial][sample])
+
+      }  //      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
+    }    //   for (unsigned int pad_azimuth = 0; pad_azimuth < kMaxPadY; ++pad_azimuth)
+  }      //  for (unsigned int pad_radial = 0; pad_radial < kMaxPadX; ++pad_radial)
+
+  return nHits;
 }
 
 int TpcPrototypeUnpacker::Clustering()
@@ -771,8 +815,19 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   // create the cluster entry directly in the node tree
   const TrkrDefs::hitsetkey hit_set_key(TpcDefs::genHitSetKey(layer, 0, 0));
   const TrkrDefs::cluskey ckey = TpcDefs::genClusKey(hit_set_key, iclus);
-  TrkrClusterv1* clus = static_cast<TrkrClusterv1*>((trkrclusters->findOrAddCluster(ckey))->second);
+
+  // make sure this cluster location is available
+  if (trkrclusters->findCluster(ckey))
+  {
+    cout << "TpcPrototypeUnpacker::exportDSTCluster - fatal error - cluster already exist which is not expected for prototype analysis. "
+         << "iclus = " << iclus << ", ckey = " << ckey << ". Offending cluster: " << endl;
+    trkrclusters->findCluster(ckey)->identify();
+    exit(1);
+  }
+  TpcPrototypeCluster* clus = new TpcPrototypeCluster();
   assert(clus);
+  clus->setClusKey(ckey);
+  trkrclusters->addCluster(clus);
 
   //  calculate geometry
   const double radius = layergeom->get_radius();  // returns center of layer
@@ -832,6 +887,64 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
 
   cluster.delta_z = (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample));
   cluster.delta_azimuth_bin = (layergeom->get_phicenter(lowery + 1) - layergeom->get_phicenter(lowery));
+
+  // output prototype specifics
+
+  //  std::set<int> pad_radials;
+  clus->setPadRadials(cluster.pad_radials);
+  //  std::set<int> pad_azimuths;
+  clus->setPadAzimuths(cluster.pad_azimuths);
+  //  std::set<int> samples;
+  clus->setSamples(cluster.samples);
+  //
+  //  std::map<int, std::vector<double>> pad_radial_samples;
+  clus->setPadRadialSamples(cluster.pad_radial_samples);
+  //  std::map<int, std::vector<double>> pad_azimuth_samples;
+  clus->setPadAzimuthSamples(cluster.pad_azimuth_samples);
+  //  std::vector<double> sum_samples;
+  clus->setSumSamples(cluster.sum_samples);
+  //
+  //  int min_sample;
+  clus->setMinSample(cluster.min_sample);
+  //  int max_sample;
+  clus->setMaxSample(cluster.max_sample);
+  //  int min_pad_azimuth;
+  clus->setMinPadAzimuth(cluster.min_pad_azimuth);
+  //  int max_pad_azimuth;
+  clus->setMaxPadAzimuth(cluster.max_pad_azimuth);
+  //
+  //  double peak;
+  clus->setPeak(cluster.peak);
+  //  double peak_sample;
+  clus->setPeakSample(cluster.peak_sample);
+  //  double pedstal;
+  clus->setPedstal(cluster.pedstal);
+  //
+  //  std::map<int, double> pad_azimuth_peaks;
+  clus->setPadAzimuthPeaks(cluster.pad_azimuth_peaks);
+  //
+  //  //! pad coordinate
+  //  int avg_pad_radial;
+  clus->setAvgPadRadial(cluster.avg_pad_radial);
+  //  double avg_pad_azimuth;
+  clus->setAvgPadAzimuth(cluster.avg_pad_azimuth);
+  //
+  //  //! cluster size in units of pad bins
+  //  int size_pad_radial;
+  clus->setSizePadRadial(cluster.size_pad_radial);
+  //  int size_pad_azimuth;
+  clus->setSizePadAzimuth(cluster.size_pad_azimuth);
+  //
+  //
+  //  //! pad bin size
+  //  //! phi size per pad in rad
+  //  double delta_azimuth_bin;
+  clus->setDeltaAzimuthBin(cluster.delta_azimuth_bin);
+  //  //! z size per ADC sample bin
+  //  double delta_z;
+  clus->setDeltaZ(cluster.delta_z);
+
+  // update error matrix
 
   TMatrixF DIM(3, 3);
   DIM[0][0] = 0.0;
@@ -895,6 +1008,8 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   clus->setError(2, 0, COVAR_ERR[2][0]);
   clus->setError(2, 1, COVAR_ERR[2][1]);
   clus->setError(2, 2, COVAR_ERR[2][2]);
+
+  // output prototype specifics
 
   if (Verbosity() >= 2)
   {

@@ -64,8 +64,8 @@ TpcPrototypeCluster::TpcPrototypeCluster()
   {
     for (int i = j; i < 3; ++i)
     {
-      setSize(i, j, NAN);
-      setError(i, j, NAN);
+      TpcPrototypeCluster::setSize(i, j, NAN);
+      TpcPrototypeCluster::setError(i, j, NAN);
     }
   }
 }
@@ -113,6 +113,85 @@ void TpcPrototypeCluster::identify(std::ostream& os) const
   os << getError(2, 0) << " , ";
   os << getError(2, 1) << " , ";
   os << getError(2, 2) << " )" << std::endl;
+
+  //  std::set<int> pad_radials;
+  os << "  pad_radials  = ( ";
+  for (auto& element : pad_radials) os << element << " ";
+  os << ")" << std::endl;
+
+  //  std::set<int> pad_azimuths;
+  os << "  pad_azimuths  = ( ";
+  for (auto& element : pad_azimuths) os << element << " ";
+  os << ")" << std::endl;
+  //  std::set<int> samples;
+  os << "  samples  = ( ";
+  for (auto& element : samples) os << element << " ";
+  os << ")" << std::endl;
+  //
+  //  std::map<int, std::vector<double>> pad_radial_samples;
+  os << "  pad_radial_samples  = [ " << std::endl;
+  for (auto& pair : pad_radial_samples)
+  {
+    os << pair.first << "->( ";
+    for (auto& element : pair.second) os << element << " ";
+    os << ")" << std::endl;
+  }
+  os << "]" << std::endl;
+  //  std::map<int, std::vector<double>> pad_azimuth_samples;
+  os << "  pad_azimuth_samples  = [ " << std::endl;
+  for (auto& pair : pad_azimuth_samples)
+  {
+    os << pair.first << "->( ";
+    for (auto& element : pair.second) os << element << " ";
+    os << ")" << std::endl;
+  }
+  os << "]" << std::endl;
+  //  std::vector<double> sum_samples;
+  os << "  sum_samples  = ( ";
+  for (auto& element : sum_samples) os << element << " ";
+  os << ")" << std::endl;
+  //
+  //  int min_sample;
+  os << "  min_sample  =  " << min_sample << std::endl;
+  //  int max_sample;
+  os << "  max_sample  =  " << max_sample << std::endl;
+  //  int min_pad_azimuth;
+  os << "  min_pad_azimuth  =  " << min_pad_azimuth << std::endl;
+  //  int max_pad_azimuth;
+  os << "  max_pad_azimuth  =  " << max_pad_azimuth << std::endl;
+  //
+  //  double peak;
+  os << "  peak  =  " << peak << std::endl;
+  //  double peak_sample;
+  os << "  peak_sample  =  " << peak_sample << std::endl;
+  //  double pedstal;
+  os << "  pedstal  =  " << pedstal << std::endl;
+  //
+  //  //    std::map<int, double> pad_radial_peaks; // radial always have size = 1 in this analysis
+  //  std::map<int, double> pad_azimuth_peaks;
+  os << "  pad_azimuth_peaks  = ( ";
+  for (auto& element : pad_azimuth_peaks) os << element.first << "->" << element.second << " ";
+  os << ")" << std::endl;
+  //
+  //  //! pad coordinate
+  //  int avg_pad_radial;
+  os << "  avg_pad_radial  =  " << avg_pad_radial << std::endl;
+  //  double avg_pad_azimuth;
+  os << "  avg_pad_azimuth  =  " << avg_pad_azimuth << std::endl;
+  //
+  //  //! cluster size in units of pad bins
+  //  int size_pad_radial;
+  os << "  size_pad_radial  =  " << size_pad_radial << std::endl;
+  //  int size_pad_azimuth;
+  os << "  size_pad_azimuth  =  " << size_pad_azimuth << std::endl;
+  //
+  //  //! pad bin size
+  //  //! phi size per pad in rad
+  //  double delta_azimuth_bin;
+  os << "  delta_azimuth_bin  =  " << delta_azimuth_bin << std::endl;
+  //  //! z size per ADC sample bin
+  //  double delta_z;
+  os << "  delta_z  =  " << delta_z << std::endl;
 
   os << std::endl;
   os << "-----------------------------------------------" << std::endl;

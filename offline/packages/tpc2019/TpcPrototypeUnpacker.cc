@@ -775,8 +775,8 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   // make sure this cluster location is available
   if (trkrclusters->findCluster(ckey))
   {
-    cout <<"TpcPrototypeUnpacker::exportDSTCluster - fatal error - cluster already exist which is not expected for prototype analysis. "
-        <<"iclus = "<<iclus<<", ckey = "<<ckey<<". Offending cluster: "<<endl;
+    cout << "TpcPrototypeUnpacker::exportDSTCluster - fatal error - cluster already exist which is not expected for prototype analysis. "
+         << "iclus = " << iclus << ", ckey = " << ckey << ". Offending cluster: " << endl;
     trkrclusters->findCluster(ckey)->identify();
     exit(1);
   }
@@ -844,6 +844,64 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   cluster.delta_z = (layergeom->get_zcenter(cluster.min_sample + 1) - layergeom->get_zcenter(cluster.min_sample));
   cluster.delta_azimuth_bin = (layergeom->get_phicenter(lowery + 1) - layergeom->get_phicenter(lowery));
 
+  // output prototype specifics
+
+  //  std::set<int> pad_radials;
+  clus->setPadRadials(cluster.pad_radials);
+  //  std::set<int> pad_azimuths;
+  clus->setPadAzimuths(cluster.pad_azimuths);
+  //  std::set<int> samples;
+  clus->setSamples(cluster.samples);
+  //
+  //  std::map<int, std::vector<double>> pad_radial_samples;
+  clus->setPadRadialSamples(cluster.pad_radial_samples);
+  //  std::map<int, std::vector<double>> pad_azimuth_samples;
+  clus->setPadAzimuthSamples(cluster.pad_azimuth_samples);
+  //  std::vector<double> sum_samples;
+  clus->setSumSamples(cluster.sum_samples);
+  //
+  //  int min_sample;
+  clus->setMinSample(cluster.min_sample);
+  //  int max_sample;
+  clus->setMaxSample(cluster.max_sample);
+  //  int min_pad_azimuth;
+  clus->setMinPadAzimuth(cluster.min_pad_azimuth);
+  //  int max_pad_azimuth;
+  clus->setMaxPadAzimuth(cluster.max_pad_azimuth);
+  //
+  //  double peak;
+  clus->setPeak(cluster.peak);
+  //  double peak_sample;
+  clus->setPeakSample(cluster.peak_sample);
+  //  double pedstal;
+  clus->setPedstal(cluster.pedstal);
+  //
+  //  std::map<int, double> pad_azimuth_peaks;
+  clus->setPadAzimuthPeaks(cluster.pad_azimuth_peaks);
+  //
+  //  //! pad coordinate
+  //  int avg_pad_radial;
+  clus->setAvgPadRadial(cluster.avg_pad_radial);
+  //  double avg_pad_azimuth;
+  clus->setAvgPadAzimuth(cluster.avg_pad_azimuth);
+  //
+  //  //! cluster size in units of pad bins
+  //  int size_pad_radial;
+  clus->setSizePadRadial(cluster.size_pad_radial);
+  //  int size_pad_azimuth;
+  clus->setSizePadAzimuth(cluster.size_pad_azimuth);
+  //
+  //
+  //  //! pad bin size
+  //  //! phi size per pad in rad
+  //  double delta_azimuth_bin;
+  clus->setDeltaAzimuthBin(cluster.delta_azimuth_bin);
+  //  //! z size per ADC sample bin
+  //  double delta_z;
+  clus->setDeltaZ(cluster.delta_z);
+
+  // update error matrix
+
   TMatrixF DIM(3, 3);
   DIM[0][0] = 0.0;
   DIM[0][1] = 0.0;
@@ -907,7 +965,7 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   clus->setError(2, 1, COVAR_ERR[2][1]);
   clus->setError(2, 2, COVAR_ERR[2][2]);
 
-
+  // output prototype specifics
 
   if (Verbosity() >= 2)
   {

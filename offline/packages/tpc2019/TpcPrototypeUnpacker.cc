@@ -771,8 +771,19 @@ int TpcPrototypeUnpacker::exportDSTCluster(ClusterData& cluster, const int iclus
   // create the cluster entry directly in the node tree
   const TrkrDefs::hitsetkey hit_set_key(TpcDefs::genHitSetKey(layer, 0, 0));
   const TrkrDefs::cluskey ckey = TpcDefs::genClusKey(hit_set_key, iclus);
-  TpcPrototypeCluster* clus = static_cast<TpcPrototypeCluster*>((trkrclusters->findOrAddCluster(ckey))->second);
+
+  // make sure this cluster location is available
+  if (trkrclusters->findCluster(ckey))
+  {
+    cout <<"TpcPrototypeUnpacker::exportDSTCluster - fatal error - cluster already exist which is not expected for prototype analysis. "
+        <<"iclus = "<<iclus<<", ckey = "<<ckey<<". Offending cluster: "<<endl;
+    trkrclusters->findCluster(ckey)->identify();
+    exit(1);
+  }
+  TpcPrototypeCluster* clus = new TpcPrototypeCluster();
   assert(clus);
+  clus->setClusKey(ckey);
+  trkrclusters->addCluster(clus);
 
   //  calculate geometry
   const double radius = layergeom->get_radius();  // returns center of layer

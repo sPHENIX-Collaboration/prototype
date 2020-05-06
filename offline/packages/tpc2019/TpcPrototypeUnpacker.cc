@@ -183,6 +183,7 @@ int TpcPrototypeUnpacker::Init(PHCompositeNode* topNode)
 int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
 {
   // Looking for the DST node
+  PHNodeIterator iter(topNode);
   PHCompositeNode* dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST"));
   if (!dstNode)
   {
@@ -244,7 +245,6 @@ int TpcPrototypeUnpacker::InitRun(PHCompositeNode* topNode)
   trkrclusters = findNode::getClass<TrkrClusterContainer>(topNode, "TRKR_CLUSTER");
   if (!trkrclusters)
   {
-    PHNodeIterator iter(topNode);
 
     PHNodeIterator dstiter(dstNode);
     PHCompositeNode* DetNode =
@@ -591,7 +591,7 @@ int TpcPrototypeUnpacker::exportDSTHits()
     {
       for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
       {
-        unsigned int adc = static_cast<unsigned int>(m_padPlaneData.m_data[pad_azimuth][pad_radial][sample]);
+        unsigned int adc = static_cast<unsigned int>(m_padPlaneData.getData()[pad_azimuth][pad_radial][sample]);
 
         if (adc)
         {

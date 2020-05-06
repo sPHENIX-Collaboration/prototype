@@ -263,7 +263,13 @@ class TpcPrototypeUnpacker : public SubsysReco
   PHG4CylinderCellGeomContainer *tpcCylinderCellGeom;
   TrkrHitSetContainer *hitsetcontainer;
   TrkrClusterContainer *trkrclusters;
+
+  //! ClusterData &cluster -> DST / TrkrClusterContainer
   int exportDSTCluster(ClusterData &cluster, const int i);
+
+  //! PadPlaneData m_padPlaneData -> DST / TrkrHitSetContainer
+  int exportDSTHits();
+
   int InitField(PHCompositeNode *topNode);
 
 #if !defined(__CINT__) || defined(__CLING__)

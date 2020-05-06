@@ -29,6 +29,8 @@
 #include <phfield/PHFieldConfigv2.h>
 #include <phfield/PHFieldUtility.h>
 
+#include <tpc/TpcDefs.h>
+#include <tpc/TpcHit.h>
 #include <trackbase/TrkrClusterContainer.h>
 #include <trackbase/TrkrDefs.h>  // for hitkey, getLayer
 #include <trackbase/TrkrHit.h>   // for TrkrHit
@@ -559,6 +561,8 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
     }  //    for (unsigned int channel = 0; channel < kN_CHANNELS; channel++)
   }    //  for (unsigned int fee = 0; fee < kN_FEES; ++fee)
 
+  exportDSTHits();
+
   if (enableClustering)
   {
     int ret = Clustering();
@@ -569,6 +573,58 @@ int TpcPrototypeUnpacker::process_event(PHCompositeNode* topNode)
   m_eventT->Fill();
 
   return Fun4AllReturnCodes::EVENT_OK;
+}
+
+int TpcPrototypeUnpacker::exportDSTHits()
+{
+  int nHits(0);
+
+  assert(hitsetcontainer);
+
+  for (unsigned int pad_radial = 0; pad_radial < kMaxPadX; ++pad_radial)
+  {
+    TrkrDefs::hitsetkey hitsetkey = TpcDefs::genHitSetKey(pad_radial, 0, 0);
+    // Use existing hitset or add new one if needed
+    TrkrHitSetContainer::Iterator hitsetit = hitsetcontainer->findOrAddHitSet(hitsetkey);
+
+    for (unsigned int pad_azimuth = 0; pad_azimuth < kMaxPadY; ++pad_azimuth)
+    {
+      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
+      {
+        unsigned int adc = static_cast<unsigned int>(m_padPlaneData.m_data[pad_azimuth][pad_radial][sample]);
+
+        if (adc)
+        {
+          // generate the key for this hit, requires zbin and phibin
+          TrkrDefs::hitkey hitkey = TpcDefs::genHitKey(pad_azimuth, sample);
+          // See if this hit already exists
+          TrkrHit* hit = nullptr;
+          hit = hitsetit->second->getHit(hitkey);
+          if (!hit)
+          {
+            // create a new one
+            hit = new TpcHit();
+            hitsetit->second->addHitSpecificKey(hitkey, hit);
+          }
+          else
+          {
+            cout << "TpcPrototypeUnpacker::exportDSTHits "
+                 << " - Fatal error - hit with "
+                 << " hitkey = " << hitkey << " already exist";
+            exit(1);
+          }
+
+          // Either way, add the energy to it  -- adc values will be added at digitization
+          hit->setAdc(adc);
+          ++nHits;
+
+        }  //        if (m_padPlaneData.m_data[pad_azimuth][pad_radial][sample])
+
+      }  //      for (unsigned int sample = 0; sample < kSAMPLE_LENGTH; sample++)
+    }    //   for (unsigned int pad_azimuth = 0; pad_azimuth < kMaxPadY; ++pad_azimuth)
+  }      //  for (unsigned int pad_radial = 0; pad_radial < kMaxPadX; ++pad_radial)
+
+  return nHits;
 }
 
 int TpcPrototypeUnpacker::Clustering()

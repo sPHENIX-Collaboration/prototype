@@ -170,12 +170,12 @@ inline bool MvtxPrototype2Geom::detectorToGlobal(int index, int iCol, int iRow, 
 {
   if (iRow<0 || iRow>=Segmentation::NRows || iCol<0 || iCol>=Segmentation::NCols)
     return false;
-  Point3D<float> locPoint;
+  TVector3 locPoint;
   Segmentation::detectorToLocal(iRow, iCol, locPoint);
   const TGeoHMatrix& matL2G = Instance()->getMatrixL2G(index);
   //matL2G.Print();
   double loc[3];
-  locPoint.GetCoordinates(loc);
+  locPoint.GetXYZ(loc);
   matL2G.LocalToMaster(loc, glo);
   return true;
 }

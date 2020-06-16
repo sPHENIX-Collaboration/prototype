@@ -1,9 +1,8 @@
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
-
+#if !defined (__CINT__) || defined (__CLING__) || defined(__MAKE_CINT__)
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllInputManager.h>
-#include <fun4all/Fun4AllPrdfInputManager.h>
+#include <fun4allraw/Fun4AllPrdfInputManager.h>
 
 #include <phool/recoConsts.h>
 
@@ -16,6 +15,7 @@
 #include <TSystem.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
+R__LOAD_LIBRARY(libfun4allraw.so)
 R__LOAD_LIBRARY(libmvtxprototype2.so)
 R__LOAD_LIBRARY(libanamvtxtestbeam2019.so)
 #endif
@@ -29,6 +29,7 @@ void Fun4All_TestBeam(
 		const string &input_file = "calib-00000648-0000.prdf")
 {
   gSystem->Load("libfun4all");
+  gSystem->Load("libfun4allraw");
   gSystem->Load("libmvtxprototype2.so");
   gSystem->Load("libanamvtxtestbeam2019.so");
 

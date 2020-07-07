@@ -117,7 +117,7 @@ MvtxStandaloneTracking::AssociateClusters(MvtxTrackList &trklst, std::vector<int
 
       // calculate slope & interecept in zy plane
       double mzy = CalcSlope(clus0->getY(), clus0->getZ(), clus1->getY(), clus1->getZ());
-      double bzy = CalcIntecept(clus0->getY(), clus0->getZ(), mxy);
+      double bzy = CalcIntecept(clus0->getY(), clus0->getZ(), mzy);
 
       // -- loop over all clusters in the third desired layer
       TrkrClusterContainer::ConstRange clusrange2 =

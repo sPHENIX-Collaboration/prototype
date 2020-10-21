@@ -76,8 +76,6 @@ class Prototype4DSTReader : public SubsysReco
 
   int nblocks;
 
-#if !defined(__CINT__) || defined(__CLING__)
-
   typedef std::shared_ptr<TClonesArray> arr_ptr;
 
   struct record
@@ -107,7 +105,6 @@ class Prototype4DSTReader : public SubsysReco
   typedef RawTower_Prototype4 RawTower_type;
 
   typedef RawTower_Temperature RawTowerT_type;
-#endif
 
   int _event;
 

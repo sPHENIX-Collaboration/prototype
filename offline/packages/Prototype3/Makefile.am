@@ -32,33 +32,19 @@ pkginclude_HEADERS = \
 ROOTDICTS = \
   RawTower_Prototype3_Dict.cc \
   RawTower_Temperature_Dict.cc
-if MAKEROOT6
-  pcmdir = $(libdir)
-  nobase_dist_pcm_DATA = \
-    RawTower_Prototype3_Dict_rdict.pcm \
-    RawTower_Temperature_Dict_rdict.pcm
-else
-  ROOT5_IO_DICTS = \
-    PROTOTYPE3_FEM_Dict.cc
-  ROOT5_DICTS = \
-    CaloCalibration_Dict.cc \
-    CaloUnpackPRDF_Dict.cc \
-    EventInfoSummary_Dict.cc \
-    GenericUnpackPRDF_Dict.cc \
-    Prototype3DSTReader_Dict.cc \
-    RunInfoUnpackPRDF_Dict.cc \
-    TempInfoUnpackPRDF_Dict.cc
-endif
+
+pcmdir = $(libdir)
+nobase_dist_pcm_DATA = \
+  RawTower_Prototype3_Dict_rdict.pcm \
+  RawTower_Temperature_Dict_rdict.pcm
 
 libPrototype3_io_la_SOURCES = \
   $(ROOTDICTS) \
-  $(ROOT5_IO_DICTS) \
   PROTOTYPE3_FEM.cc \
   RawTower_Prototype3.cc \
   RawTower_Temperature.cc
 
 libPrototype3_la_SOURCES = \
-  $(ROOT5_DICTS) \
   Prototype3DSTReader.cc \
   CaloUnpackPRDF.cc \
   TempInfoUnpackPRDF.cc \
@@ -80,7 +66,7 @@ libPrototype3_la_LIBADD = \
 
 # Rule for generating CINT dictionaries from class headers.
 %_Dict.cc: %.h %LinkDef.h
-	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
+	rootcint -f $@ @CINTDEFS@ $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
 
 #just to get the dependency
 %_Dict_rdict.pcm: %_Dict.cc ;
@@ -113,4 +99,3 @@ testexternals.cc:
 
 clean-local:
 	rm -f *Dict* $(BUILT_SOURCES) *.pcm
-

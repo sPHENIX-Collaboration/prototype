@@ -1,9 +1,7 @@
 #ifndef TPC_TPCDAQDEFS_H
 #define TPC_TPCDAQDEFS_H
 
-#if !defined(__CINT__) or defined(__CLING__)
 #include "ChanMap.h"
-#endif
 
 #include <map>
 #include <string>
@@ -27,10 +25,8 @@ static const unsigned int kN_FEES = 8;
 static const unsigned int kMaxPadY=16*8;
 static const unsigned int kMaxPadX=16;
 
-#if !defined(__CINT__) or defined(__CLING__)
 //! static R2 channel map
 static  TPCR2Map TpcR2Map;
-#endif
 
 class SampleFit_PowerLawDoubleExp_PDFMaker
 {

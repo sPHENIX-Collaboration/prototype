@@ -33,23 +33,12 @@ pkginclude_HEADERS = \
 
 libMvtxPrototype1_la_SOURCES = \
   MvtxAlign.C \
-  MvtxAlign_Dict.C \
   MvtxApplyHotDead.C \
-  MvtxApplyHotDead_Dict.C \
   MvtxClusterizer.C \
-  MvtxClusterizer_Dict.C \
   MvtxRunInfoUnpackPRDF.C \
-  MvtxRunInfoUnpackPRDF_Dict.C \
   MvtxStandaloneTracking.C \
-  MvtxStandaloneTracking_Dict.C \
   MvtxUnpackPRDF.C \
-  MvtxUnpackPRDF_Dict.C \
-  MvtxQAHisto.C \
-  MvtxQAHisto_Dict.C
-
-# Rule for generating table CINT dictionaries.
-%_Dict.C: %.h %LinkDef.h
-	rootcint -f $@ @CINTDEFS@  -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
+  MvtxQAHisto.C
 
 ################################################
 # linking tests
@@ -72,4 +61,4 @@ testexternals.C:
 ################################################
 
 clean-local:
-	rm -f *Dict* *.pcm
+	rm -f $(BUILT_SOURCES)

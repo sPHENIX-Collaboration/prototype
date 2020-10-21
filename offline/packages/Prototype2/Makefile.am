@@ -7,9 +7,6 @@ lib_LTLIBRARIES = \
   libPrototype2_io.la \
   libPrototype2.la
 
-AM_CXXFLAGS = \
- -Werror
-
 AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \
@@ -35,32 +32,19 @@ pkginclude_HEADERS = \
 ROOTDICTS = \
   RawTower_Prototype2_Dict.cc \
   RawTower_Temperature_Dict.cc
-if MAKEROOT6
-  pcmdir = $(libdir)
-  nobase_dist_pcm_DATA = \
-    RawTower_Prototype2_Dict_rdict.pcm \
-    RawTower_Temperature_Dict_rdict.pcm
-else
-  ROOT5_IO_DICTS = \
-    PROTOTYPE2_FEM_Dict.cc
-  ROOT5_DICTS = \
-    CaloCalibration_Dict.cc \
-    CaloUnpackPRDF_Dict.cc \
-    GenericUnpackPRDF_Dict.cc \
-    Prototype2DSTReader_Dict.cc \
-    RunInfoUnpackPRDF_Dict.cc \
-    TempInfoUnpackPRDF_Dict.cc
-endif
+
+pcmdir = $(libdir)
+nobase_dist_pcm_DATA = \
+  RawTower_Prototype2_Dict_rdict.pcm \
+  RawTower_Temperature_Dict_rdict.pcm
 
 libPrototype2_io_la_SOURCES = \
   $(ROOTDICTS) \
-  $(ROOT5_IO_DICTS) \
   PROTOTYPE2_FEM.cc \
   RawTower_Prototype2.cc \
   RawTower_Temperature.cc
 
 libPrototype2_la_SOURCES = \
-  $(ROOT5_DICTS) \
   CaloCalibration.cc \
   CaloUnpackPRDF.cc \
   GenericUnpackPRDF.cc \
@@ -108,7 +92,7 @@ testexternals.cc:
 
 # Rule for generating CINT dictionaries from class headers.
 %_Dict.cc: %.h %LinkDef.h
-	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
+	rootcint -f $@ @CINTDEFS@ $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
 
 #just to get the dependency
 %_Dict_rdict.pcm: %_Dict.cc ;

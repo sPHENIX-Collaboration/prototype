@@ -12,12 +12,9 @@
 #define TPCPROTOTYPETRACK_H_
 
 
-#if defined(__CINT__) && !defined(__CLING__)
-#include <stdint.h>
-#else
-#include <cstdint>
-#endif
 #include <phool/PHObject.h>
+
+#include <cstdint>
 
 /*!
  * \brief TpcPrototypeTrack

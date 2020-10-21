@@ -12,7 +12,7 @@
 
 #include <TObject.h>
 
-#include <stdint.h>
+#include <cstdint>
 #include <cmath>
 #include <map>
 #include <set>
@@ -122,7 +122,6 @@ class TpcPrototypeUnpacker : public SubsysReco
     //! 3-D Graph clustering based on PHMakeGroups()
     void Clustering(int zero_suppression, bool verbosity = false);
 
-#if !defined(__CINT__) || defined(__CLING__)
 
     const std::vector<std::vector<std::vector<int>>> &getData() const
     {
@@ -140,7 +139,6 @@ class TpcPrototypeUnpacker : public SubsysReco
 
     std::multimap<int, SampleID> m_groups;
 
-#endif  // #if !defined(__CINT__) || defined (__CLING__)
   };
 
   //! buffer for a cluster's data
@@ -272,7 +270,6 @@ class TpcPrototypeUnpacker : public SubsysReco
 
   int InitField(PHCompositeNode *topNode);
 
-#if !defined(__CINT__) || defined(__CLING__)
 
   // IO stuff
 
@@ -306,7 +303,6 @@ class TpcPrototypeUnpacker : public SubsysReco
   //! Clustering then prepare IOs
   int Clustering(void);
 
-#endif  // !defined(__CINT__) || defined (__CLING__)
 
   int m_clusteringZeroSuppression;
   int m_nPreSample;

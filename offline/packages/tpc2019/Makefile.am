@@ -8,7 +8,7 @@ lib_LTLIBRARIES = \
   libtpc2019.la
 
 AM_CXXFLAGS = \
- -Werror -DRAVE -DRaveDllExport=
+ -DRAVE -DRaveDllExport=
 
 AM_CPPFLAGS = \
   -I$(includedir) \
@@ -36,19 +36,12 @@ ROOTDICTS = \
   TpcPrototypeCluster_Dict.cc \
   TpcPrototypeDefs_Dict.cc
 
-if MAKEROOT6
-  pcmdir = $(libdir)
-  nobase_dist_pcm_DATA =  \
-    TpcPrototypeTrack_Dict_rdict.pcm \
-    TpcPrototypeCluster_Dict_rdict.pcm \
-    TpcPrototypeDefs_Dict_rdict.pcm \
-    TpcPrototypeUnpacker_Dict_rdict.pcm
-else
-  ROOT5_DICTS = \
-  TpcPrototypeClusterizer_Dict.cc \
-  TpcPrototypeGenFitTrkFinder_Dict.cc \
-  TpcPrototypeGenFitTrkFitter_Dict.cc
-endif
+pcmdir = $(libdir)
+nobase_dist_pcm_DATA =  \
+  TpcPrototypeTrack_Dict_rdict.pcm \
+  TpcPrototypeCluster_Dict_rdict.pcm \
+  TpcPrototypeDefs_Dict_rdict.pcm \
+  TpcPrototypeUnpacker_Dict_rdict.pcm
 
 libtpc2019_io_la_SOURCES = \
   $(ROOTDICTS) \
@@ -57,7 +50,6 @@ libtpc2019_io_la_SOURCES = \
   TpcPrototypeDefs.cc
 
 libtpc2019_la_SOURCES = \
-  $(ROOT5_DICTS) \
   TpcPrototypeClusterizer.cc \
   TpcPrototypeGenFitTrkFinder.cc  \
   TpcPrototypeGenFitTrkFitter.cc  \
@@ -83,7 +75,7 @@ libtpc2019_la_LIBADD = \
 
 # Rule for generating CINT dictionaries from class headers.
 %_Dict.cc: %.h %LinkDef.h
-	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
+	rootcint -f $@ @CINTDEFS@ $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
 
 #just to get the dependency
 %_Dict_rdict.pcm: %_Dict.cc ;

@@ -61,7 +61,6 @@ libPrototype4_la_LIBADD = \
   libPrototype4_io.la \
   -lSubsysReco \
   -lfun4all \
-  -lcalo_util \
   -lphparameter
 
 # Rule for generating CINT dictionaries from class headers.

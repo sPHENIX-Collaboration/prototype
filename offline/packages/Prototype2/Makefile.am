@@ -61,7 +61,6 @@ libPrototype2_la_LIBADD = \
   -lSubsysReco \
   -lphool \
   -lfun4all \
-  -lcalo_util \
   -lphparameter
 
 BUILT_SOURCES = \

@@ -60,6 +60,7 @@ int PHG4Prototype2HcalCellReco::InitRun(PHCompositeNode *topNode)
   {
     std::cout << PHWHERE << "DST Node missing, doing nothing." << std::endl;
     gSystem->Exit(1);
+    exit(1);
   }
   PHCompositeNode *runNode = dynamic_cast<PHCompositeNode *>(iter.findFirst("PHCompositeNode", "RUN"));
   PHCompositeNode *parNode = dynamic_cast<PHCompositeNode *>(iter.findFirst("PHCompositeNode", "PAR"));
@@ -75,6 +76,7 @@ int PHG4Prototype2HcalCellReco::InitRun(PHCompositeNode *topNode)
     Fun4AllServer *se = Fun4AllServer::instance();
     se->Print("NODETREE");
     gSystem->Exit(1);
+    exit(1);
   }
   m_CellNodeName = "G4CELL_" + m_Detector;
   PHG4ScintillatorSlatContainer *slats = findNode::getClass<PHG4ScintillatorSlatContainer>(topNode, m_CellNodeName);

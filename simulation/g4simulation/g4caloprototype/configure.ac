@@ -7,7 +7,7 @@ LT_INIT([disable-static])
 
 case $CXX in
  clang++)
-  CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-undefined-var-template -Wno-unused-private-field"
+  CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-undefined-var-template -Wno-unused-private-field -Wno-c11-extensions -Wno-return-stack-address"
  ;;
  g++)
   CXXFLAGS="$CXXFLAGS -Wall -Werror"

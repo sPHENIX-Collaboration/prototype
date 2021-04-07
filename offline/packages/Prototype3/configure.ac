@@ -9,16 +9,16 @@ case $CXX in
   clang++)
 # boost statistics
   CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-deprecated-declarations"
-  ;;
-esac
-
-if test $ac_cv_prog_gxx = yes; then
+ ;;
+ g++)
   if test `g++ -dumpversion | gawk '{print $1>=8.0?"1":"0"}'` = 1; then
    CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated-declarations -Werror"
   else
    CXXFLAGS="$CXXFLAGS -Wall -Werror"
   fi
-fi
+  ;;
+esac
+
 
 CINTDEFS=" -noIncludePaths  -inlineInputHeader "
 AC_SUBST(CINTDEFS)

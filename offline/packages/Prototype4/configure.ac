@@ -8,7 +8,7 @@ LT_INIT([disable-static])
 case $CXX in
   clang++)
 # boost statistics
-  CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-deprecated-declarations -Wno-return-stack-address"
+  CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-deprecated-declarations"
  ;;
  g++)
   if test `g++ -dumpversion | gawk '{print $1>=8.0?"1":"0"}'` = 1; then

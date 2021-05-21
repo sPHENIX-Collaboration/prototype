@@ -321,7 +321,7 @@ class TpcPrototypeCluster : public TrkrCluster
   //! z size per ADC sample bin
   double delta_z;
 
-  ClassDef(TpcPrototypeCluster, 1)
+  ClassDefOverride(TpcPrototypeCluster, 1)
 };
 
 #endif  //TRACKBASE_TRKRCLUSTERV1_H

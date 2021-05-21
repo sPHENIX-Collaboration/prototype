@@ -68,7 +68,7 @@ class RawTower_Prototype2 : public RawTower
   signal_type signal_samples[NSAMPLES];  // Low Gain
   int HBD_channel;
 
-  ClassDef(RawTower_Prototype2, 3)
+  ClassDefOverride(RawTower_Prototype2, 3)
 };
 
 #endif

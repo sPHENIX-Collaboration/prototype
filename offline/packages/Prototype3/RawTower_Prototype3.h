@@ -22,20 +22,20 @@ class RawTower_Prototype3 : public RawTower
 
   virtual ~RawTower_Prototype3() {}
 
-  void Reset();
-  int isValid() const;
-  void identify(std::ostream &os = std::cout) const;
+  void Reset() override;
+  int isValid() const override;
+  void identify(std::ostream &os = std::cout) const override;
 
-  void set_id(RawTowerDefs::keytype id) { towerid = id; }
-  RawTowerDefs::keytype get_id() const { return towerid; }
-  int get_bineta() const { return RawTowerDefs::decode_index1(towerid); }
-  int get_binphi() const { return RawTowerDefs::decode_index2(towerid); }
-  int get_column() const { return RawTowerDefs::decode_index1(towerid); }
-  int get_row() const { return RawTowerDefs::decode_index2(towerid); }
-  double get_energy() const { return energy; }
-  void set_energy(const double e) { energy = e; }
-  float get_time() const { return time; }
-  void set_time(const float t) { time = t; }
+  void set_id(RawTowerDefs::keytype id) override { towerid = id; }
+  RawTowerDefs::keytype get_id() const override { return towerid; }
+  int get_bineta() const override { return RawTowerDefs::decode_index1(towerid); }
+  int get_binphi() const override { return RawTowerDefs::decode_index2(towerid); }
+  int get_column() const override { return RawTowerDefs::decode_index1(towerid); }
+  int get_row() const override { return RawTowerDefs::decode_index2(towerid); }
+  double get_energy() const override { return energy; }
+  void set_energy(const double e) override { energy = e; }
+  float get_time() const override { return time; }
+  void set_time(const float t) override { time = t; }
 
   //---Raw data
   // access------------------------------------------------------------

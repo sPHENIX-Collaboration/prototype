@@ -91,7 +91,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     {
     }
 
-    ClassDef(TpcPrototypeUnpacker::EventHeader, 1)
+    ClassDefOverride(TpcPrototypeUnpacker::EventHeader, 1)
   };
 
   //! buffer for full event data
@@ -209,7 +209,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     //! z size per ADC sample bin
     double delta_z;
 
-    ClassDef(TpcPrototypeUnpacker::ClusterData, 5);
+    ClassDefOverride(TpcPrototypeUnpacker::ClusterData, 5);
   };
 
   //! simple channel header class for ROOT file IO
@@ -253,7 +253,7 @@ class TpcPrototypeUnpacker : public SubsysReco
     {
     }
 
-    ClassDef(TpcPrototypeUnpacker::ChannelHeader, 1)
+    ClassDefOverride(TpcPrototypeUnpacker::ChannelHeader, 1)
   };
 
  private:

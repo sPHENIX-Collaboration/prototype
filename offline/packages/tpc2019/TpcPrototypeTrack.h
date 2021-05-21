@@ -67,7 +67,7 @@ class TpcPrototypeTrack : public PHObject
   //
   //    float residualIsolated;
   //
-  //    ClassDef(TpcPrototypeTrack::Cluster, 1);
+  //    ClassDefOverride(TpcPrototypeTrack::Cluster, 1);
   //  };
 
   //  Cluster clusters[nLayer];
@@ -83,7 +83,7 @@ class TpcPrototypeTrack : public PHObject
   float clusterProjectionPhi[nLayer];
   float clusterResidualZ[nLayer];
 
-  ClassDef(TpcPrototypeTrack, 5);
+  ClassDefOverride(TpcPrototypeTrack, 5);
 };
 
 #endif /* TPCPROTOTYPETRACK_H_ */

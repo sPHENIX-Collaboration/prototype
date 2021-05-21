@@ -76,7 +76,7 @@ class RawTower_Temperature : public RawTower
   std::vector<time_t> times;
   std::vector<float> temperatures;
 
-  ClassDef(RawTower_Temperature, 1)
+  ClassDefOverride(RawTower_Temperature, 1)
 };
 
 #endif

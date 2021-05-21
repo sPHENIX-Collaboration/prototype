@@ -18,16 +18,16 @@ class RawTower_Temperature : public RawTower
   RawTower_Temperature(RawTowerDefs::keytype id);
   virtual ~RawTower_Temperature() {}
 
-  void Reset();
-  int isValid() const { return get_nr_entries(); }
-  void identify(std::ostream &os = std::cout) const;
+  void Reset() override;
+  int isValid() const override { return get_nr_entries(); }
+  void identify(std::ostream &os = std::cout) const override;
   void print(std::ostream &os = std::cout) const;
 
-  int get_column() const { return RawTowerDefs::decode_index1(towerid); }
-  int get_row() const { return RawTowerDefs::decode_index2(towerid); }
+  int get_column() const override { return RawTowerDefs::decode_index1(towerid); }
+  int get_row() const override { return RawTowerDefs::decode_index2(towerid); }
 
-  void set_id(RawTowerDefs::keytype id) { towerid = id; }
-  RawTowerDefs::keytype get_id() const { return towerid; }
+  void set_id(RawTowerDefs::keytype id) override { towerid = id; }
+  RawTowerDefs::keytype get_id() const override { return towerid; }
 
   int get_nr_entries() const { return temperatures.size(); }
 

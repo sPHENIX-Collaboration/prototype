@@ -10,7 +10,7 @@ case $CXX in
 # boost statistics
   CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-deprecated-declarations"
  ;;
- g++)
+ *g++)
   if test `g++ -dumpversion | gawk '{print $1>=8.0?"1":"0"}'` = 1; then
    CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated-declarations -Werror"
   else
@@ -19,7 +19,7 @@ case $CXX in
   ;;
 esac
 
-CINTDEFS=" -noIncludePaths  -inlineInputHeader -Wno-inconsistent-missing-override "
+CINTDEFS=" -noIncludePaths  -inlineInputHeader "
 AC_SUBST(CINTDEFS)
 
 AC_CONFIG_FILES([Makefile])

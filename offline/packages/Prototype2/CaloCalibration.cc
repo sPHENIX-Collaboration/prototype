@@ -66,7 +66,7 @@ int CaloCalibration::InitRun(PHCompositeNode *topNode)
 }
 
 //____________________________________
-int CaloCalibration::process_event(PHCompositeNode *topNode)
+int CaloCalibration::process_event(PHCompositeNode */*topNode*/)
 {
   if (Verbosity())
   {

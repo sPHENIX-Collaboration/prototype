@@ -130,7 +130,7 @@ int PHG4Prototype2InnerHcalDetector::IsInPrototype2InnerHcal(G4VPhysicalVolume* 
 }
 
 G4LogicalVolume*
-PHG4Prototype2InnerHcalDetector::ConstructSteelPlate(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2InnerHcalDetector::ConstructSteelPlate(G4LogicalVolume* /*hcalenvelope*/)
 {
   if (!m_InnerHcalSteelPlate)
   {
@@ -262,7 +262,7 @@ PHG4Prototype2InnerHcalDetector::ConstructScintillatorBox(G4LogicalVolume* hcale
 }
 
 G4LogicalVolume*
-PHG4Prototype2InnerHcalDetector::ConstructScintiTileU1(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2InnerHcalDetector::ConstructScintiTileU1(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiUoneCornerUpperLeft);
@@ -283,7 +283,7 @@ PHG4Prototype2InnerHcalDetector::ConstructScintiTileU1(G4LogicalVolume* hcalenve
 }
 
 G4LogicalVolume*
-PHG4Prototype2InnerHcalDetector::ConstructScintiTileU2(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2InnerHcalDetector::ConstructScintiTileU2(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiU2CornerUpperLeft);
@@ -304,7 +304,7 @@ PHG4Prototype2InnerHcalDetector::ConstructScintiTileU2(G4LogicalVolume* hcalenve
 }
 
 G4LogicalVolume*
-PHG4Prototype2InnerHcalDetector::ConstructScintiTile9(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2InnerHcalDetector::ConstructScintiTile9(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT9CornerUpperLeft);
@@ -325,7 +325,7 @@ PHG4Prototype2InnerHcalDetector::ConstructScintiTile9(G4LogicalVolume* hcalenvel
 }
 
 G4LogicalVolume*
-PHG4Prototype2InnerHcalDetector::ConstructScintiTile10(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2InnerHcalDetector::ConstructScintiTile10(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT10CornerUpperLeft);
@@ -346,7 +346,7 @@ PHG4Prototype2InnerHcalDetector::ConstructScintiTile10(G4LogicalVolume* hcalenve
 }
 
 G4LogicalVolume*
-PHG4Prototype2InnerHcalDetector::ConstructScintiTile11(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2InnerHcalDetector::ConstructScintiTile11(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT11CornerUpperLeft);
@@ -367,7 +367,7 @@ PHG4Prototype2InnerHcalDetector::ConstructScintiTile11(G4LogicalVolume* hcalenve
 }
 
 G4LogicalVolume*
-PHG4Prototype2InnerHcalDetector::ConstructScintiTile12(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2InnerHcalDetector::ConstructScintiTile12(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT12CornerUpperLeft);

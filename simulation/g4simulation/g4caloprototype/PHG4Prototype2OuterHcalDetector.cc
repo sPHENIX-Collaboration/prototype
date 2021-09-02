@@ -132,7 +132,7 @@ int PHG4Prototype2OuterHcalDetector::IsInPrototype2OuterHcal(G4VPhysicalVolume* 
 }
 
 G4LogicalVolume*
-PHG4Prototype2OuterHcalDetector::ConstructSteelPlate(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2OuterHcalDetector::ConstructSteelPlate(G4LogicalVolume* /*hcalenvelope*/)
 {
   if (!m_OuterHcalSteelPlate)
   {
@@ -204,7 +204,7 @@ PHG4Prototype2OuterHcalDetector::ConstructScintillatorBox(G4LogicalVolume* hcale
 }
 
 G4LogicalVolume*
-PHG4Prototype2OuterHcalDetector::ConstructScintiTileU1(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2OuterHcalDetector::ConstructScintiTileU1(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiUoneCornerUpperLeft);
@@ -225,7 +225,7 @@ PHG4Prototype2OuterHcalDetector::ConstructScintiTileU1(G4LogicalVolume* hcalenve
 }
 
 G4LogicalVolume*
-PHG4Prototype2OuterHcalDetector::ConstructScintiTileU2(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2OuterHcalDetector::ConstructScintiTileU2(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiU2CornerUpperLeft);
@@ -305,7 +305,7 @@ PHG4Prototype2OuterHcalDetector::ConstructScintillatorBoxHiEta(G4LogicalVolume* 
   return scintiboxlogical;
 }
 G4LogicalVolume*
-PHG4Prototype2OuterHcalDetector::ConstructScintiTile9(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2OuterHcalDetector::ConstructScintiTile9(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT9CornerUpperLeft);
@@ -326,7 +326,7 @@ PHG4Prototype2OuterHcalDetector::ConstructScintiTile9(G4LogicalVolume* hcalenvel
 }
 
 G4LogicalVolume*
-PHG4Prototype2OuterHcalDetector::ConstructScintiTile10(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2OuterHcalDetector::ConstructScintiTile10(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT10CornerUpperLeft);
@@ -347,7 +347,7 @@ PHG4Prototype2OuterHcalDetector::ConstructScintiTile10(G4LogicalVolume* hcalenve
 }
 
 G4LogicalVolume*
-PHG4Prototype2OuterHcalDetector::ConstructScintiTile11(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2OuterHcalDetector::ConstructScintiTile11(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT11CornerUpperLeft);
@@ -368,7 +368,7 @@ PHG4Prototype2OuterHcalDetector::ConstructScintiTile11(G4LogicalVolume* hcalenve
 }
 
 G4LogicalVolume*
-PHG4Prototype2OuterHcalDetector::ConstructScintiTile12(G4LogicalVolume* hcalenvelope)
+PHG4Prototype2OuterHcalDetector::ConstructScintiTile12(G4LogicalVolume* /*hcalenvelope*/)
 {
   std::vector<G4TwoVector> vertexes;
   vertexes.push_back(m_ScintiT12CornerUpperLeft);
@@ -442,7 +442,7 @@ void PHG4Prototype2OuterHcalDetector::ConstructMe(G4LogicalVolume* logicWorld)
   return;
 }
 
-int PHG4Prototype2OuterHcalDetector::ConstructOuterHcal(G4LogicalVolume* hcalenvelope)
+int PHG4Prototype2OuterHcalDetector::ConstructOuterHcal(G4LogicalVolume *hcalenvelope)
 {
   G4LogicalVolume* steel_plate = ConstructSteelPlate(hcalenvelope);  // bottom steel plate
   G4LogicalVolume* scintibox = nullptr;

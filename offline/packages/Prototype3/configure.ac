@@ -12,7 +12,7 @@ case $CXX in
  ;;
  *g++)
   if test `g++ -dumpversion | gawk '{print $1>=8.0?"1":"0"}'` = 1; then
-   CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated-declarations  -Wno-unused-parameter -Wnoerror"
+   CXXFLAGS="$CXXFLAGS -Wall -Wno-deprecated-declarations  -Wno-unused-parameter -Wno-error"
   else
    CXXFLAGS="$CXXFLAGS -Wall -Werror"
   fi

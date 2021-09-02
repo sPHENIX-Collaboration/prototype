@@ -24,8 +24,6 @@ class CaloUnpackPRDF : public SubsysReco
 
   int process_event(PHCompositeNode *topNode);
 
-  int End(PHCompositeNode *topNode);
-
   void CreateNodeTree(PHCompositeNode *topNode);
 
  private:

@@ -283,7 +283,7 @@ void Prototype2RawTowerBuilder::ReadParamsFromNodeTree(PHCompositeNode *topNode)
   return;
 }
 
-void Prototype2RawTowerBuilder::Print(const std::string &what) const
+void Prototype2RawTowerBuilder::Print(const std::string &/*what*/) const
 {
   cout << "m_NumCellToTower: " << m_NumCellToTower << endl;
   return;

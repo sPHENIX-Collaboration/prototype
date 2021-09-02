@@ -110,7 +110,7 @@ PHG4HcalPrototypeDetector::PHG4HcalPrototypeDetector(PHG4Subsystem* subsys, PHCo
 
 //_______________________________________________________________
 //_______________________________________________________________
-int PHG4HcalPrototypeDetector::IsInHcalPrototype(G4VPhysicalVolume* volume) const
+int PHG4HcalPrototypeDetector::IsInHcalPrototype(G4VPhysicalVolume* /*volume*/) const
 {
   return 0;  // not sure what value to return for now.
 }
@@ -627,7 +627,7 @@ void PHG4HcalPrototypeDetector::CalculateGeometry()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-void PHG4HcalPrototypeDetector::SetMaterial(G4String materialChoice)
+void PHG4HcalPrototypeDetector::SetMaterial(G4String /*materialChoice*/)
 {
 }
 

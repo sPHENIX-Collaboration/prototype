@@ -623,7 +623,7 @@ PHG4SpacalPrototypeDetector::Construct_Fiber(const G4double length,
   return fiber_logic;
 }
 
-void PHG4SpacalPrototypeDetector::Print(const std::string& what) const
+void PHG4SpacalPrototypeDetector::Print(const std::string& /*what*/) const
 {
   assert(_geom);
 

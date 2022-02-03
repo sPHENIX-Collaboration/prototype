@@ -25,7 +25,6 @@ libg4caloprototype_la_LIBADD = \
   -lcalo_io \
   -lg4testbench \
   -lg4detectors \
-  -lphg4gdml \
   -lphool  \
   -lSubsysReco
 

@@ -5,12 +5,11 @@ AM_INIT_AUTOMAKE
 AC_PROG_CXX(CC g++)
 LT_INIT([disable-static])
 
+CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-unused-parameter"
+
 case $CXX in
  clang++)
-  CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-unused-parameter"
- ;;
- *g++)
-  CXXFLAGS="$CXXFLAGS -Wall -Werror -Wno-unused-parameter"
+  CXXFLAGS="$CXXFLAGS -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option"
  ;;
 esac
 

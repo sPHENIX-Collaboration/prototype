@@ -22,8 +22,11 @@
 #include <Event/EventTypes.h>
 #include <Event/packet.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
+#pragma GCC diagnostic pop
 
 #include <cassert>
 #include <cmath>  // for NAN

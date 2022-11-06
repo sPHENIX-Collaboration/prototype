@@ -9,7 +9,7 @@ AM_CXXFLAGS = `geant4-config --cflags | sed s/-Woverloaded-virtual// | sed s/-W\
 AM_CPPFLAGS = \
     -I$(includedir) \
     -I$(OFFLINE_MAIN)/include \
-    -I$(ROOTSYS)/include \
+    -isystem$(ROOTSYS)/include \
     -I$(G4_MAIN)/include
 
 # set in configure.in to check if gcc version >= 4.8
